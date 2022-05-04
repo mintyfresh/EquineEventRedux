@@ -421,11 +421,13 @@ export type UpdatePlayerPayload = {
   player?: Maybe<Player>;
 };
 
-export type EventLayoutFragment = { __typename?: 'Event', name: string };
+export type EventLayoutFragment = { __typename?: 'Event', name: string, id: string };
 
 export type EventListFragment = { __typename?: 'EventConnection', nodes: Array<{ __typename?: 'Event', id: string, name: string }> };
 
 export type EventListItemFragment = { __typename?: 'Event', id: string, name: string };
+
+export type EventNavFragment = { __typename?: 'Event', id: string };
 
 export type PlayerTableFragment = { __typename?: 'Player', id: string, name: string, paid: boolean, dropped: boolean, winsCount: number, drawsCount: number, lossesCount: number, score: number };
 
@@ -458,18 +460,24 @@ export type EventPlayersQueryVariables = Exact<{
 }>;
 
 
-export type EventPlayersQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, players: Array<{ __typename?: 'Player', id: string, name: string, paid: boolean, dropped: boolean, winsCount: number, drawsCount: number, lossesCount: number, score: number }>, deletedPlayers: Array<{ __typename?: 'Player', id: string, name: string, paid: boolean, dropped: boolean, winsCount: number, drawsCount: number, lossesCount: number, score: number }> } };
+export type EventPlayersQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, players: Array<{ __typename?: 'Player', id: string, name: string, paid: boolean, dropped: boolean, winsCount: number, drawsCount: number, lossesCount: number, score: number }> } };
 
 export type EventsIndexQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type EventsIndexQuery = { __typename?: 'Query', events: { __typename?: 'EventConnection', nodes: Array<{ __typename?: 'Event', id: string, name: string }> } };
 
+export const EventNavFragmentDoc = gql`
+    fragment EventNav on Event {
+  id
+}
+    `;
 export const EventLayoutFragmentDoc = gql`
     fragment EventLayout on Event {
   name
+  ...EventNav
 }
-    `;
+    ${EventNavFragmentDoc}`;
 export const EventListItemFragmentDoc = gql`
     fragment EventListItem on Event {
   id
@@ -626,9 +634,6 @@ export const EventPlayersDocument = gql`
     name
     ...EventLayout
     players(deleted: false) {
-      ...PlayerTable
-    }
-    deletedPlayers: players(deleted: true) {
       ...PlayerTable
     }
   }
