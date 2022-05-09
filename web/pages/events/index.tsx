@@ -1,5 +1,6 @@
 import { gql } from '@apollo/client'
 import type { GetServerSideProps, NextPage } from 'next'
+import { Card } from 'react-bootstrap'
 import EventList, { EVENT_LIST_FRAGMENT } from '../../components/EventList'
 import { EventsIndexQuery, useEventsIndexQuery } from '../../lib/generated/graphql'
 import { initializeApolloClient } from '../../lib/graphql/client'
@@ -42,6 +43,11 @@ const EventsIndexPage: NextPage<EventsIndexPageProps> = () => {
     <>
       <h1>Events</h1>
       <EventList nodes={data.events.nodes} />
+      {data.events.nodes.length === 0 && (
+        <Card body>
+          <Card.Text>No events found.</Card.Text>
+        </Card>
+      )}
     </>
   )
 }
