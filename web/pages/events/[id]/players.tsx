@@ -14,7 +14,9 @@ const EVENT_PLAYERS_QUERY = gql`
       name
       ...EventLayout
       players(deleted: false) {
-        ...PlayerTable
+        nodes {
+          ...PlayerTable
+        }
       }
     }
   }
@@ -54,9 +56,9 @@ const EventPlayersPage: NextPageWithLayout<EventPlayersQuery> = ({ event: { id }
 
   return (
     <>
-      {data.event.players.length > 0 ? (
+      {data.event.players.nodes.length > 0 ? (
         <PlayerTable
-          players={data.event.players}
+          players={data.event.players.nodes}
           onDelete={() => refetch()}
         />
       ) : (

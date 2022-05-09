@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client'
 import { GetServerSideProps } from 'next'
-import { Card, ListGroup } from 'react-bootstrap'
+import { Alert, Card, ListGroup } from 'react-bootstrap'
 import EventLayout, { EVENT_LAYOUT_FRAGMENT } from '../../../components/EventLayout'
 import { EventMatchesQuery, EventMatchesQueryVariables, useEventMatchesQuery } from '../../../lib/generated/graphql'
 import { initializeApolloClient } from '../../../lib/graphql/client'
@@ -12,6 +12,9 @@ const EVENT_MATCHES_QUERY = gql`
       id
       name
       ...EventLayout
+      players {
+        totalCount
+      }
       rounds {
         id
         number
@@ -66,6 +69,11 @@ const EventMatchesPage: NextPageWithLayout<EventMatchesQuery> = ({ event: { id }
 
   return (
     <>
+      {data.event.players.totalCount === 0 && (
+        <Alert variant="warning">
+          No players have been added to this event yet.
+        </Alert>
+      )}
       {data.event.rounds.map((round) => (
         <Card key={round.id}>
           <Card.Header>

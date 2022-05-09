@@ -6,7 +6,7 @@ module Types
     field :name, String, null: false
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false
 
-    field :players, [Types::PlayerType], null: false do
+    field :players, Types::PlayerConnectionType, null: false do
       argument :deleted, Boolean, required: false do
         description 'Filters players by their deletion state; includes all players if unspecified'
       end
