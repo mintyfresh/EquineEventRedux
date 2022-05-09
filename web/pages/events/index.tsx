@@ -1,6 +1,7 @@
 import { gql } from '@apollo/client'
 import type { GetServerSideProps, NextPage } from 'next'
 import { Card } from 'react-bootstrap'
+import CreateEventModal from '../../components/CreateEventModal'
 import EventList, { EVENT_LIST_FRAGMENT } from '../../components/EventList'
 import { EventsIndexQuery, useEventsIndexQuery } from '../../lib/generated/graphql'
 import { initializeApolloClient } from '../../lib/graphql/client'
@@ -33,7 +34,7 @@ interface EventsIndexPageProps {
 }
 
 const EventsIndexPage: NextPage<EventsIndexPageProps> = () => {
-  const { data } = useEventsIndexQuery()
+  const { data, refetch } = useEventsIndexQuery()
 
   if (!data?.events) {
     return null
@@ -42,6 +43,9 @@ const EventsIndexPage: NextPage<EventsIndexPageProps> = () => {
   return (
     <>
       <h1>Events</h1>
+      <CreateEventModal
+        onCreate={() => refetch()}
+      />
       <EventList nodes={data.events.nodes} />
       {data.events.nodes.length === 0 && (
         <Card body>
