@@ -464,6 +464,13 @@ export type EventShowQueryVariables = Exact<{
 
 export type EventShowQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string } };
 
+export type EventMatchesQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type EventMatchesQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, rounds: Array<{ __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, player1: { __typename?: 'Player', id: string, name: string }, player2?: { __typename?: 'Player', id: string, name: string } | null }> }> } };
+
 export type EventPlayersQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
@@ -681,6 +688,60 @@ export function useEventShowLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<
 export type EventShowQueryHookResult = ReturnType<typeof useEventShowQuery>;
 export type EventShowLazyQueryHookResult = ReturnType<typeof useEventShowLazyQuery>;
 export type EventShowQueryResult = Apollo.QueryResult<EventShowQuery, EventShowQueryVariables>;
+export const EventMatchesDocument = gql`
+    query EventMatches($id: ID!) {
+  event(id: $id) {
+    id
+    name
+    ...EventLayout
+    rounds {
+      id
+      number
+      matches {
+        id
+        player1 {
+          id
+          name
+        }
+        player2 {
+          id
+          name
+        }
+        winnerId
+        draw
+      }
+    }
+  }
+}
+    ${EventLayoutFragmentDoc}`;
+
+/**
+ * __useEventMatchesQuery__
+ *
+ * To run a query within a React component, call `useEventMatchesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useEventMatchesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useEventMatchesQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useEventMatchesQuery(baseOptions: Apollo.QueryHookOptions<EventMatchesQuery, EventMatchesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<EventMatchesQuery, EventMatchesQueryVariables>(EventMatchesDocument, options);
+      }
+export function useEventMatchesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<EventMatchesQuery, EventMatchesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<EventMatchesQuery, EventMatchesQueryVariables>(EventMatchesDocument, options);
+        }
+export type EventMatchesQueryHookResult = ReturnType<typeof useEventMatchesQuery>;
+export type EventMatchesLazyQueryHookResult = ReturnType<typeof useEventMatchesLazyQuery>;
+export type EventMatchesQueryResult = Apollo.QueryResult<EventMatchesQuery, EventMatchesQueryVariables>;
 export const EventPlayersDocument = gql`
     query EventPlayers($id: ID!) {
   event(id: $id) {
