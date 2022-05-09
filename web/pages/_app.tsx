@@ -5,7 +5,6 @@ import { SSRProvider } from 'react-bootstrap'
 import Layout from '../components/Layout'
 import { useApolloClient } from '../lib/graphql/client'
 import { NextPageWithLayout } from '../lib/types/next-page'
-import '../styles/globals.css'
 
 type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout
