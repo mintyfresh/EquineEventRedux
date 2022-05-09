@@ -453,6 +453,14 @@ export type CreateEventMutationVariables = Exact<{
 
 export type CreateEventMutation = { __typename?: 'Mutation', eventCreate?: { __typename?: 'EventCreatePayload', event?: { __typename?: 'Event', id: string, name: string } | null, errors?: Array<{ __typename?: 'Error', attribute: string, message: string }> | null } | null };
 
+export type CreatePlayerMutationVariables = Exact<{
+  eventID: Scalars['ID'];
+  input: PlayerInput;
+}>;
+
+
+export type CreatePlayerMutation = { __typename?: 'Mutation', playerCreate?: { __typename?: 'PlayerCreatePayload', player?: { __typename?: 'Player', id: string } | null, errors?: Array<{ __typename?: 'Error', attribute: string, message: string }> | null } | null };
+
 export type EventLayoutFragment = { __typename?: 'Event', name: string, id: string };
 
 export type EventListFragment = { __typename?: 'EventConnection', nodes: Array<{ __typename?: 'Event', id: string, name: string }> };
@@ -598,6 +606,45 @@ export function useCreateEventMutation(baseOptions?: Apollo.MutationHookOptions<
 export type CreateEventMutationHookResult = ReturnType<typeof useCreateEventMutation>;
 export type CreateEventMutationResult = Apollo.MutationResult<CreateEventMutation>;
 export type CreateEventMutationOptions = Apollo.BaseMutationOptions<CreateEventMutation, CreateEventMutationVariables>;
+export const CreatePlayerDocument = gql`
+    mutation CreatePlayer($eventID: ID!, $input: PlayerInput!) {
+  playerCreate(input: {eventId: $eventID, playerInput: $input}) {
+    player {
+      id
+    }
+    errors {
+      ...Errors
+    }
+  }
+}
+    ${ErrorsFragmentDoc}`;
+export type CreatePlayerMutationFn = Apollo.MutationFunction<CreatePlayerMutation, CreatePlayerMutationVariables>;
+
+/**
+ * __useCreatePlayerMutation__
+ *
+ * To run a mutation, you first call `useCreatePlayerMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreatePlayerMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createPlayerMutation, { data, loading, error }] = useCreatePlayerMutation({
+ *   variables: {
+ *      eventID: // value for 'eventID'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreatePlayerMutation(baseOptions?: Apollo.MutationHookOptions<CreatePlayerMutation, CreatePlayerMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreatePlayerMutation, CreatePlayerMutationVariables>(CreatePlayerDocument, options);
+      }
+export type CreatePlayerMutationHookResult = ReturnType<typeof useCreatePlayerMutation>;
+export type CreatePlayerMutationResult = Apollo.MutationResult<CreatePlayerMutation>;
+export type CreatePlayerMutationOptions = Apollo.BaseMutationOptions<CreatePlayerMutation, CreatePlayerMutationVariables>;
 export const PlayerActionsUpdateDocument = gql`
     mutation PlayerActionsUpdate($id: ID!, $input: PlayerInput!) {
   playerUpdate(input: {id: $id, playerInput: $input}) {

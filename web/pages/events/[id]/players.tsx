@@ -1,6 +1,7 @@
 import { gql } from '@apollo/client'
 import { GetServerSideProps } from 'next'
 import { Card } from 'react-bootstrap'
+import CreatePlayerModal from '../../../components/CreatePlayerModal'
 import EventLayout, { EVENT_LAYOUT_FRAGMENT } from '../../../components/EventLayout'
 import PlayerTable, { PLAYER_TABLE_FRAGMENT } from '../../../components/PlayerTable'
 import { EventPlayersQuery, EventPlayersQueryVariables, useEventPlayersQuery } from '../../../lib/generated/graphql'
@@ -56,6 +57,10 @@ const EventPlayersPage: NextPageWithLayout<EventPlayersQuery> = ({ event: { id }
 
   return (
     <>
+      <CreatePlayerModal
+        event={data.event}
+        onCreate={() => refetch()}
+      />
       {data.event.players.nodes.length > 0 ? (
         <PlayerTable
           players={data.event.players.nodes}
