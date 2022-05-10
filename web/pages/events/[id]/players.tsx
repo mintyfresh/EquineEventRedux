@@ -1,12 +1,13 @@
 import { gql } from '@apollo/client'
 import { GetServerSideProps } from 'next'
 import { Card } from 'react-bootstrap'
-import CreatePlayerModal from '../../../components/CreatePlayerModal'
+import PlayerModal from '../../../components/PlayerModal'
 import EventLayout, { EVENT_LAYOUT_FRAGMENT } from '../../../components/EventLayout'
 import PlayerTable, { PLAYER_TABLE_FRAGMENT } from '../../../components/PlayerTable'
 import { EventPlayersQuery, EventPlayersQueryVariables, useEventPlayersQuery } from '../../../lib/generated/graphql'
 import { initializeApolloClient } from '../../../lib/graphql/client'
 import { NextPageWithLayout } from '../../../lib/types/next-page'
+import CreatePlayerButton, { CREATE_PLAYER_BUTTON_FRAGMENT } from '../../../components/CreatePlayerButton'
 
 const EVENT_PLAYERS_QUERY = gql`
   query EventPlayers($id: ID!) {
@@ -14,6 +15,7 @@ const EVENT_PLAYERS_QUERY = gql`
       id
       name
       ...EventLayout
+      ...CreatePlayerButton
       players(deleted: false) {
         nodes {
           ...PlayerTable
@@ -22,6 +24,7 @@ const EVENT_PLAYERS_QUERY = gql`
     }
   }
   ${EVENT_LAYOUT_FRAGMENT}
+  ${CREATE_PLAYER_BUTTON_FRAGMENT}
   ${PLAYER_TABLE_FRAGMENT}
 `
 
@@ -57,7 +60,7 @@ const EventPlayersPage: NextPageWithLayout<EventPlayersQuery> = ({ event: { id }
 
   return (
     <>
-      <CreatePlayerModal
+      <CreatePlayerButton
         event={data.event}
         onCreate={() => refetch()}
       />
