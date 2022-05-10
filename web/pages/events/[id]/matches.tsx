@@ -73,15 +73,19 @@ const EventMatchesPage: NextPageWithLayout<EventMatchesQuery> = ({ event: { id }
 
   return (
     <>
-      <Button variant="primary" onClick={() => setShow(true)} className="mb-3">
-        Create Match
-      </Button>
-      <PlayerPairingsModal show={show} onHide={() => setShow(false)} event={data.event} />
       {data.event.players.totalCount === 0 && (
         <Alert variant="warning">
           No players have been added to this event yet.
         </Alert>
       )}
+      <Button
+        variant="primary"
+        disabled={data.event.players.totalCount === 0}
+        onClick={() => setShow(true)} className="mb-3"
+      >
+        Create Match
+      </Button>
+      <PlayerPairingsModal show={show} onHide={() => setShow(false)} event={data.event} />
       {data.event.rounds.map((round) => (
         <Card key={round.id}>
           <Card.Header>
