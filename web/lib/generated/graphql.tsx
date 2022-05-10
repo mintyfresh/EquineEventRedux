@@ -500,6 +500,8 @@ export type PlayerActionsDeleteMutation = { __typename?: 'Mutation', playerDelet
 
 export type SlipEventFragment = { __typename?: 'Event', id: string, name: string };
 
+export type SlipRoundFragment = { __typename?: 'Round', id: string, number: number };
+
 export type SlipMatchFragment = { __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, player1: { __typename?: 'Player', id: string, name: string, score: number }, player2?: { __typename?: 'Player', id: string, name: string, score: number } | null };
 
 export type ErrorsFragment = { __typename?: 'Error', attribute: string, message: string };
@@ -586,6 +588,12 @@ export const SlipEventFragmentDoc = gql`
     fragment SlipEvent on Event {
   id
   name
+}
+    `;
+export const SlipRoundFragmentDoc = gql`
+    fragment SlipRound on Round {
+  id
+  number
 }
     `;
 export const SlipMatchFragmentDoc = gql`
@@ -954,7 +962,7 @@ export const EventSlipsDocument = gql`
     ...SlipEvent
     rounds {
       id
-      number
+      ...SlipRound
       matches {
         ...SlipMatch
       }
@@ -963,6 +971,7 @@ export const EventSlipsDocument = gql`
 }
     ${EventLayoutFragmentDoc}
 ${SlipEventFragmentDoc}
+${SlipRoundFragmentDoc}
 ${SlipMatchFragmentDoc}`;
 
 /**

@@ -1,10 +1,17 @@
 import { gql } from '@apollo/client'
-import { SlipEventFragment, SlipMatchFragment } from '../lib/generated/graphql'
+import { SlipEventFragment, SlipMatchFragment, SlipRoundFragment } from '../lib/generated/graphql'
 
 export const SLIP_EVENT_FRAGMENT = gql`
   fragment SlipEvent on Event {
     id
     name
+  }
+`
+
+export const SLIP_ROUND_FRAGMENT = gql`
+  fragment SlipRound on Round {
+    id
+    number
   }
 `
 
@@ -28,15 +35,16 @@ export const SLIP_MATCH_FRAGMENT = gql`
 
 export interface SlipProps {
   event: SlipEventFragment
+  round: SlipRoundFragment
   match: SlipMatchFragment
 }
 
-const Slip: React.FC<SlipProps> = ({ event, match }) => {
+const Slip: React.FC<SlipProps> = ({ event, round, match }) => {
   return (
     <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="600px"
          height="129px" viewBox="0 0 540 115" enableBackground="new 0 0 540 115" xmlSpace="preserve">
       <rect x="0.5" y="0.5" fill="none" stroke="#231F20" strokeMiterlimit="10" width="539" height="114"/>
-      <text transform="matrix(1 0 0 1 2.999 13.5493)" fontFamily="'MyriadPro-Regular'" fontSize="12">{event.name} - Round match.round</text>
+      <text transform="matrix(1 0 0 1 2.999 13.5493)" fontFamily="'MyriadPro-Regular'" fontSize="12">{event.name} - Round {round.number}</text>
       <text transform="matrix(1 0 0 1 216.8911 13.5493)" fontFamily="'MyriadPro-Regular'" fontSize="12">Win</text>
       <text transform="matrix(1 0 0 1 368.0713 13.5493)" fontFamily="'MyriadPro-Regular'" fontSize="12">First</text>
       <text transform="matrix(1 0 0 1 458.9805 13.5493)" fontFamily="'MyriadPro-Regular'" fontSize="12">Drop?</text>

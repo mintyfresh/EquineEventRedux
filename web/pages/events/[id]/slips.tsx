@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client'
 import { GetServerSideProps } from 'next'
 import EventLayout, { EVENT_LAYOUT_FRAGMENT } from '../../../components/EventLayout'
-import Slip, { SLIP_EVENT_FRAGMENT, SLIP_MATCH_FRAGMENT } from '../../../components/Slip'
+import Slip, { SLIP_EVENT_FRAGMENT, SLIP_MATCH_FRAGMENT, SLIP_ROUND_FRAGMENT } from '../../../components/Slip'
 import { EventSlipsQuery, EventSlipsQueryVariables, useEventSlipsQuery } from '../../../lib/generated/graphql'
 import { initializeApolloClient } from '../../../lib/graphql/client'
 import { NextPageWithLayout } from '../../../lib/types/next-page'
@@ -15,7 +15,7 @@ const EVENT_SLIPS_QUERY = gql`
       ...SlipEvent
       rounds {
         id
-        number
+        ...SlipRound
         matches {
           ...SlipMatch
         }
@@ -24,6 +24,7 @@ const EVENT_SLIPS_QUERY = gql`
   }
   ${EVENT_LAYOUT_FRAGMENT}
   ${SLIP_EVENT_FRAGMENT}
+  ${SLIP_ROUND_FRAGMENT}
   ${SLIP_MATCH_FRAGMENT}
 `
 
@@ -61,7 +62,12 @@ const EventSlipsPage: NextPageWithLayout<EventSlipsQuery> = ({ event: { id }}) =
     <>
       {data.event.rounds.flatMap((round) => (
         round.matches.map((match) => (
-          <Slip key={match.id} event={data.event} match={match} />
+          <Slip
+            key={match.id}
+            event={data.event}
+            round={round}
+            match={match}
+          />
         ))
       ))}
     </>
