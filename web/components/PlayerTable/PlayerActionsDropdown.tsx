@@ -1,14 +1,17 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
 import { Dropdown } from 'react-bootstrap'
-import { PlayerActionsDropdownFragment, PlayerActionsUpdateMutation, PlayerActionsUpdateMutationVariables, usePlayerActionsDeleteMutation, usePlayerActionsUpdateMutation } from '../../lib/generated/graphql'
+import { PlayerActionsDropdownFragment, PlayerActionsUpdateMutationVariables, usePlayerActionsDeleteMutation, usePlayerActionsUpdateMutation } from '../../lib/generated/graphql'
 import EllipsisDropdown from '../EllipsisDropdown'
+import EditPlayerDropdownItem, { EDIT_PLAYER_DROPDOWN_ITEM_FRAGMENT } from './EditPlayerDropdownItem'
 
 export const PLAYER_ACTIONS_DROPDOWN_FRAGMENT = gql`
   fragment PlayerActionsDropdown on Player {
     id
     paid
     dropped
+    ...EditPlayerDropdownItem
   }
+  ${EDIT_PLAYER_DROPDOWN_ITEM_FRAGMENT}
 `
 
 gql`
@@ -63,7 +66,7 @@ const PlayerActionsDropdown: React.FC<PlayerActionsDropdownProps> = ({ player, o
 
   return (
     <EllipsisDropdown align="end">
-      <Dropdown.Item>Edit</Dropdown.Item>
+      <EditPlayerDropdownItem player={player} />
       <Dropdown.Item disabled={loading} onClick={() => updatePlayerAttribute('paid', !player.paid)}>
         Mark {player.paid ? 'unpaid' : 'paid'}
       </Dropdown.Item>

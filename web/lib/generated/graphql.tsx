@@ -483,7 +483,17 @@ export type PlayersForPairingsQuery = { __typename?: 'Query', event: { __typenam
 
 export type PlayerTableFragment = { __typename?: 'Player', id: string, name: string, paid: boolean, dropped: boolean, winsCount: number, drawsCount: number, lossesCount: number, score: number };
 
-export type PlayerActionsDropdownFragment = { __typename?: 'Player', id: string, paid: boolean, dropped: boolean };
+export type EditPlayerDropdownItemFragment = { __typename?: 'Player', id: string, name: string, paid: boolean, dropped: boolean };
+
+export type EditPlayerMutationVariables = Exact<{
+  id: Scalars['ID'];
+  input: PlayerInput;
+}>;
+
+
+export type EditPlayerMutation = { __typename?: 'Mutation', playerUpdate?: { __typename?: 'UpdatePlayerPayload', player?: { __typename?: 'Player', id: string, name: string, paid: boolean, dropped: boolean } | null, errors?: Array<{ __typename?: 'Error', attribute: string, message: string }> | null } | null };
+
+export type PlayerActionsDropdownFragment = { __typename?: 'Player', id: string, paid: boolean, dropped: boolean, name: string };
 
 export type PlayerActionsUpdateMutationVariables = Exact<{
   id: Scalars['ID'];
@@ -491,7 +501,7 @@ export type PlayerActionsUpdateMutationVariables = Exact<{
 }>;
 
 
-export type PlayerActionsUpdateMutation = { __typename?: 'Mutation', playerUpdate?: { __typename?: 'UpdatePlayerPayload', player?: { __typename?: 'Player', id: string, paid: boolean, dropped: boolean } | null, errors?: Array<{ __typename?: 'Error', attribute: string, message: string }> | null } | null };
+export type PlayerActionsUpdateMutation = { __typename?: 'Mutation', playerUpdate?: { __typename?: 'UpdatePlayerPayload', player?: { __typename?: 'Player', id: string, paid: boolean, dropped: boolean, name: string } | null, errors?: Array<{ __typename?: 'Error', attribute: string, message: string }> | null } | null };
 
 export type PlayerActionsDeleteMutationVariables = Exact<{
   id: Scalars['ID'];
@@ -571,13 +581,22 @@ export const EventListFragmentDoc = gql`
   }
 }
     ${EventListItemFragmentDoc}`;
+export const EditPlayerDropdownItemFragmentDoc = gql`
+    fragment EditPlayerDropdownItem on Player {
+  id
+  name
+  paid
+  dropped
+}
+    `;
 export const PlayerActionsDropdownFragmentDoc = gql`
     fragment PlayerActionsDropdown on Player {
   id
   paid
   dropped
+  ...EditPlayerDropdownItem
 }
-    `;
+    ${EditPlayerDropdownItemFragmentDoc}`;
 export const PlayerTableFragmentDoc = gql`
     fragment PlayerTable on Player {
   id
@@ -745,6 +764,47 @@ export function usePlayersForPairingsLazyQuery(baseOptions?: Apollo.LazyQueryHoo
 export type PlayersForPairingsQueryHookResult = ReturnType<typeof usePlayersForPairingsQuery>;
 export type PlayersForPairingsLazyQueryHookResult = ReturnType<typeof usePlayersForPairingsLazyQuery>;
 export type PlayersForPairingsQueryResult = Apollo.QueryResult<PlayersForPairingsQuery, PlayersForPairingsQueryVariables>;
+export const EditPlayerDocument = gql`
+    mutation EditPlayer($id: ID!, $input: PlayerInput!) {
+  playerUpdate(input: {id: $id, playerInput: $input}) {
+    player {
+      id
+      ...EditPlayerDropdownItem
+    }
+    errors {
+      ...Errors
+    }
+  }
+}
+    ${EditPlayerDropdownItemFragmentDoc}
+${ErrorsFragmentDoc}`;
+export type EditPlayerMutationFn = Apollo.MutationFunction<EditPlayerMutation, EditPlayerMutationVariables>;
+
+/**
+ * __useEditPlayerMutation__
+ *
+ * To run a mutation, you first call `useEditPlayerMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useEditPlayerMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [editPlayerMutation, { data, loading, error }] = useEditPlayerMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useEditPlayerMutation(baseOptions?: Apollo.MutationHookOptions<EditPlayerMutation, EditPlayerMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<EditPlayerMutation, EditPlayerMutationVariables>(EditPlayerDocument, options);
+      }
+export type EditPlayerMutationHookResult = ReturnType<typeof useEditPlayerMutation>;
+export type EditPlayerMutationResult = Apollo.MutationResult<EditPlayerMutation>;
+export type EditPlayerMutationOptions = Apollo.BaseMutationOptions<EditPlayerMutation, EditPlayerMutationVariables>;
 export const PlayerActionsUpdateDocument = gql`
     mutation PlayerActionsUpdate($id: ID!, $input: PlayerInput!) {
   playerUpdate(input: {id: $id, playerInput: $input}) {
