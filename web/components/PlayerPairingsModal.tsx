@@ -53,9 +53,37 @@ const PlayerPairingsModal: React.FC<PlayerPairingsModalProps> = ({ event, show, 
     return null
   }
 
-  const optionsForPlayer = (player: { id: string }) => (
-    data.event.players.nodes.filter((p) => p.id !== player.id)
-  )
+  const optionsForPlayer = (player: { id: string }) => {
+    // Exclude the player from the list of options they can pair with
+    const options = data.event.players.nodes.filter((p) => p.id !== player.id)
+
+    const paired   = options.filter((p) => !!pairings[p.id])
+    const unpaired = options.filter((p) => !pairings[p.id])
+
+    return (
+      <>
+        <option value=""></option>
+        {unpaired.length > 0 && (
+          <optgroup label="Unpaired">
+            {unpaired.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
+            ))}
+          </optgroup>
+        )}
+        {paired.length > 0 && (
+          <optgroup label="Paired">
+            {paired.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
+            ))}
+          </optgroup>
+        )}
+      </>
+    )
+  }
 
   return (
     <Modal show={show} onHide={onHide}>
@@ -78,12 +106,7 @@ const PlayerPairingsModal: React.FC<PlayerPairingsModalProps> = ({ event, show, 
                 value={pairings[player.id] || ''}
                 onChange={(event) => createPairing(player.id, event.currentTarget.value)}
               >
-                <option value=""></option>
-                {optionsForPlayer(player).map((option) => (
-                  <option key={option.id} value={option.id}>
-                    {option.name}
-                  </option>
-                ))}
+                {optionsForPlayer(player)}
               </Form.Select>
             </InputGroup>
           ))}
