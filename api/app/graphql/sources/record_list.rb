@@ -6,8 +6,8 @@ module Sources
     # @param column [Symbol, String]
     # @param scope [ActiveRecord::Relation, nil]
     # @return [Array]
-    def self.batch_key_for(model, column, scope: nil)
-      [model, column, scope&.to_sql]
+    def self.batch_key_for(model, column = model.primary_key, scope: nil)
+      [model, column.to_sym, scope&.to_sql]
     end
 
     # @param model [Class<ActiveRecord::Base>]
@@ -17,7 +17,7 @@ module Sources
       super()
 
       @model  = model
-      @column = column
+      @column = column.to_sym
       @scope  = scope
     end
 
