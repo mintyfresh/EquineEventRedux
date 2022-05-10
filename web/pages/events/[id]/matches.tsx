@@ -85,7 +85,7 @@ const EventMatchesPage: NextPageWithLayout<EventMatchesQuery> = ({ event: { id }
       {data.event.rounds.map((round) => (
         <Card key={round.id}>
           <Card.Header>
-            Round {round.number}
+            Match {round.number}
           </Card.Header>
           <Card.Body>
             {round.matches.length > 0 ? (
@@ -97,11 +97,16 @@ const EventMatchesPage: NextPageWithLayout<EventMatchesQuery> = ({ event: { id }
                 ))}
               </ListGroup>
             ) : (
-              <Card.Text>No pairings have been added to this round yet.</Card.Text>
+              <Card.Text>No pairings have been added to this match yet.</Card.Text>
             )}
           </Card.Body>
         </Card>
       ))}
+      {data.event.rounds.length === 0 && (
+        <Card body>
+          <Card.Text>No matches have been added to this event yet.</Card.Text>
+        </Card>
+      )}
     </>
   )
 }

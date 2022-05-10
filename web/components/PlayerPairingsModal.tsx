@@ -53,6 +53,10 @@ const PlayerPairingsModal: React.FC<PlayerPairingsModalProps> = ({ event, show, 
     return null
   }
 
+  const optionsForPlayer = (player: { id: string }) => (
+    data.event.players.nodes.filter((p) => p.id !== player.id)
+  )
+
   return (
     <Modal show={show} onHide={onHide}>
       <Modal.Header closeButton>
@@ -75,9 +79,9 @@ const PlayerPairingsModal: React.FC<PlayerPairingsModalProps> = ({ event, show, 
                 onChange={(event) => createPairing(player.id, event.currentTarget.value)}
               >
                 <option value=""></option>
-                {data.event.players.nodes.map((pairing) => (
-                  <option key={pairing.id} value={pairing.id}>
-                    {pairing.name}
+                {optionsForPlayer(player).map((option) => (
+                  <option key={option.id} value={option.id}>
+                    {option.name}
                   </option>
                 ))}
               </Form.Select>

@@ -32,13 +32,14 @@ const CreatePlayerModal: React.FC<CreatePlayerModalProps> = ({ event, onCreate }
 
   const [show, setShow] = useState(false)
   const [name, setName] = useState('')
+  const [paid, setPaid] = useState(false)
   const [createAnother, setCreateAnother] = useState(false)
   const [errors, setErrors] = useErrors()
 
   const [createPlayer, { loading }] = useCreatePlayerMutation({
     variables: {
       eventID: event.id,
-      input: { name }
+      input: { name, paid }
     },
     onCompleted: ({ playerCreate }) => {
       setErrors(playerCreate?.errors)
@@ -48,6 +49,7 @@ const CreatePlayerModal: React.FC<CreatePlayerModalProps> = ({ event, onCreate }
         setShow(createAnother)
 
         setName('')
+        setPaid(false)
         nameRef.current?.focus()
       }
     }
@@ -71,7 +73,7 @@ const CreatePlayerModal: React.FC<CreatePlayerModalProps> = ({ event, onCreate }
           createPlayer()
         }}>
           <Modal.Body>
-            <Form.Group>
+            <Form.Group className="mb-3">
               <Form.Label>Name</Form.Label>
               <Form.Control
                 ref={nameRef}
@@ -82,6 +84,16 @@ const CreatePlayerModal: React.FC<CreatePlayerModalProps> = ({ event, onCreate }
                 disabled={loading}
               />
               <FormControlErrors name="name" errors={errors} />
+            </Form.Group>
+            <Form.Group>
+              <Form.Check
+                title="Paid"
+                label="Paid"
+                checked={paid}
+                onChange={(event) => setPaid(event.currentTarget.checked)}
+                isInvalid={errors.any('paid')}
+                disabled={loading}
+              />
             </Form.Group>
           </Modal.Body>
           <Modal.Footer>
