@@ -498,6 +498,10 @@ export type PlayerActionsDeleteMutationVariables = Exact<{
 
 export type PlayerActionsDeleteMutation = { __typename?: 'Mutation', playerDelete?: { __typename?: 'DeletePlayerPayload', success?: boolean | null, errors?: Array<{ __typename?: 'Error', attribute: string, message: string }> | null } | null };
 
+export type SlipEventFragment = { __typename?: 'Event', id: string, name: string };
+
+export type SlipMatchFragment = { __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, player1: { __typename?: 'Player', id: string, name: string, score: number }, player2?: { __typename?: 'Player', id: string, name: string, score: number } | null };
+
 export type ErrorsFragment = { __typename?: 'Error', attribute: string, message: string };
 
 export type EventShowQueryVariables = Exact<{
@@ -526,7 +530,7 @@ export type EventSlipsQueryVariables = Exact<{
 }>;
 
 
-export type EventSlipsQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, rounds: Array<{ __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, player1: { __typename?: 'Player', id: string, name: string }, player2?: { __typename?: 'Player', id: string, name: string } | null }> }> } };
+export type EventSlipsQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, rounds: Array<{ __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, player1: { __typename?: 'Player', id: string, name: string, score: number }, player2?: { __typename?: 'Player', id: string, name: string, score: number } | null }> }> } };
 
 export type EventsIndexQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -578,6 +582,29 @@ export const PlayerTableFragmentDoc = gql`
   ...PlayerActionsDropdown
 }
     ${PlayerActionsDropdownFragmentDoc}`;
+export const SlipEventFragmentDoc = gql`
+    fragment SlipEvent on Event {
+  id
+  name
+}
+    `;
+export const SlipMatchFragmentDoc = gql`
+    fragment SlipMatch on Match {
+  id
+  player1 {
+    id
+    name
+    score
+  }
+  player2 {
+    id
+    name
+    score
+  }
+  winnerId
+  draw
+}
+    `;
 export const ErrorsFragmentDoc = gql`
     fragment Errors on Error {
   attribute
@@ -924,26 +951,19 @@ export const EventSlipsDocument = gql`
     id
     name
     ...EventLayout
+    ...SlipEvent
     rounds {
       id
       number
       matches {
-        id
-        player1 {
-          id
-          name
-        }
-        player2 {
-          id
-          name
-        }
-        winnerId
-        draw
+        ...SlipMatch
       }
     }
   }
 }
-    ${EventLayoutFragmentDoc}`;
+    ${EventLayoutFragmentDoc}
+${SlipEventFragmentDoc}
+${SlipMatchFragmentDoc}`;
 
 /**
  * __useEventSlipsQuery__
