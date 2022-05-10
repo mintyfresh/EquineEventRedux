@@ -74,7 +74,11 @@ const PlayerActionsDropdown: React.FC<PlayerActionsDropdownProps> = ({ player, o
         {player.dropped ? 'Restore' : 'Drop'}
       </Dropdown.Item>
       <Dropdown.Divider />
-      <Dropdown.Item className="text-danger" onClick={() => deletePlayer({ variables: { id: player.id } })}>
+      <Dropdown.Item className="text-danger" onClick={() => {
+        if (confirm(`Are you sure you want to delete ${player.name}?`)) {
+          deletePlayer({ variables: { id: player.id } })
+        }
+      }}>
         Delete
       </Dropdown.Item>
     </EllipsisDropdown>

@@ -51,6 +51,7 @@ const EditPlayerDropdownItem: React.FC<EditPlayerDropdownItemProps> = ({ player 
       setErrors(playerUpdate?.errors)
 
       if (playerUpdate?.player?.id) {
+        // Hide modal on success
         setShowModal(false)
       }
     }
@@ -69,6 +70,7 @@ const EditPlayerDropdownItem: React.FC<EditPlayerDropdownItemProps> = ({ player 
         errors={errors}
         disabled={loading}
         onSubmit={(_, focus) => editPlayer({
+          // Re-focus inputs once request is complete
           onCompleted: () => focus()
         })}
       />
