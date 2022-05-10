@@ -313,6 +313,7 @@ export type Query = {
   player: Player;
   /** Finds a Round by ID */
   round: Round;
+  /** Generates a possible list of pairings for a round. */
   roundProposePairings: Array<Array<Maybe<Player>>>;
 };
 
@@ -346,6 +347,7 @@ export type QueryRoundArgs = {
 
 
 export type QueryRoundProposePairingsArgs = {
+  excludePlayerIds?: InputMaybe<Array<Scalars['ID']>>;
   roundId: Scalars['ID'];
 };
 
@@ -518,6 +520,13 @@ export type EventPlayersQueryVariables = Exact<{
 
 
 export type EventPlayersQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, players: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, paid: boolean, dropped: boolean, winsCount: number, drawsCount: number, lossesCount: number, score: number }> } } };
+
+export type EventSlipsQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type EventSlipsQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, rounds: Array<{ __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, player1: { __typename?: 'Player', id: string, name: string }, player2?: { __typename?: 'Player', id: string, name: string } | null }> }> } };
 
 export type EventsIndexQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -909,6 +918,60 @@ export function useEventPlayersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptio
 export type EventPlayersQueryHookResult = ReturnType<typeof useEventPlayersQuery>;
 export type EventPlayersLazyQueryHookResult = ReturnType<typeof useEventPlayersLazyQuery>;
 export type EventPlayersQueryResult = Apollo.QueryResult<EventPlayersQuery, EventPlayersQueryVariables>;
+export const EventSlipsDocument = gql`
+    query EventSlips($id: ID!) {
+  event(id: $id) {
+    id
+    name
+    ...EventLayout
+    rounds {
+      id
+      number
+      matches {
+        id
+        player1 {
+          id
+          name
+        }
+        player2 {
+          id
+          name
+        }
+        winnerId
+        draw
+      }
+    }
+  }
+}
+    ${EventLayoutFragmentDoc}`;
+
+/**
+ * __useEventSlipsQuery__
+ *
+ * To run a query within a React component, call `useEventSlipsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useEventSlipsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useEventSlipsQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useEventSlipsQuery(baseOptions: Apollo.QueryHookOptions<EventSlipsQuery, EventSlipsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<EventSlipsQuery, EventSlipsQueryVariables>(EventSlipsDocument, options);
+      }
+export function useEventSlipsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<EventSlipsQuery, EventSlipsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<EventSlipsQuery, EventSlipsQueryVariables>(EventSlipsDocument, options);
+        }
+export type EventSlipsQueryHookResult = ReturnType<typeof useEventSlipsQuery>;
+export type EventSlipsLazyQueryHookResult = ReturnType<typeof useEventSlipsLazyQuery>;
+export type EventSlipsQueryResult = Apollo.QueryResult<EventSlipsQuery, EventSlipsQueryVariables>;
 export const EventsIndexDocument = gql`
     query EventsIndex {
   events {

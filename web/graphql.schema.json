@@ -2005,8 +2005,28 @@
           },
           {
             "name": "roundProposePairings",
-            "description": null,
+            "description": "Generates a possible list of pairings for a round.",
             "args": [
+              {
+                "name": "excludePlayerIds",
+                "description": "Players to be excluded from pairing",
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "ID",
+                      "ofType": null
+                    }
+                  }
+                },
+                "defaultValue": "[]",
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
               {
                 "name": "roundId",
                 "description": null,
