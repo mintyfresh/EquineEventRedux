@@ -6,7 +6,8 @@
 #
 #  id         :uuid             not null, primary key
 #  round_id   :uuid             not null
-#  player_ids :uuid             not null, is an Array
+#  player1_id :uuid             not null
+#  player2_id :uuid
 #  winner_id  :uuid
 #  draw       :boolean          default(FALSE), not null
 #  created_at :datetime         not null
@@ -14,36 +15,43 @@
 #
 # Indexes
 #
-#  index_matches_on_round_id  (round_id)
+#  index_matches_on_player1_id  (player1_id)
+#  index_matches_on_player2_id  (player2_id)
+#  index_matches_on_round_id    (round_id)
 #
 # Foreign Keys
 #
+#  fk_rails_...  (player1_id => players.id)
+#  fk_rails_...  (player2_id => players.id)
 #  fk_rails_...  (round_id => rounds.id)
 #
 class Match < ApplicationRecord
   # Ensure a deterministic order of player IDs.
   # Also ensure that the first player ID is always one that is present.
-  PLAYER_IDS_COMPARATOR = -> (id) { id&.hash || Float::INFINITY }
+  PLAYER_IDS_COMPARATOR = -> (id) { id ? id.tr('-', '').to_i(16) : Float::INFINITY }
 
   belongs_to :round, inverse_of: :matches
+  belongs_to :player1, class_name: 'Player'
+  belongs_to :player2, class_name: 'Player', optional: true
 
   has_one :event, through: :round
 
-  validates :player_ids, presence: true
   validates :winner_id, absence: { if: :draw? }
 
-  validate if: -> { round && player_ids_changed? } do
-    errors.add(:player_ids, :invalid) if player_ids.size != 2 || player_ids.uniq.size != 2 || player_ids[0].nil?
+  validate do
+    errors.add(:player1, :same_as_player2) if player1_id == player2_id
+  end
 
-    player_ids&.each_with_index do |player_id, index|
-      next if player_id.nil? || event.players.any? { |player| player.id == player_id }
+  validate if: -> { round && player1_id_changed? } do
+    errors.add(:player1, :not_found) unless round.event.players.include?(player1)
+  end
 
-      errors.add("player_ids[#{index}]", :not_found)
-    end
+  validate if: -> { round && player2_id_changed? } do
+    errors.add(:player2, :not_found) unless player2.nil? || round.event.players.include?(player2)
   end
 
   validate if: :winner_id? do
-    errors.add(:winner_id, :not_in_match) unless player_ids.include?(winner_id)
+    errors.add(:winner_id, :not_in_match) unless winner_id.in?([player1_id, player2_id])
   end
 
   before_validation do
@@ -53,16 +61,17 @@ class Match < ApplicationRecord
   scope :draw, -> { where(draw: true) }
 
   scope :with_player, lambda { |player|
-    where('"matches"."player_ids" @> ARRAY[?]::uuid[]', player)
+    where(player1: player).or(where(player2: player))
   }
 
-  # @return [String, nil]
-  def player1_id
-    player_ids[0]
+  # @return [Array<(String, String | nil)>]
+  def player_ids
+    [player1_id, player2_id]
   end
 
-  # @return [String, nil]
-  def player2_id
-    player_ids[1]
+  # @param ids [Array<(String, String | nil)>]
+  # @return [void]
+  def player_ids=(ids)
+    self.player1_id, self.player2_id = ids
   end
 end

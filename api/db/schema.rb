@@ -24,15 +24,17 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_30_150152) do
 
   create_table "matches", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "round_id", null: false
-    t.uuid "player_ids", null: false, array: true
+    t.uuid "player1_id", null: false
+    t.uuid "player2_id"
     t.uuid "winner_id"
     t.boolean "draw", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["player1_id"], name: "index_matches_on_player1_id"
+    t.index ["player2_id"], name: "index_matches_on_player2_id"
     t.index ["round_id"], name: "index_matches_on_round_id"
     t.check_constraint "NOT (winner_id IS NOT NULL AND draw = true)"
-    t.check_constraint "array_length(player_ids, 1) = 2"
-    t.check_constraint "winner_id IS NULL OR player_ids @> ARRAY[winner_id]"
+    t.check_constraint "winner_id IS NULL OR winner_id = player1_id OR winner_id = player2_id"
   end
 
   create_table "players", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -56,6 +58,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_30_150152) do
     t.index ["event_id"], name: "index_rounds_on_event_id"
   end
 
+  add_foreign_key "matches", "players", column: "player1_id"
+  add_foreign_key "matches", "players", column: "player2_id"
   add_foreign_key "matches", "rounds"
   add_foreign_key "players", "events"
   add_foreign_key "rounds", "events"
