@@ -1,7 +1,9 @@
 import { gql } from '@apollo/client'
 import { GetServerSideProps } from 'next'
-import { Alert, Card, ListGroup } from 'react-bootstrap'
+import { useState } from 'react'
+import { Alert, Button, Card, ListGroup } from 'react-bootstrap'
 import EventLayout, { EVENT_LAYOUT_FRAGMENT } from '../../../components/EventLayout'
+import PlayerPairingsModal from '../../../components/PlayerPairingsModal'
 import { EventMatchesQuery, EventMatchesQueryVariables, useEventMatchesQuery } from '../../../lib/generated/graphql'
 import { initializeApolloClient } from '../../../lib/graphql/client'
 import { NextPageWithLayout } from '../../../lib/types/next-page'
@@ -59,6 +61,8 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 }
 
 const EventMatchesPage: NextPageWithLayout<EventMatchesQuery> = ({ event: { id }}) => {
+  const [show, setShow] = useState(false)
+
   const { data } = useEventMatchesQuery({
     variables: { id }
   })
@@ -69,6 +73,10 @@ const EventMatchesPage: NextPageWithLayout<EventMatchesQuery> = ({ event: { id }
 
   return (
     <>
+      <Button variant="primary" onClick={() => setShow(true)} className="mb-3">
+        Create Match
+      </Button>
+      <PlayerPairingsModal show={show} onHide={() => setShow(false)} event={data.event} />
       {data.event.players.totalCount === 0 && (
         <Alert variant="warning">
           No players have been added to this event yet.

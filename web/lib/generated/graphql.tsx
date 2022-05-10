@@ -87,6 +87,7 @@ export type Event = {
 
 
 export type EventPlayersArgs = {
+  activeOnly?: InputMaybe<Scalars['Boolean']>;
   after?: InputMaybe<Scalars['String']>;
   before?: InputMaybe<Scalars['String']>;
   deleted?: InputMaybe<Scalars['Boolean']>;
@@ -469,6 +470,13 @@ export type EventListItemFragment = { __typename?: 'Event', id: string, name: st
 
 export type EventNavFragment = { __typename?: 'Event', id: string };
 
+export type PlayersForPairingsQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type PlayersForPairingsQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, players: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string }> } } };
+
 export type PlayerTableFragment = { __typename?: 'Player', id: string, name: string, paid: boolean, dropped: boolean, winsCount: number, drawsCount: number, lossesCount: number, score: number };
 
 export type PlayerActionsDropdownFragment = { __typename?: 'Player', id: string, paid: boolean, dropped: boolean };
@@ -645,6 +653,47 @@ export function useCreatePlayerMutation(baseOptions?: Apollo.MutationHookOptions
 export type CreatePlayerMutationHookResult = ReturnType<typeof useCreatePlayerMutation>;
 export type CreatePlayerMutationResult = Apollo.MutationResult<CreatePlayerMutation>;
 export type CreatePlayerMutationOptions = Apollo.BaseMutationOptions<CreatePlayerMutation, CreatePlayerMutationVariables>;
+export const PlayersForPairingsDocument = gql`
+    query PlayersForPairings($id: ID!) {
+  event(id: $id) {
+    id
+    players(activeOnly: true) {
+      nodes {
+        id
+        name
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __usePlayersForPairingsQuery__
+ *
+ * To run a query within a React component, call `usePlayersForPairingsQuery` and pass it any options that fit your needs.
+ * When your component renders, `usePlayersForPairingsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = usePlayersForPairingsQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function usePlayersForPairingsQuery(baseOptions: Apollo.QueryHookOptions<PlayersForPairingsQuery, PlayersForPairingsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<PlayersForPairingsQuery, PlayersForPairingsQueryVariables>(PlayersForPairingsDocument, options);
+      }
+export function usePlayersForPairingsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<PlayersForPairingsQuery, PlayersForPairingsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<PlayersForPairingsQuery, PlayersForPairingsQueryVariables>(PlayersForPairingsDocument, options);
+        }
+export type PlayersForPairingsQueryHookResult = ReturnType<typeof usePlayersForPairingsQuery>;
+export type PlayersForPairingsLazyQueryHookResult = ReturnType<typeof usePlayersForPairingsLazyQuery>;
+export type PlayersForPairingsQueryResult = Apollo.QueryResult<PlayersForPairingsQuery, PlayersForPairingsQueryVariables>;
 export const PlayerActionsUpdateDocument = gql`
     mutation PlayerActionsUpdate($id: ID!, $input: PlayerInput!) {
   playerUpdate(input: {id: $id, playerInput: $input}) {
