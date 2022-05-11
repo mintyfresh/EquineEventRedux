@@ -2,8 +2,8 @@
 
 module Types
   class RoundType < Types::BaseObject
-    field :id, ID, null: false
-    field :event_id, ID, null: false
+    implements GraphQL::Types::Relay::Node
+
     field :number, Integer, null: false
     field :matches, [Types::MatchType], null: false
 

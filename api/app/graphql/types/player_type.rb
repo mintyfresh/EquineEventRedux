@@ -2,8 +2,8 @@
 
 module Types
   class PlayerType < BaseObject
-    field :id, ID, null: false
-    field :event_id, ID, null: false
+    implements GraphQL::Types::Relay::Node
+
     field :name, String, null: false
     field :paid, Boolean, null: false
     field :dropped, Boolean, null: false

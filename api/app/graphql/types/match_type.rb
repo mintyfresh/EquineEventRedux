@@ -2,15 +2,24 @@
 
 module Types
   class MatchType < Types::BaseObject
-    field :id, ID, null: false
-    field :round_id, ID, null: false
-    field :player1_id, ID, null: false
-    field :player2_id, ID, null: true
-    field :winner_id, ID
+    implements GraphQL::Types::Relay::Node
+
+    field :winner_id, ID do
+      description 'The ID of the winner of the match.'
+    end
     field :draw, Boolean, null: false
 
     field :player1, Types::PlayerType, null: false
     field :player2, Types::PlayerType, null: true
+
+    # @return [String, nil]
+    def winner_id
+      case object.winner_id
+      when nil then nil
+      when object.player1_id then EquineEventApiSchema.id_from_object(player1, Types::PlayerType, context)
+      when object.player2_id then EquineEventApiSchema.id_from_object(player2, Types::PlayerType, context)
+      end
+    end
 
     # @return [::Player]
     def player1

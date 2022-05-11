@@ -2,7 +2,8 @@
 
 module Types
   class EventType < BaseObject
-    field :id, ID, null: false
+    implements GraphQL::Types::Relay::Node
+
     field :name, String, null: false
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false
 
