@@ -1,7 +1,8 @@
 import { gql } from '@apollo/client'
 import { GetServerSideProps } from 'next'
-import { Alert, Card, ListGroup } from 'react-bootstrap'
+import { Alert, Card, Dropdown, ListGroup } from 'react-bootstrap'
 import CreateRoundButton, { CREATE_ROUND_BUTTON_FRAGMENT } from '../../../components/CreateRoundButton'
+import EllipsisDropdown from '../../../components/EllipsisDropdown'
 import EventLayout, { EVENT_LAYOUT_FRAGMENT } from '../../../components/EventLayout'
 import { EventMatchesQuery, EventMatchesQueryVariables, useEventMatchesQuery } from '../../../lib/generated/graphql'
 import { initializeApolloClient } from '../../../lib/graphql/client'
@@ -85,6 +86,11 @@ const EventMatchesPage: NextPageWithLayout<EventMatchesQuery> = ({ event: { id }
         <Card key={round.id} className="mb-3">
           <Card.Header>
             Match {round.number}
+            <EllipsisDropdown align="end" className="float-end">
+              <Dropdown.Item>Edit</Dropdown.Item>
+              <Dropdown.Divider />
+              <Dropdown.Item className="text-danger">Delete</Dropdown.Item>
+            </EllipsisDropdown>
           </Card.Header>
           <Card.Body>
             {round.matches.length > 0 ? (
