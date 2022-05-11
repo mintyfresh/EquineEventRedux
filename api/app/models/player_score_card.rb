@@ -17,6 +17,12 @@ class PlayerScoreCard < ApplicationRecord
 
   belongs_to :player
 
+  scope :order_by_score, -> (direction = 'ASC') { order(Arel.sql(<<-SQL.squish) => direction) }
+    ("player_score_cards"."wins_count" * #{POINTS_PER_WIN})
+    + ("player_score_cards"."draws_count" * #{POINTS_PER_DRAW})
+    + ("player_score_cards"."losses_count" * #{POINTS_PER_LOSS})
+  SQL
+
   # @return [Integer]
   def score
     (wins_count * POINTS_PER_WIN) + (draws_count * POINTS_PER_DRAW) + (losses_count * POINTS_PER_LOSS)

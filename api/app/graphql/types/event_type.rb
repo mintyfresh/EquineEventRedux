@@ -7,6 +7,8 @@ module Types
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false
 
     field :players, Types::PlayerConnectionType, null: false do
+      extension Extensions::OrderByExtension, type: Types::EventPlayersOrderByType
+
       argument :active_only, Boolean, required: false, default_value: false do
         description 'If true, unpaid and dropped players will be excluded'
       end
@@ -21,10 +23,11 @@ module Types
     # @param active_only [Boolean]
     # @param deleted [Boolean, nil]
     # @return [Array<::Player>]
-    def players(active_only: false, deleted: nil)
-      players = Player.order(:name, :id)
+    def players(active_only: false, deleted: nil, order_by:)
+      players = Player.all
       players = players.active if active_only
       players = deleted ? players.deleted : players.non_deleted unless deleted.nil?
+      players = players.merge(order_by)
 
       dataloader.with(Sources::RecordList, ::Player, :event_id, scope: players).load(object.id)
     end
