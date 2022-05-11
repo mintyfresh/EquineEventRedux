@@ -75,6 +75,12 @@ export type EventPlayersArgs = {
   last?: InputMaybe<Scalars['Int']>;
 };
 
+
+export type EventRoundsArgs = {
+  orderBy?: InputMaybe<EventRoundsOrderBy>;
+  orderByDirection?: InputMaybe<OrderByDirection>;
+};
+
 /** The connection type for Event. */
 export type EventConnection = {
   __typename?: 'EventConnection';
@@ -104,6 +110,10 @@ export type EventGeneratePairingsPayload = {
 export type EventInput = {
   name?: InputMaybe<Scalars['String']>;
 };
+
+export enum EventRoundsOrderBy {
+  Number = 'NUMBER'
+}
 
 export type Match = {
   __typename?: 'Match';
@@ -214,6 +224,11 @@ export type MutationRoundUpdatePairingsArgs = {
   pairings: Array<Array<InputMaybe<Scalars['ID']>>>;
   roundId: Scalars['ID'];
 };
+
+export enum OrderByDirection {
+  Asc = 'ASC',
+  Desc = 'DESC'
+}
 
 /** Information about pagination in a connection. */
 export type PageInfo = {
@@ -969,7 +984,7 @@ export const EventMatchesDocument = gql`
     players {
       totalCount
     }
-    rounds {
+    rounds(orderBy: NUMBER, orderByDirection: DESC) {
       id
       number
       matches {

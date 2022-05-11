@@ -18,7 +18,7 @@ const EVENT_MATCHES_QUERY = gql`
       players {
         totalCount
       }
-      rounds {
+      rounds(orderBy: NUMBER, orderByDirection: DESC) {
         id
         number
         matches {
