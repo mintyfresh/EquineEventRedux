@@ -24,7 +24,7 @@ module Sources
     # @param ids [Array<String, Integer>]
     # @return [Array<ActiveRecord::Base, nil>]
     def fetch(ids)
-      records = @model.where(@column => ids)
+      records = @model.where_any(@column, ids)
       records = records.merge(@scope) if @scope
       records = records.index_by(&@column)
 

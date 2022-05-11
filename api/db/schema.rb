@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_04_30_150152) do
+ActiveRecord::Schema[7.0].define(version: 2022_05_11_042440) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pgcrypto"
@@ -63,4 +63,15 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_30_150152) do
   add_foreign_key "matches", "rounds"
   add_foreign_key "players", "events"
   add_foreign_key "rounds", "events"
+
+  create_view "player_score_cards", sql_definition: <<-SQL
+      SELECT players.id AS player_id,
+      count(matches.id) AS matches_count,
+      count(matches.id) FILTER (WHERE (matches.winner_id = players.id)) AS wins_count,
+      count(matches.id) FILTER (WHERE ((matches.winner_id IS NOT NULL) AND (matches.winner_id <> players.id))) AS losses_count,
+      count(matches.id) FILTER (WHERE matches.draw) AS draws_count
+     FROM (players
+       LEFT JOIN matches ON (((matches.player1_id = players.id) OR (matches.player2_id = players.id))))
+    GROUP BY players.id;
+  SQL
 end

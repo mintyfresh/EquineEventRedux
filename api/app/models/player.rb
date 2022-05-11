@@ -27,6 +27,8 @@ class Player < ApplicationRecord
 
   belongs_to :event, inverse_of: :players
 
+  has_one :score_card, class_name: 'PlayerScoreCard', dependent: false, inverse_of: :player
+
   validates :name, length: { maximum: 50 }, presence: true, uniqueness: { scope: :event }
 
   scope :active, -> { where(paid: true, dropped: false) }

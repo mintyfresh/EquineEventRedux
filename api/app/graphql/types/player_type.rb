@@ -15,35 +15,21 @@ module Types
     field :losses_count, Integer, null: false
     field :score, Integer, null: false
 
-    # @return [Integer]
-    def wins_count
-      @wins_count ||= matches.count { |match| match.winner_id == object.id }
-    end
-
-    # @return [Integer]
-    def draws_count
-      @draws_count ||= matches.count(&:draw?)
-    end
-
-    # @return [Integer]
-    def losses_count
-      @losses_count ||= matches.count { |match| match.winner_id && match.winner_id != object.id }
-    end
-
-    # @return [Integer]
-    def score
-      (wins_count * 3) + (draws_count * 1) + (losses_count * 0)
-    end
+    # @!method wins_count
+    #   @return [Integer]
+    # @!method draws_count
+    #   @return [Integer]
+    # @!method losses_count
+    #   @return [Integer]
+    # @!method score
+    #   @return [Integer]
+    delegate :wins_count, :draws_count, :losses_count, :score, to: :score_card
 
   private
 
-    # @return [Array<::Match>]
-    def matches
-      @matches ||= dataloader.with(Sources::RecordList, ::Round, :event_id).load(object.event_id).flat_map do |round|
-        dataloader.with(Sources::RecordList, ::Match, :round_id).load(round.id).select do |match|
-          match.player_ids.include?(object.id)
-        end
-      end
+    # @return [PlayerScoreCard]
+    def score_card
+      @score_card ||= dataloader.with(Sources::Record, ::PlayerScoreCard, :player_id).load(object.id)
     end
   end
 end
