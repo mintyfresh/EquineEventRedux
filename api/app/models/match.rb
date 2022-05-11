@@ -58,6 +58,10 @@ class Match < ApplicationRecord
     self.player_ids = player_ids&.sort_by(&PLAYER_IDS_COMPARATOR)
   end
 
+  before_save do
+    self.winner_id = player1_id if player2_id.nil?
+  end
+
   scope :draw, -> { where(draw: true) }
 
   scope :with_player, lambda { |player|

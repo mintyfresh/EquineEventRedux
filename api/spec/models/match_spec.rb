@@ -80,4 +80,10 @@ RSpec.describe Match, type: :model do
     match.winner_id = match.player1_id
     expect(match).to be_invalid
   end
+
+  it 'automatically sets a winner for a match if it only has one player' do
+    match.player2 = nil
+    match.save
+    expect(match.winner_id).to eq(match.player1_id)
+  end
 end
