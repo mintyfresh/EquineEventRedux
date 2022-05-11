@@ -27,4 +27,9 @@ class PlayerScoreCard < ApplicationRecord
   def score
     (wins_count * POINTS_PER_WIN) + (draws_count * POINTS_PER_DRAW) + (losses_count * POINTS_PER_LOSS)
   end
+
+  # @return [Boolean]
+  def readonly?
+    true # Table is a database view
+  end
 end
