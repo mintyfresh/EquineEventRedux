@@ -374,6 +374,30 @@
                 "defaultValue": null,
                 "isDeprecated": false,
                 "deprecationReason": null
+              },
+              {
+                "name": "orderBy",
+                "description": null,
+                "type": {
+                  "kind": "ENUM",
+                  "name": "EventPlayersOrderBy",
+                  "ofType": null
+                },
+                "defaultValue": "NAME",
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "orderByDirection",
+                "description": null,
+                "type": {
+                  "kind": "ENUM",
+                  "name": "OrderByDirection",
+                  "ofType": null
+                },
+                "defaultValue": "ASC",
+                "isDeprecated": false,
+                "deprecationReason": null
               }
             ],
             "type": {
@@ -613,6 +637,47 @@
         ],
         "interfaces": null,
         "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "ENUM",
+        "name": "EventPlayersOrderBy",
+        "description": null,
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "DRAWS_COUNT",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "LOSSES_COUNT",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "NAME",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "SCORE",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "WINS_COUNT",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
         "possibleTypes": null
       },
       {

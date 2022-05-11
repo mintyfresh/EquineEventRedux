@@ -10,13 +10,13 @@ import { NextPageWithLayout } from '../../../lib/types/next-page'
 import CreatePlayerButton, { CREATE_PLAYER_BUTTON_FRAGMENT } from '../../../components/CreatePlayerButton'
 
 const EVENT_PLAYERS_QUERY = gql`
-  query EventPlayers($id: ID!) {
+  query EventPlayers($id: ID!, $orderBy: EventPlayersOrderBy, $orderByDirection: OrderByDirection) {
     event(id: $id) {
       id
       name
       ...EventLayout
       ...CreatePlayerButton
-      players(deleted: false) {
+      players(deleted: false, orderBy: $orderBy, orderByDirection: $orderByDirection) {
         nodes {
           ...PlayerTable
         }
@@ -69,6 +69,9 @@ const EventPlayersPage: NextPageWithLayout<EventPlayersQuery> = ({ event: { id }
         <PlayerTable
           players={data.event.players.nodes}
           onDelete={() => refetch()}
+          onOrderBy={(orderBy, orderByDirection) =>
+            refetch({ orderBy, orderByDirection })
+          }
         />
       ) : (
         <Card body>

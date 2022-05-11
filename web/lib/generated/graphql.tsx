@@ -73,6 +73,8 @@ export type EventPlayersArgs = {
   deleted?: InputMaybe<Scalars['Boolean']>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<EventPlayersOrderBy>;
+  orderByDirection?: InputMaybe<OrderByDirection>;
 };
 
 
@@ -110,6 +112,14 @@ export type EventGeneratePairingsPayload = {
 export type EventInput = {
   name?: InputMaybe<Scalars['String']>;
 };
+
+export enum EventPlayersOrderBy {
+  DrawsCount = 'DRAWS_COUNT',
+  LossesCount = 'LOSSES_COUNT',
+  Name = 'NAME',
+  Score = 'SCORE',
+  WinsCount = 'WINS_COUNT'
+}
 
 export enum EventRoundsOrderBy {
   Number = 'NUMBER'
@@ -501,6 +511,8 @@ export type EventMatchesQuery = { __typename?: 'Query', event: { __typename?: 'E
 
 export type EventPlayersQueryVariables = Exact<{
   id: Scalars['ID'];
+  orderBy?: InputMaybe<EventPlayersOrderBy>;
+  orderByDirection?: InputMaybe<OrderByDirection>;
 }>;
 
 
@@ -1050,13 +1062,13 @@ export type EventMatchesQueryHookResult = ReturnType<typeof useEventMatchesQuery
 export type EventMatchesLazyQueryHookResult = ReturnType<typeof useEventMatchesLazyQuery>;
 export type EventMatchesQueryResult = Apollo.QueryResult<EventMatchesQuery, EventMatchesQueryVariables>;
 export const EventPlayersDocument = gql`
-    query EventPlayers($id: ID!) {
+    query EventPlayers($id: ID!, $orderBy: EventPlayersOrderBy, $orderByDirection: OrderByDirection) {
   event(id: $id) {
     id
     name
     ...EventLayout
     ...CreatePlayerButton
-    players(deleted: false) {
+    players(deleted: false, orderBy: $orderBy, orderByDirection: $orderByDirection) {
       nodes {
         ...PlayerTable
       }
@@ -1080,6 +1092,8 @@ ${PlayerTableFragmentDoc}`;
  * const { data, loading, error } = useEventPlayersQuery({
  *   variables: {
  *      id: // value for 'id'
+ *      orderBy: // value for 'orderBy'
+ *      orderByDirection: // value for 'orderByDirection'
  *   },
  * });
  */
