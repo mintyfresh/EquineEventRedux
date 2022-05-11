@@ -8,7 +8,7 @@ let apolloClient: ApolloClient<NormalizedCacheObject> | null = null
 export const createApolloClient = () => (
   new ApolloClient({
     ssrMode: isSSR,
-    uri: process.env.API_URL || '/api/graphql',
+    uri: isSSR ? process.env.API_URL : '/api/graphql',
     cache: new InMemoryCache({ possibleTypes: result.possibleTypes })
   })
 )

@@ -20,6 +20,16 @@ services:
     command:
       sh -c "bin/rails db:migrate && bin/rails db:seed && bin/rails server"
 
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      API_URL: http://api:3000/graphql
+    ports:
+      - 4500:4500
+
   postgres:
     image: postgres
     restart: unless-stopped
