@@ -9,7 +9,9 @@ module Types
 
     # @return [Array<::Match>]
     def matches
-      dataloader.with(Sources::RecordList, ::Match, :round_id).load(object.id)
+      scope = Match.paired_first.order(:created_at)
+
+      dataloader.with(Sources::RecordList, ::Match, :round_id, scope:).load(object.id)
     end
   end
 end

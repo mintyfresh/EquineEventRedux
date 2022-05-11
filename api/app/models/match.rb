@@ -64,6 +64,10 @@ class Match < ApplicationRecord
     where(player1: player).or(where(player2: player))
   }
 
+  scope :paired_first, -> { order(Arel.sql(<<-SQL.squish)) }
+    CASE WHEN "matches"."player2_id" IS NULL THEN 1 ELSE 0 END
+  SQL
+
   # @return [Array<(String, String | nil)>]
   def player_ids
     [player1_id, player2_id]
