@@ -1,14 +1,21 @@
 import { gql } from '@apollo/client'
-import { useEffect, useState } from 'react'
-import { Button, Form, InputGroup, Modal } from 'react-bootstrap'
-import { RoundCreateInput, RoundModalPlayerFragment } from '../lib/generated/graphql'
-
+import { Button, ButtonGroup, Dropdown, Form, InputGroup, Modal } from 'react-bootstrap'
+import { RoundCreateInput, RoundModalPlayerFragment, useGeneratePairingsForRoundLazyQuery } from '../lib/generated/graphql'
 
 export const ROUND_MODAL_PLAYER_FRAGMENT = gql`
   fragment RoundModalPlayer on Player {
     id
     name
   }
+`
+
+gql`
+  query GeneratePairingsForRound($eventId: ID!, $excludePlayerIds: [ID!]!) {
+    eventProposeMatches(eventId: $eventId, excludePlayerIds: $excludePlayerIds) {
+      ...RoundModalPlayer
+    }
+  }
+  ${ROUND_MODAL_PLAYER_FRAGMENT}
 `
 
 type PlayerPairings = { [key: string]: string | null }
@@ -47,6 +54,7 @@ const parsePairings = (pairings: PlayerPairings): RoundCreateInput['matches'] =>
 }
 
 export interface RoundModalProps {
+  event: { id: string }
   players: RoundModalPlayerFragment[]
   show: boolean
   disabled: boolean
@@ -56,8 +64,31 @@ export interface RoundModalProps {
   onSubmit: () => void
 }
 
-const RoundModal: React.FC<RoundModalProps> = ({ players, show, disabled, input, onHide, onChange, onSubmit }) => {
+const RoundModal: React.FC<RoundModalProps> = ({ event, players, show, disabled, input, onHide, onChange, onSubmit }) => {
   const pairings = buildPairings(input.matches)
+
+  const [generatePairings, {}] = useGeneratePairingsForRoundLazyQuery({
+    variables: {
+      eventId: event.id,
+      excludePlayerIds: Object.keys(pairings).filter((playerId) => pairings[playerId])
+    },
+    fetchPolicy: 'no-cache',
+    onCompleted: ({ eventProposeMatches }) => {
+      if (eventProposeMatches) {
+        const newPairings = { ...pairings }
+
+        eventProposeMatches.forEach(([player1, player2]) => {
+          player1 && (newPairings[player1.id] = player2?.id || null)
+          player2 && (newPairings[player2.id] = player1?.id || null)
+        })
+
+        onChange({
+          ...input,
+          matches: parsePairings(newPairings)
+        })
+      }
+    }
+  })
 
   const createPairing = (player: string, newValue: string | null) => {
     const newPairings = { ...pairings }
@@ -145,9 +176,15 @@ const RoundModal: React.FC<RoundModalProps> = ({ players, show, disabled, input,
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button type="button" variant="secondary" className="me-auto" disabled={disabled}>
-            Generate Pairings
-          </Button>
+          <Dropdown as={ButtonGroup} className="me-auto">
+            <Button type="button" variant="secondary" disabled={disabled} onClick={() => generatePairings()}>
+              Generate Pairings
+            </Button>
+            <Dropdown.Toggle split variant="secondary" disabled={disabled} />
+            <Dropdown.Menu align="end">
+              <Dropdown.Item>Clear All</Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
           <Button type="submit" disabled={disabled}>
             Save Pairings
           </Button>

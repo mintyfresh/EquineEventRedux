@@ -269,6 +269,8 @@ export type Query = {
   __typename?: 'Query';
   /** Finds a Event by ID */
   event: Event;
+  /** Generates a possible list of matches for a round. */
+  eventProposeMatches: Array<Array<Maybe<Player>>>;
   /** Finds a list of Event objects */
   events: EventConnection;
   /** Finds a Match by ID */
@@ -277,13 +279,17 @@ export type Query = {
   player: Player;
   /** Finds a Round by ID */
   round: Round;
-  /** Generates a possible list of pairings for a round. */
-  roundProposePairings: Array<Array<Maybe<Player>>>;
 };
 
 
 export type QueryEventArgs = {
   id: Scalars['ID'];
+};
+
+
+export type QueryEventProposeMatchesArgs = {
+  eventId: Scalars['ID'];
+  excludePlayerIds?: InputMaybe<Array<Scalars['ID']>>;
 };
 
 
@@ -307,12 +313,6 @@ export type QueryPlayerArgs = {
 
 export type QueryRoundArgs = {
   id: Scalars['ID'];
-};
-
-
-export type QueryRoundProposePairingsArgs = {
-  excludePlayerIds?: InputMaybe<Array<Scalars['ID']>>;
-  roundId: Scalars['ID'];
 };
 
 export type Round = {
@@ -437,6 +437,14 @@ export type PlayerActionsDeleteMutationVariables = Exact<{
 export type PlayerActionsDeleteMutation = { __typename?: 'Mutation', playerDelete?: { __typename?: 'DeletePlayerPayload', success?: boolean | null, errors?: Array<{ __typename?: 'Error', attribute: string, message: string }> | null } | null };
 
 export type RoundModalPlayerFragment = { __typename?: 'Player', id: string, name: string };
+
+export type GeneratePairingsForRoundQueryVariables = Exact<{
+  eventId: Scalars['ID'];
+  excludePlayerIds: Array<Scalars['ID']> | Scalars['ID'];
+}>;
+
+
+export type GeneratePairingsForRoundQuery = { __typename?: 'Query', eventProposeMatches: Array<Array<{ __typename?: 'Player', id: string, name: string } | null>> };
 
 export type SlipEventFragment = { __typename?: 'Event', id: string, name: string };
 
@@ -861,6 +869,42 @@ export function usePlayerActionsDeleteMutation(baseOptions?: Apollo.MutationHook
 export type PlayerActionsDeleteMutationHookResult = ReturnType<typeof usePlayerActionsDeleteMutation>;
 export type PlayerActionsDeleteMutationResult = Apollo.MutationResult<PlayerActionsDeleteMutation>;
 export type PlayerActionsDeleteMutationOptions = Apollo.BaseMutationOptions<PlayerActionsDeleteMutation, PlayerActionsDeleteMutationVariables>;
+export const GeneratePairingsForRoundDocument = gql`
+    query GeneratePairingsForRound($eventId: ID!, $excludePlayerIds: [ID!]!) {
+  eventProposeMatches(eventId: $eventId, excludePlayerIds: $excludePlayerIds) {
+    ...RoundModalPlayer
+  }
+}
+    ${RoundModalPlayerFragmentDoc}`;
+
+/**
+ * __useGeneratePairingsForRoundQuery__
+ *
+ * To run a query within a React component, call `useGeneratePairingsForRoundQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGeneratePairingsForRoundQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGeneratePairingsForRoundQuery({
+ *   variables: {
+ *      eventId: // value for 'eventId'
+ *      excludePlayerIds: // value for 'excludePlayerIds'
+ *   },
+ * });
+ */
+export function useGeneratePairingsForRoundQuery(baseOptions: Apollo.QueryHookOptions<GeneratePairingsForRoundQuery, GeneratePairingsForRoundQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GeneratePairingsForRoundQuery, GeneratePairingsForRoundQueryVariables>(GeneratePairingsForRoundDocument, options);
+      }
+export function useGeneratePairingsForRoundLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GeneratePairingsForRoundQuery, GeneratePairingsForRoundQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GeneratePairingsForRoundQuery, GeneratePairingsForRoundQueryVariables>(GeneratePairingsForRoundDocument, options);
+        }
+export type GeneratePairingsForRoundQueryHookResult = ReturnType<typeof useGeneratePairingsForRoundQuery>;
+export type GeneratePairingsForRoundLazyQueryHookResult = ReturnType<typeof useGeneratePairingsForRoundLazyQuery>;
+export type GeneratePairingsForRoundQueryResult = Apollo.QueryResult<GeneratePairingsForRoundQuery, GeneratePairingsForRoundQueryVariables>;
 export const EventShowDocument = gql`
     query EventShow($id: ID!) {
   event(id: $id) {

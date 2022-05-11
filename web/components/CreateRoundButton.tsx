@@ -99,6 +99,7 @@ const CreateRoundButton: React.FC<CreateRoundButtonProps> = ({ event, onCreate }
       </Button>
       {data?.event?.players?.nodes && (
         <RoundModal
+          event={data.event}
           players={data.event.players.nodes}
           show={showModal}
           onHide={() => setShowModal(false)}
