@@ -463,6 +463,8 @@ export type PlayerActionsDeleteMutationVariables = Exact<{
 
 export type PlayerActionsDeleteMutation = { __typename?: 'Mutation', playerDelete?: { __typename?: 'DeletePlayerPayload', success?: boolean | null, errors?: Array<{ __typename?: 'Error', attribute: string, message: string }> | null } | null };
 
+export type RoundListFragment = { __typename?: 'Event', rounds: Array<{ __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, player1: { __typename?: 'Player', id: string, name: string }, player2?: { __typename?: 'Player', id: string, name: string } | null }> }> };
+
 export type RoundModalPlayerFragment = { __typename?: 'Player', id: string, name: string };
 
 export type GeneratePairingsForRoundMutationVariables = Exact<{
@@ -578,6 +580,27 @@ export const PlayerTableFragmentDoc = gql`
   ...PlayerActionsDropdown
 }
     ${PlayerActionsDropdownFragmentDoc}`;
+export const RoundListFragmentDoc = gql`
+    fragment RoundList on Event {
+  rounds(orderBy: NUMBER, orderByDirection: DESC) {
+    id
+    number
+    matches {
+      id
+      player1 {
+        id
+        name
+      }
+      player2 {
+        id
+        name
+      }
+      winnerId
+      draw
+    }
+  }
+}
+    `;
 export const RoundModalPlayerFragmentDoc = gql`
     fragment RoundModalPlayer on Player {
   id
@@ -981,30 +1004,15 @@ export const EventMatchesDocument = gql`
     name
     ...EventLayout
     ...CreateRoundButton
+    ...RoundList
     players {
       totalCount
-    }
-    rounds(orderBy: NUMBER, orderByDirection: DESC) {
-      id
-      number
-      matches {
-        id
-        player1 {
-          id
-          name
-        }
-        player2 {
-          id
-          name
-        }
-        winnerId
-        draw
-      }
     }
   }
 }
     ${EventLayoutFragmentDoc}
-${CreateRoundButtonFragmentDoc}`;
+${CreateRoundButtonFragmentDoc}
+${RoundListFragmentDoc}`;
 
 /**
  * __useEventMatchesQuery__
