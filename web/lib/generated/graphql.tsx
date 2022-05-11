@@ -186,7 +186,7 @@ export type MutationEventDeleteArgs = {
 
 export type MutationEventGeneratePairingsArgs = {
   eventId: Scalars['ID'];
-  excludePlayerIds?: InputMaybe<Array<Scalars['ID']>>;
+  playerIds: Array<Scalars['ID']>;
 };
 
 
@@ -481,7 +481,7 @@ export type RoundModalPlayerFragment = { __typename?: 'Player', id: string, name
 
 export type GeneratePairingsForRoundMutationVariables = Exact<{
   eventId: Scalars['ID'];
-  excludePlayerIds?: InputMaybe<Array<Scalars['ID']> | Scalars['ID']>;
+  playerIds: Array<Scalars['ID']> | Scalars['ID'];
 }>;
 
 
@@ -940,8 +940,8 @@ export type PlayerActionsDeleteMutationHookResult = ReturnType<typeof usePlayerA
 export type PlayerActionsDeleteMutationResult = Apollo.MutationResult<PlayerActionsDeleteMutation>;
 export type PlayerActionsDeleteMutationOptions = Apollo.BaseMutationOptions<PlayerActionsDeleteMutation, PlayerActionsDeleteMutationVariables>;
 export const GeneratePairingsForRoundDocument = gql`
-    mutation GeneratePairingsForRound($eventId: ID!, $excludePlayerIds: [ID!]) {
-  eventGeneratePairings(eventId: $eventId, excludePlayerIds: $excludePlayerIds) {
+    mutation GeneratePairingsForRound($eventId: ID!, $playerIds: [ID!]!) {
+  eventGeneratePairings(eventId: $eventId, playerIds: $playerIds) {
     pairings {
       player1 {
         ...RoundModalPlayer
@@ -969,7 +969,7 @@ export type GeneratePairingsForRoundMutationFn = Apollo.MutationFunction<Generat
  * const [generatePairingsForRoundMutation, { data, loading, error }] = useGeneratePairingsForRoundMutation({
  *   variables: {
  *      eventId: // value for 'eventId'
- *      excludePlayerIds: // value for 'excludePlayerIds'
+ *      playerIds: // value for 'playerIds'
  *   },
  * });
  */
@@ -1068,7 +1068,7 @@ export const EventPlayersDocument = gql`
     name
     ...EventLayout
     ...CreatePlayerButton
-    players(deleted: false, orderBy: $orderBy, orderByDirection: $orderByDirection) {
+    players(orderBy: $orderBy, orderByDirection: $orderByDirection) {
       nodes {
         ...PlayerTable
       }

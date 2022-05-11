@@ -31,5 +31,10 @@ class Player < ApplicationRecord
 
   validates :name, length: { maximum: 50 }, presence: true, uniqueness: { scope: :event }
 
-  scope :active, -> { where(paid: true, dropped: false) }
+  scope :active, -> { non_deleted.where(paid: true, dropped: false) }
+
+  # @return [Boolean]
+  def active?
+    !deleted? && paid? && !dropped?
+  end
 end

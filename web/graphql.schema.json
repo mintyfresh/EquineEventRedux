@@ -341,13 +341,13 @@
               },
               {
                 "name": "deleted",
-                "description": "Filters players by their deletion state; includes all players if unspecified",
+                "description": "Filters players by their deletion state",
                 "type": {
                   "kind": "SCALAR",
                   "name": "Boolean",
                   "ofType": null
                 },
-                "defaultValue": null,
+                "defaultValue": "false",
                 "isDeprecated": false,
                 "deprecationReason": null
               },
@@ -1012,22 +1012,26 @@
                 "deprecationReason": null
               },
               {
-                "name": "excludePlayerIds",
-                "description": "Players to be excluded from pairing",
+                "name": "playerIds",
+                "description": "Players for which pairings should be generated.",
                 "type": {
-                  "kind": "LIST",
+                  "kind": "NON_NULL",
                   "name": null,
                   "ofType": {
-                    "kind": "NON_NULL",
+                    "kind": "LIST",
                     "name": null,
                     "ofType": {
-                      "kind": "SCALAR",
-                      "name": "ID",
-                      "ofType": null
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "SCALAR",
+                        "name": "ID",
+                        "ofType": null
+                      }
                     }
                   }
                 },
-                "defaultValue": "[]",
+                "defaultValue": null,
                 "isDeprecated": false,
                 "deprecationReason": null
               }

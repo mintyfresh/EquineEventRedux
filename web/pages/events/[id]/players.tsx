@@ -16,7 +16,7 @@ const EVENT_PLAYERS_QUERY = gql`
       name
       ...EventLayout
       ...CreatePlayerButton
-      players(deleted: false, orderBy: $orderBy, orderByDirection: $orderByDirection) {
+      players(orderBy: $orderBy, orderByDirection: $orderByDirection) {
         nodes {
           ...PlayerTable
         }

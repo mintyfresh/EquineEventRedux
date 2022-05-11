@@ -7,17 +7,19 @@ module Mutations
     field :pairings, [Types::PairingType], null: false
 
     argument :event_id, ID, required: true
-    argument :exclude_player_ids, [ID], required: false, default_value: [] do
-      description 'Players to be excluded from pairing'
+    argument :player_ids, [ID], required: true do
+      description 'Players for which pairings should be generated.'
     end
 
-    def resolve(event_id:, exclude_player_ids: [])
-      event = ::Event.find(event_id)
+    def resolve(event_id:, player_ids:)
+      event   = ::Event.find(event_id)
+      players = event.players.active.find(player_ids)
 
       # TODO: Implement a proper pairing algorithm.
-      pairings = event.players.active.where.not(id: exclude_player_ids).shuffle.in_groups_of(2).to_a
+      pairings = players.shuffle.in_groups_of(2).to_a
+      pairings = pairings.map { |(player1, player2)| { player1:, player2: } }
 
-      { pairings: pairings.map { |(player1, player2)| { player1:, player2: } } }
+      { pairings: }
     end
   end
 end

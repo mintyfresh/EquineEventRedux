@@ -10,8 +10,8 @@ export const ROUND_MODAL_PLAYER_FRAGMENT = gql`
 `
 
 gql`
-  mutation GeneratePairingsForRound($eventId: ID!, $excludePlayerIds: [ID!]) {
-    eventGeneratePairings(eventId: $eventId, excludePlayerIds: $excludePlayerIds) {
+  mutation GeneratePairingsForRound($eventId: ID!, $playerIds: [ID!]!) {
+    eventGeneratePairings(eventId: $eventId, playerIds: $playerIds) {
       pairings {
         player1 { ...RoundModalPlayer }
         player2 { ...RoundModalPlayer }
@@ -73,7 +73,7 @@ const RoundModal: React.FC<RoundModalProps> = ({ event, players, show, disabled,
   const [generatePairings, {}] = useGeneratePairingsForRoundMutation({
     variables: {
       eventId: event.id,
-      excludePlayerIds: Object.keys(pairings).filter((playerId) => pairings[playerId])
+      playerIds: Object.keys(pairings).filter((playerId) => !pairings[playerId])
     },
     onCompleted: ({ eventGeneratePairings }) => {
       if (eventGeneratePairings) {
@@ -92,12 +92,18 @@ const RoundModal: React.FC<RoundModalProps> = ({ event, players, show, disabled,
     }
   })
 
-  const clearAllPairings = () => (
+  const regenerateAllPairings = () => {
+    generatePairings({
+      variables: { eventId: event.id, playerIds: players.map((player) => player.id) }
+    })
+  }
+
+  const clearAllPairings = () => {
     onChange({
       ...input,
       matches: players.map((player) => ({ player1Id: player.id, player2Id: null }))
     })
-  )
+  }
 
   const createPairing = (player: string, newValue: string | null) => {
     const newPairings = { ...pairings }
@@ -191,8 +197,8 @@ const RoundModal: React.FC<RoundModalProps> = ({ event, players, show, disabled,
             </Button>
             <Dropdown.Toggle split variant="secondary" disabled={disabled} />
             <Dropdown.Menu align="end">
-              <Dropdown.Item onClick={() => generatePairings({ variables: { eventId: event.id, excludePlayerIds: [] } })}>
-                Re-Pair All Players
+              <Dropdown.Item onClick={() => regenerateAllPairings()}>
+                Regenerate All Pairings
               </Dropdown.Item>
               <Dropdown.Item onClick={() => clearAllPairings()}>
                 Clear All Pairings
