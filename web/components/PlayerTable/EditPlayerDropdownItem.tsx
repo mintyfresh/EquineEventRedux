@@ -16,10 +16,7 @@ export const EDIT_PLAYER_DROPDOWN_ITEM_FRAGMENT = gql`
 
 gql`
   mutation EditPlayer($id: ID!, $input: PlayerInput!) {
-    playerUpdate(input: {
-      id: $id,
-      playerInput: $input
-    }) {
+    playerUpdate(id: $id, input: $input) {
       player {
         id
         ...EditPlayerDropdownItem

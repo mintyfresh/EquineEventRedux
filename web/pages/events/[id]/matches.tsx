@@ -1,9 +1,8 @@
 import { gql } from '@apollo/client'
 import { GetServerSideProps } from 'next'
-import { useState } from 'react'
-import { Alert, Button, Card, ListGroup } from 'react-bootstrap'
+import { Alert, Card, ListGroup } from 'react-bootstrap'
+import CreateRoundButton, { CREATE_ROUND_BUTTON_FRAGMENT } from '../../../components/CreateRoundButton'
 import EventLayout, { EVENT_LAYOUT_FRAGMENT } from '../../../components/EventLayout'
-import PlayerPairingsModal from '../../../components/PlayerPairingsModal'
 import { EventMatchesQuery, EventMatchesQueryVariables, useEventMatchesQuery } from '../../../lib/generated/graphql'
 import { initializeApolloClient } from '../../../lib/graphql/client'
 import { NextPageWithLayout } from '../../../lib/types/next-page'
@@ -14,6 +13,7 @@ const EVENT_MATCHES_QUERY = gql`
       id
       name
       ...EventLayout
+      ...CreateRoundButton
       players {
         totalCount
       }
@@ -37,6 +37,7 @@ const EVENT_MATCHES_QUERY = gql`
     }
   }
   ${EVENT_LAYOUT_FRAGMENT}
+  ${CREATE_ROUND_BUTTON_FRAGMENT}
 `
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
@@ -61,9 +62,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 }
 
 const EventMatchesPage: NextPageWithLayout<EventMatchesQuery> = ({ event: { id }}) => {
-  const [show, setShow] = useState(false)
-
-  const { data } = useEventMatchesQuery({
+  const { data, refetch } = useEventMatchesQuery({
     variables: { id }
   })
 
@@ -78,16 +77,12 @@ const EventMatchesPage: NextPageWithLayout<EventMatchesQuery> = ({ event: { id }
           No players have been added to this event yet.
         </Alert>
       )}
-      <Button
-        variant="primary"
-        disabled={data.event.players.totalCount === 0}
-        onClick={() => setShow(true)} className="mb-3"
-      >
-        Create Match
-      </Button>
-      <PlayerPairingsModal show={show} onHide={() => setShow(false)} event={data.event} />
+      <CreateRoundButton
+        event={data.event}
+        onCreate={() => refetch()}
+      />
       {data.event.rounds.map((round) => (
-        <Card key={round.id}>
+        <Card key={round.id} className="mb-3">
           <Card.Header>
             Match {round.number}
           </Card.Header>

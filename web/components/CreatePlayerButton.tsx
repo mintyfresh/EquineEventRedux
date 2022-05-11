@@ -7,10 +7,7 @@ import PlayerModal from './PlayerModal'
 
 gql`
   mutation CreatePlayer($eventID: ID!, $input: PlayerInput!) {
-    playerCreate(input: {
-      eventId: $eventID,
-      playerInput: $input
-    }) {
+    playerCreate(eventId: $eventID, input: $input) {
       player {
         id
       }

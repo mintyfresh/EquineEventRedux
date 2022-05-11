@@ -27,12 +27,12 @@ module Mutations
 
     # @return [Symbol]
     def self.model_input_name
-      :"#{model.model_name.singular}_input"
+      :input
     end
 
     # @return [Class<Types::BaseInputObject>]
     def self.model_input_type
-      "Types::#{model.name}InputType".constantize
+      "Types::#{model.name}UpdateInputType".safe_constantize || "Types::#{model.name}InputType".constantize
     end
 
     # @return [Symbol]

@@ -7,9 +7,7 @@ import FormControlErrors from './Form/FormControlErrors'
 
 gql`
   mutation CreateEvent($input: EventInput!) {
-    eventCreate(input: {
-      eventInput: $input
-    }) {
+    eventCreate(input: $input) {
       event {
         id
         name

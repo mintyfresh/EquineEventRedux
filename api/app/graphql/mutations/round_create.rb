@@ -2,7 +2,7 @@
 
 module Mutations
   class RoundCreate < BaseMutation
-    description 'Create a new Round'
+    description 'Creates a new Round'
 
     field :event, Types::EventType, null: true do
       description 'The Event that the Round was added to'
@@ -15,10 +15,15 @@ module Mutations
     argument :event_id, ID, required: true do
       description 'The ID of the Event to add the Round to'
     end
+    argument :input, Types::RoundCreateInputType, required: true
 
-    def resolve(event_id:)
+    def resolve(event_id:, input:)
       event = ::Event.find(event_id)
       round = event.rounds.build(number: event.rounds.count + 1)
+
+      input.matches.each do |match|
+        round.matches.build(match.to_h)
+      end
 
       if round.save
         { event:, round: }

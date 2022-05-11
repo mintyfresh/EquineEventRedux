@@ -16,10 +16,7 @@ export const PLAYER_ACTIONS_DROPDOWN_FRAGMENT = gql`
 
 gql`
   mutation PlayerActionsUpdate($id: ID!, $input: PlayerInput!) {
-    playerUpdate(input: {
-      id: $id,
-      playerInput: $input
-    }) {
+    playerUpdate(id: $id, input: $input) {
       player {
         id
         ...PlayerActionsDropdown
@@ -35,7 +32,7 @@ gql`
 
 gql`
   mutation PlayerActionsDelete($id: ID!) {
-    playerDelete(input: { id: $id }) {
+    playerDelete(id: $id) {
       success
       errors {
         attribute

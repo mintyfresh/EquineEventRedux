@@ -26,7 +26,7 @@ module Mutations
 
     # @return [Symbol]
     def self.model_input_name
-      :"#{model.model_name.singular}_input"
+      :input
     end
 
     # @return [Class<Types::BaseInputObject>]
