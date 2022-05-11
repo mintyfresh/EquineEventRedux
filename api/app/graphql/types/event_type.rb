@@ -14,7 +14,9 @@ module Types
         description 'Filters players by their deletion state; includes all players if unspecified'
       end
     end
-    field :rounds, [Types::RoundType], null: false
+    field :rounds, [Types::RoundType], null: false do
+      extension Extensions::OrderByExtension, type: Types::EventRoundsOrderByType
+    end
 
     # @param active_only [Boolean]
     # @param deleted [Boolean, nil]
@@ -28,8 +30,8 @@ module Types
     end
 
     # @return [Array<::Round>]
-    def rounds
-      dataloader.with(Sources::RecordList, ::Round, :event_id, scope: Round.order(:number)).load(object.id)
+    def rounds(order_by:)
+      dataloader.with(Sources::RecordList, ::Round, :event_id, scope: order_by).load(object.id)
     end
   end
 end
