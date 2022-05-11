@@ -465,6 +465,8 @@ export type PlayerActionsDeleteMutation = { __typename?: 'Mutation', playerDelet
 
 export type RoundListFragment = { __typename?: 'Event', rounds: Array<{ __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, player1: { __typename?: 'Player', id: string, name: string }, player2?: { __typename?: 'Player', id: string, name: string } | null }> }> };
 
+export type RoundMatchListItemFragment = { __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, player1: { __typename?: 'Player', id: string, name: string }, player2?: { __typename?: 'Player', id: string, name: string } | null };
+
 export type RoundModalPlayerFragment = { __typename?: 'Player', id: string, name: string };
 
 export type GeneratePairingsForRoundMutationVariables = Exact<{
@@ -580,6 +582,21 @@ export const PlayerTableFragmentDoc = gql`
   ...PlayerActionsDropdown
 }
     ${PlayerActionsDropdownFragmentDoc}`;
+export const RoundMatchListItemFragmentDoc = gql`
+    fragment RoundMatchListItem on Match {
+  id
+  player1 {
+    id
+    name
+  }
+  player2 {
+    id
+    name
+  }
+  winnerId
+  draw
+}
+    `;
 export const RoundListFragmentDoc = gql`
     fragment RoundList on Event {
   rounds(orderBy: NUMBER, orderByDirection: DESC) {
@@ -587,20 +604,11 @@ export const RoundListFragmentDoc = gql`
     number
     matches {
       id
-      player1 {
-        id
-        name
-      }
-      player2 {
-        id
-        name
-      }
-      winnerId
-      draw
+      ...RoundMatchListItem
     }
   }
 }
-    `;
+    ${RoundMatchListItemFragmentDoc}`;
 export const RoundModalPlayerFragmentDoc = gql`
     fragment RoundModalPlayer on Player {
   id

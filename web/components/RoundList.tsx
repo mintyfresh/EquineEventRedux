@@ -1,7 +1,8 @@
 import { gql } from '@apollo/client'
-import { Card, Dropdown, ListGroup } from 'react-bootstrap'
+import { Card } from 'react-bootstrap'
 import { RoundListFragment } from '../lib/generated/graphql'
-import EllipsisDropdown from './EllipsisDropdown'
+import RoundControlsDropdown from './RoundList/RoundControlsDropdown'
+import RoundMatchesList, { ROUND_MATCH_LIST_ITEM_FRAGMENT } from './RoundList/RoundMatchesList'
 
 export const ROUND_LIST_FRAGMENT = gql`
   fragment RoundList on Event {
@@ -10,19 +11,11 @@ export const ROUND_LIST_FRAGMENT = gql`
       number
       matches {
         id
-        player1 {
-          id
-          name
-        }
-        player2 {
-          id
-          name
-        }
-        winnerId
-        draw
+        ...RoundMatchListItem
       }
     }
   }
+  ${ROUND_MATCH_LIST_ITEM_FRAGMENT}
 `
 
 export interface RoundListProps {
@@ -36,21 +29,11 @@ const RoundList: React.FC<RoundListProps> = ({ rounds }) => {
         <Card key={round.id} className="mb-3">
           <Card.Header>
             Round {round.number}
-            <EllipsisDropdown align="end" className="float-end">
-              <Dropdown.Item>Edit</Dropdown.Item>
-              <Dropdown.Divider />
-              <Dropdown.Item className="text-danger">Delete</Dropdown.Item>
-            </EllipsisDropdown>
+            <RoundControlsDropdown />
           </Card.Header>
           <Card.Body>
             {round.matches.length > 0 ? (
-              <ListGroup variant="flush">
-                {round.matches.map((match) => (
-                  <ListGroup.Item key={match.id}>
-                    {match.player1.name} vs {match.player2?.name || 'N/A'}
-                  </ListGroup.Item>
-                ))}
-              </ListGroup>
+              <RoundMatchesList matches={round.matches} />
             ) : (
               <Card.Text>No pairings have been added to this match yet.</Card.Text>
             )}
