@@ -56,7 +56,18 @@ const CreateRoundButton: React.FC<CreateRoundButtonProps> = ({ event, onCreate }
   const [input, setInput] = useState<RoundCreateInput>(EMPTY_ROUND_CREATE_INPUT)
 
   const [loadPlayers, { data, loading: playersLoading }] = usePlayersForRoundCreateLazyQuery({
-    variables: { id: event.id }
+    variables: { id: event.id },
+    onCompleted: ({ event }) => {
+      if (event?.players?.nodes?.length) {
+        setInput({
+          ...input,
+          // Generate empty matches for each player
+          matches: event.players.nodes.map((player) => (
+            { player1Id: player.id, player2Id: null }
+          ))
+        })
+      }
+    }
   })
 
   const [createRound, { loading }] = useCreateRoundMutation({
