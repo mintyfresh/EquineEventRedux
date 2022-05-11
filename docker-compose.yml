@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+      args:
+        - RAILS_ENV=production
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    environment:
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+      RAILS_ENV: production
+      RAILS_LOG_TO_STDOUT: 'true'
+      DATABASE_URL: 'postgres://equine_event_api:${POSTGRES_PASSWORD}@postgres/equine_event_api_production'
+    ports:
+      - 3000:3000
+    command:
+      sh -c "bin/rails db:migrate && bin/rails db:seed && bin/rails server"
+
+  postgres:
+    image: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: equine_event_api
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: equine_event_api_production
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+volumes:
+  postgres:
