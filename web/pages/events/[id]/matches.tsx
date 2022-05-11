@@ -81,6 +81,7 @@ const EventMatchesPage: NextPageWithLayout<EventMatchesQuery> = ({ event: { id }
       <CreateRoundButton
         event={data.event}
         onCreate={() => refetch()}
+        className="mb-3"
       />
       {data.event.rounds.map((round) => (
         <Card key={round.id} className="mb-3">

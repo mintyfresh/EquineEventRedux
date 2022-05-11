@@ -63,6 +63,7 @@ const EventPlayersPage: NextPageWithLayout<EventPlayersQuery> = ({ event: { id }
       <CreatePlayerButton
         event={data.event}
         onCreate={() => refetch()}
+        className="mb-3"
       />
       {data.event.players.nodes.length > 0 ? (
         <PlayerTable

@@ -25,12 +25,12 @@ export const CREATE_PLAYER_BUTTON_FRAGMENT = gql`
   }
 `
 
-export interface CreatePlayerButtonProps {
+export interface CreatePlayerButtonProps extends Omit<React.ComponentProps<typeof Button>, 'onClick'> {
   event: CreatePlayerButtonFragment
   onCreate: () => void
 }
 
-const CreatePlayerButton: React.FC<CreatePlayerButtonProps> = ({ event, onCreate }) => {
+const CreatePlayerButton: React.FC<CreatePlayerButtonProps> = ({ event, onCreate, ...props }) => {
   const [showModal, setShowModal] = useState(false)
   const [input, setInput] = useState<PlayerInput>({})
   const [errors, setErrors] = useErrors()
@@ -63,7 +63,7 @@ const CreatePlayerButton: React.FC<CreatePlayerButtonProps> = ({ event, onCreate
 
   return (
     <>
-      <Button onClick={() => setShowModal(true)}>
+      <Button {...props} onClick={() => setShowModal(true)}>
         Create Player
       </Button>
       <PlayerModal

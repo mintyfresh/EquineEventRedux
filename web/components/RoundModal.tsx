@@ -155,7 +155,7 @@ const RoundModal: React.FC<RoundModalProps> = ({ event, players, show, disabled,
   return (
     <Modal show={show} onHide={onHide}>
       <Modal.Header closeButton>
-        <Modal.Title>Match Pairings</Modal.Title>
+        <Modal.Title>Start New Round</Modal.Title>
       </Modal.Header>
       <Form onSubmit={(event) => {
         event.preventDefault()
@@ -192,15 +192,15 @@ const RoundModal: React.FC<RoundModalProps> = ({ event, players, show, disabled,
             <Dropdown.Toggle split variant="secondary" disabled={disabled} />
             <Dropdown.Menu align="end">
               <Dropdown.Item onClick={() => generatePairings({ variables: { eventId: event.id, excludePlayerIds: [] } })}>
-                Re-Pair All
+                Re-Pair All Players
               </Dropdown.Item>
               <Dropdown.Item onClick={() => clearAllPairings()}>
-                Clear All
+                Clear All Pairings
               </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
           <Button type="submit" disabled={disabled}>
-            Save Pairings
+            Create Round
           </Button>
         </Modal.Footer>
       </Form>
