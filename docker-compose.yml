@@ -15,8 +15,6 @@ services:
       RAILS_ENV: production
       RAILS_LOG_TO_STDOUT: 'true'
       DATABASE_URL: 'postgres://equine_event_api:${POSTGRES_PASSWORD}@postgres/equine_event_api_production'
-    ports:
-      - 3000:3000
     command:
       sh -c "bin/rails db:migrate && bin/rails db:seed && bin/rails server"
 
