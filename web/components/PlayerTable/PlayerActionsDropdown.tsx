@@ -43,8 +43,8 @@ gql`
 `
 
 export interface PlayerActionsDropdownProps {
-  player: PlayerActionsDropdownFragment;
-  onDelete?: () => void;
+  player: PlayerActionsDropdownFragment
+  onDelete?: () => void
 }
 
 const PlayerActionsDropdown: React.FC<PlayerActionsDropdownProps> = ({ player, onDelete }) => {

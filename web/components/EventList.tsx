@@ -11,7 +11,7 @@ export const EVENT_LIST_FRAGMENT = gql`
     }
   }
   ${EVENT_LIST_ITEM_FRAGMENT}
-`;
+`
 
 const EventList: React.FC<EventListFragment> = ({ nodes }) => (
   <ListGroup>

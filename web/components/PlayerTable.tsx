@@ -27,8 +27,8 @@ const DroppedBadge: React.FC<React.ComponentPropsWithoutRef<typeof Badge>> = (pr
 )
 
 export interface PlayerTableProps {
-  players: PlayerTableFragment[];
-  onDelete?: (player: PlayerTableFragment) => void;
+  players: PlayerTableFragment[]
+  onDelete?: (player: PlayerTableFragment) => void
 }
 
 const PlayerTable: React.FC<PlayerTableProps> = ({ players, onDelete }) => (

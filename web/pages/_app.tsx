@@ -15,7 +15,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
 
   const getLayout = Component.getLayout ?? ((page) => (
     <Layout>{page}</Layout>
-  ));
+  ))
 
   return (
     <ApolloProvider client={apolloClient}>
