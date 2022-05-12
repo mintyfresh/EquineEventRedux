@@ -9,6 +9,8 @@
 #  wins_count    :bigint
 #  losses_count  :bigint
 #  draws_count   :bigint
+#  match_ids     :uuid             is an Array
+#  opponent_ids  :uuid             is an Array
 #
 require 'rails_helper'
 

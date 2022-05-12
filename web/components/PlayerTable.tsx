@@ -16,6 +16,7 @@ export const PLAYER_TABLE_FRAGMENT = gql`
     drawsCount
     lossesCount
     score
+    opponentWinRate
     ...PlayerActionsDropdown
   }
   ${PLAYER_ACTIONS_DROPDOWN_FRAGMENT}
@@ -74,6 +75,7 @@ const PlayerTable: React.FC<PlayerTableProps> = ({ players, onDelete, onOrderBy 
           <OrderableHeader orderBy={EventPlayersOrderBy.DrawsCount}>Draws</OrderableHeader>
           <OrderableHeader orderBy={EventPlayersOrderBy.LossesCount}>Losses</OrderableHeader>
           <OrderableHeader orderBy={EventPlayersOrderBy.Score}>Points</OrderableHeader>
+          <th>Opponent Win Rate</th>
           <th className="text-end">Actions</th>
         </tr>
       </thead>
@@ -89,6 +91,7 @@ const PlayerTable: React.FC<PlayerTableProps> = ({ players, onDelete, onOrderBy 
             <td>{player.drawsCount}</td>
             <td>{player.lossesCount}</td>
             <td>{player.score}</td>
+            <td>{player.opponentWinRate}</td>
             <td className="text-end">
               <PlayerActionsDropdown player={player} onDelete={() => onDelete?.(player)} />
             </td>

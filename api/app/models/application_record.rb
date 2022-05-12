@@ -4,4 +4,6 @@ class ApplicationRecord < ActiveRecord::Base
   extend WhereAny
 
   primary_abstract_class
+
+  self.implicit_order_column = :created_at
 end

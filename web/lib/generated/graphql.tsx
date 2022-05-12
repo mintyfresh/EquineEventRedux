@@ -269,6 +269,7 @@ export type Player = {
   id: Scalars['ID'];
   lossesCount: Scalars['Int'];
   name: Scalars['String'];
+  opponentWinRate: Scalars['Float'];
   paid: Scalars['Boolean'];
   score: Scalars['Int'];
   winsCount: Scalars['Int'];
@@ -444,7 +445,7 @@ export type EventListItemFragment = { __typename?: 'Event', id: string, name: st
 
 export type EventNavFragment = { __typename?: 'Event', id: string };
 
-export type PlayerTableFragment = { __typename?: 'Player', id: string, name: string, paid: boolean, dropped: boolean, winsCount: number, drawsCount: number, lossesCount: number, score: number };
+export type PlayerTableFragment = { __typename?: 'Player', id: string, name: string, paid: boolean, dropped: boolean, winsCount: number, drawsCount: number, lossesCount: number, score: number, opponentWinRate: number };
 
 export type EditPlayerDropdownItemFragment = { __typename?: 'Player', id: string, name: string, paid: boolean, dropped: boolean };
 
@@ -516,7 +517,7 @@ export type EventPlayersQueryVariables = Exact<{
 }>;
 
 
-export type EventPlayersQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, players: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, paid: boolean, dropped: boolean, winsCount: number, drawsCount: number, lossesCount: number, score: number }> } } };
+export type EventPlayersQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, players: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, paid: boolean, dropped: boolean, winsCount: number, drawsCount: number, lossesCount: number, score: number, opponentWinRate: number }> } } };
 
 export type EventSlipsQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -591,6 +592,7 @@ export const PlayerTableFragmentDoc = gql`
   drawsCount
   lossesCount
   score
+  opponentWinRate
   ...PlayerActionsDropdown
 }
     ${PlayerActionsDropdownFragmentDoc}`;
