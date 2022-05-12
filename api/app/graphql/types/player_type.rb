@@ -15,7 +15,7 @@ module Types
     field :losses_count, Integer, null: false
     field :score, Integer, null: false
 
-    field :opponent_win_rate, Float, null: false
+    field :opponent_win_rate, resolver: Resolvers::PlayerOpponentWinRate
 
     # @!method wins_count
     #   @return [Integer]
@@ -26,32 +26,6 @@ module Types
     # @!method score
     #   @return [Integer]
     delegate :wins_count, :draws_count, :losses_count, :score, to: :score_card
-
-    # @return [Float]
-    def opponent_win_rate
-      return 0.0 if total_matches_count.zero?
-
-      total_opponents_score / total_matches_count
-    end
-
-  private
-
-    # @return [Float]
-    def total_opponents_score
-      opponent_score_cards.sum { |score_card| score_card.score / score_card.maximum_possible_score.to_f }
-    end
-
-    # @return [Integer]
-    def total_matches_count
-      score_card.completed_matches_count
-    end
-
-    # @return [Array<::PlayerScoreCard>]
-    def opponent_score_cards
-      @opponent_score_cards ||= dataloader
-        .with(Sources::Record, ::PlayerScoreCard, :player_id)
-        .load_all(score_card.opponent_ids)
-    end
 
     # @return [::PlayerScoreCard]
     def score_card
