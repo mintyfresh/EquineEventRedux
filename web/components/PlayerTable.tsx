@@ -3,6 +3,7 @@ import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React, { useEffect, useState } from 'react'
 import { Badge, Table } from 'react-bootstrap'
+import NumberFormat from 'react-number-format'
 import { EventPlayersOrderBy, OrderByDirection, PlayerTableFragment } from '../lib/generated/graphql'
 import PlayerActionsDropdown, { PLAYER_ACTIONS_DROPDOWN_FRAGMENT } from './PlayerTable/PlayerActionsDropdown'
 
@@ -91,7 +92,14 @@ const PlayerTable: React.FC<PlayerTableProps> = ({ players, onDelete, onOrderBy 
             <td>{player.drawsCount}</td>
             <td>{player.lossesCount}</td>
             <td>{player.score}</td>
-            <td>{player.opponentWinRate * 100}%</td>
+            <td>
+              <NumberFormat
+                suffix="%"
+                displayType="text"
+                decimalScale={2}
+                value={player.opponentWinRate * 100}
+              />
+            </td>
             <td className="text-end">
               <PlayerActionsDropdown player={player} onDelete={() => onDelete?.(player)} />
             </td>
