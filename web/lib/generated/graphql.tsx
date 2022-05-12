@@ -477,6 +477,15 @@ export type PlayerActionsDeleteMutation = { __typename?: 'Mutation', playerDelet
 
 export type RoundListFragment = { __typename?: 'Event', rounds: Array<{ __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, table: number, player1: { __typename?: 'Player', id: string, name: string }, player2?: { __typename?: 'Player', id: string, name: string } | null }> }> };
 
+export type SetMatchResolutionMutationVariables = Exact<{
+  id: Scalars['ID'];
+  winnerId?: InputMaybe<Scalars['ID']>;
+  draw: Scalars['Boolean'];
+}>;
+
+
+export type SetMatchResolutionMutation = { __typename?: 'Mutation', matchUpdate?: { __typename?: 'UpdateMatchPayload', match?: { __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean } | null, errors?: Array<{ __typename?: 'Error', attribute: string, message: string }> | null } | null };
+
 export type RoundMatchListItemFragment = { __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, table: number, player1: { __typename?: 'Player', id: string, name: string }, player2?: { __typename?: 'Player', id: string, name: string } | null };
 
 export type RoundModalPlayerFragment = { __typename?: 'Player', id: string, name: string };
@@ -944,6 +953,48 @@ export function usePlayerActionsDeleteMutation(baseOptions?: Apollo.MutationHook
 export type PlayerActionsDeleteMutationHookResult = ReturnType<typeof usePlayerActionsDeleteMutation>;
 export type PlayerActionsDeleteMutationResult = Apollo.MutationResult<PlayerActionsDeleteMutation>;
 export type PlayerActionsDeleteMutationOptions = Apollo.BaseMutationOptions<PlayerActionsDeleteMutation, PlayerActionsDeleteMutationVariables>;
+export const SetMatchResolutionDocument = gql`
+    mutation SetMatchResolution($id: ID!, $winnerId: ID, $draw: Boolean!) {
+  matchUpdate(id: $id, input: {winnerId: $winnerId, draw: $draw}) {
+    match {
+      id
+      winnerId
+      draw
+    }
+    errors {
+      ...Errors
+    }
+  }
+}
+    ${ErrorsFragmentDoc}`;
+export type SetMatchResolutionMutationFn = Apollo.MutationFunction<SetMatchResolutionMutation, SetMatchResolutionMutationVariables>;
+
+/**
+ * __useSetMatchResolutionMutation__
+ *
+ * To run a mutation, you first call `useSetMatchResolutionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSetMatchResolutionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [setMatchResolutionMutation, { data, loading, error }] = useSetMatchResolutionMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      winnerId: // value for 'winnerId'
+ *      draw: // value for 'draw'
+ *   },
+ * });
+ */
+export function useSetMatchResolutionMutation(baseOptions?: Apollo.MutationHookOptions<SetMatchResolutionMutation, SetMatchResolutionMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SetMatchResolutionMutation, SetMatchResolutionMutationVariables>(SetMatchResolutionDocument, options);
+      }
+export type SetMatchResolutionMutationHookResult = ReturnType<typeof useSetMatchResolutionMutation>;
+export type SetMatchResolutionMutationResult = Apollo.MutationResult<SetMatchResolutionMutation>;
+export type SetMatchResolutionMutationOptions = Apollo.BaseMutationOptions<SetMatchResolutionMutation, SetMatchResolutionMutationVariables>;
 export const GeneratePairingsForRoundDocument = gql`
     mutation GeneratePairingsForRound($eventId: ID!, $playerIds: [ID!]!) {
   eventGeneratePairings(eventId: $eventId, playerIds: $playerIds) {
