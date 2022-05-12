@@ -74,8 +74,14 @@ const CreateRoundButton: React.FC<CreateRoundButtonProps> = ({ event, onCreate, 
     variables: { eventId: event.id, input },
     onCompleted: ({ roundCreate }) => {
       if (roundCreate?.round?.id) {
-        // Clear inputs after successful creation
-        setInput(EMPTY_ROUND_CREATE_INPUT)
+        setInput({
+          ...input,
+          // Reset inputs after successful creation
+          matches: data!.event.players.nodes.map((player) => (
+            { player1Id: player.id, player2Id: null }
+          ))
+        })
+
         setShowModal(false)
         onCreate()
       }
