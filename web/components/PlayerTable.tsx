@@ -91,7 +91,7 @@ const PlayerTable: React.FC<PlayerTableProps> = ({ players, onDelete, onOrderBy 
             <td>{player.drawsCount}</td>
             <td>{player.lossesCount}</td>
             <td>{player.score}</td>
-            <td>{player.opponentWinRate}</td>
+            <td>{player.opponentWinRate * 100}%</td>
             <td className="text-end">
               <PlayerActionsDropdown player={player} onDelete={() => onDelete?.(player)} />
             </td>
