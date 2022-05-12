@@ -2,34 +2,27 @@ import { gql } from '@apollo/client'
 import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React, { useEffect, useState } from 'react'
-import { Badge, Table } from 'react-bootstrap'
+import { Table } from 'react-bootstrap'
 import NumberFormat from 'react-number-format'
 import { EventPlayersOrderBy, OrderByDirection, PlayerTableFragment } from '../lib/generated/graphql'
+import PlayerNameWithBadges, { PLAYER_NAME_WITH_BADGES_FRAGMENT } from './Players/PlayerNameWithBadges'
 import PlayerActionsDropdown, { PLAYER_ACTIONS_DROPDOWN_FRAGMENT } from './PlayerTable/PlayerActionsDropdown'
 
 export const PLAYER_TABLE_FRAGMENT = gql`
   fragment PlayerTable on Player {
     id
     name
-    paid
-    dropped
     winsCount
     drawsCount
     lossesCount
     score
     opponentWinRate
+    ...PlayerNameWithBadges
     ...PlayerActionsDropdown
   }
+  ${PLAYER_NAME_WITH_BADGES_FRAGMENT}
   ${PLAYER_ACTIONS_DROPDOWN_FRAGMENT}
 `
-
-const UnpaidBadge: React.FC<React.ComponentPropsWithoutRef<typeof Badge>> = (props) => (
-  <Badge {...props} bg="warning" pill>unpaid</Badge>
-)
-
-const DroppedBadge: React.FC<React.ComponentPropsWithoutRef<typeof Badge>> = (props) => (
-  <Badge {...props} bg="danger" pill>dropped</Badge>
-)
 
 export interface PlayerTableProps {
   players: PlayerTableFragment[]
@@ -83,11 +76,7 @@ const PlayerTable: React.FC<PlayerTableProps> = ({ players, onDelete, onOrderBy 
       <tbody>
         {players.map((player) => (
           <tr key={player.id}>
-            <td>
-              {player.name}
-              {player.paid || <UnpaidBadge className="ms-1" />}
-              {player.dropped && <DroppedBadge className="ms-1" />}
-            </td>
+            <td><PlayerNameWithBadges player={player} /></td>
             <td>{player.winsCount}</td>
             <td>{player.drawsCount}</td>
             <td>{player.lossesCount}</td>

@@ -3,6 +3,8 @@ import { Dropdown, ListGroup } from 'react-bootstrap'
 import { ERRORS_FRAGMENT } from '../../lib/errors'
 import { RoundMatchListItemFragment, useSetMatchResolutionMutation } from '../../lib/generated/graphql'
 import EllipsisDropdown from '../EllipsisDropdown'
+import PlayerDeletedBadge from '../Players/PlayerDeletedBadge'
+import PlayerNameWithBadges, { PLAYER_NAME_WITH_BADGES_FRAGMENT } from '../Players/PlayerNameWithBadges'
 
 gql`
   mutation SetMatchResolution($id: ID!, $winnerId: ID, $draw: Boolean!) {
@@ -25,16 +27,17 @@ export const ROUND_MATCH_LIST_ITEM_FRAGMENT = gql`
     id
     player1 {
       id
-      name
+      ...PlayerNameWithBadges
     }
     player2 {
       id
-      name
+      ...PlayerNameWithBadges
     }
     winnerId
     draw
     table
   }
+  ${PLAYER_NAME_WITH_BADGES_FRAGMENT}
 `
 
 export interface RoundMatchesListProps {
@@ -60,7 +63,8 @@ const RoundMatchesList: React.FC<RoundMatchesListProps> = ({ matches }) => {
     <ListGroup variant="flush">
       {matches.map((match) => (
         <ListGroup.Item key={match.id}>
-          Table {match.table} - {match.player1.name} vs. {match.player2?.name || 'N/A'}
+          Table {match.table} - <PlayerNameWithBadges player={match.player1} /> vs.{' '}
+          {match.player2 ? <PlayerNameWithBadges player={match.player2} /> : <span className="text-muted">No-one</span>}
           {resolution(match)}
           {match.player2 && (
             <EllipsisDropdown align="end" className="float-end">
