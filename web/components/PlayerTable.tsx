@@ -33,12 +33,12 @@ const DroppedBadge: React.FC<React.ComponentPropsWithoutRef<typeof Badge>> = (pr
 export interface PlayerTableProps {
   players: PlayerTableFragment[]
   onDelete?: (player: PlayerTableFragment) => void
-  onOrderBy?: (orderBy: EventPlayersOrderBy, orderByDirection: OrderByDirection) => void
+  onOrderBy?: (orderBy: EventPlayersOrderBy | null, orderByDirection: OrderByDirection | null) => void
 }
 
 const PlayerTable: React.FC<PlayerTableProps> = ({ players, onDelete, onOrderBy }) => {
-  const [orderBy, setOrderBy] = useState<EventPlayersOrderBy>(EventPlayersOrderBy.Name)
-  const [orderByDirection, setOrderByDirection] = useState<OrderByDirection>(OrderByDirection.Asc)
+  const [orderBy, setOrderBy] = useState<EventPlayersOrderBy | null>(null)
+  const [orderByDirection, setOrderByDirection] = useState<OrderByDirection | null>(null)
 
   const OrderableHeader: React.FC<{ children: React.ReactNode, orderBy: EventPlayersOrderBy }> = ({ children, ...props }) => {
     const icon = orderBy === props.orderBy ? (

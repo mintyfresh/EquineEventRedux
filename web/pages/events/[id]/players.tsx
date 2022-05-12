@@ -50,7 +50,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 }
 
 const EventPlayersPage: NextPageWithLayout<EventPlayersQuery> = ({ event: { id } }) => {
-  const { data, refetch } = useEventPlayersQuery({
+  const { data, refetch, variables } = useEventPlayersQuery({
     variables: { id }
   })
 
@@ -69,9 +69,11 @@ const EventPlayersPage: NextPageWithLayout<EventPlayersQuery> = ({ event: { id }
         <PlayerTable
           players={data.event.players.nodes}
           onDelete={() => refetch()}
-          onOrderBy={(orderBy, orderByDirection) =>
-            refetch({ orderBy, orderByDirection })
-          }
+          onOrderBy={(orderBy, orderByDirection) => {
+            if (orderBy != variables?.orderBy || orderByDirection != variables?.orderByDirection) {
+              refetch(orderBy ? { orderBy, orderByDirection } : {})
+            }
+          }}
         />
       ) : (
         <Card body>
