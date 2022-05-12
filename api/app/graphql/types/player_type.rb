@@ -43,7 +43,7 @@ module Types
 
     # @return [Integer]
     def total_matches_count
-      score_card.opponent_ids.count
+      score_card.completed_matches_count
     end
 
     # @return [Array<::PlayerScoreCard>]

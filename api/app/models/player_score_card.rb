@@ -4,13 +4,13 @@
 #
 # Table name: player_score_cards
 #
-#  player_id     :uuid
-#  matches_count :bigint
-#  wins_count    :bigint
-#  losses_count  :bigint
-#  draws_count   :bigint
-#  match_ids     :uuid             is an Array
-#  opponent_ids  :uuid             is an Array
+#  player_id               :uuid
+#  matches_count           :bigint
+#  completed_matches_count :bigint
+#  wins_count              :bigint
+#  losses_count            :bigint
+#  draws_count             :bigint
+#  opponent_ids            :uuid             is an Array
 #
 class PlayerScoreCard < ApplicationRecord
   POINTS_PER_WIN  = 3
@@ -36,7 +36,7 @@ class PlayerScoreCard < ApplicationRecord
   #
   # @return [Integer]
   def maximum_possible_score
-    matches_count * POINTS_PER_WIN
+    completed_matches_count * POINTS_PER_WIN
   end
 
   # @return [Array<String>]

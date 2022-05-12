@@ -4,13 +4,13 @@
 #
 # Table name: player_score_cards
 #
-#  player_id     :uuid
-#  matches_count :bigint
-#  wins_count    :bigint
-#  losses_count  :bigint
-#  draws_count   :bigint
-#  match_ids     :uuid             is an Array
-#  opponent_ids  :uuid             is an Array
+#  player_id               :uuid
+#  matches_count           :bigint
+#  completed_matches_count :bigint
+#  wins_count              :bigint
+#  losses_count            :bigint
+#  draws_count             :bigint
+#  opponent_ids            :uuid             is an Array
 #
 require 'rails_helper'
 

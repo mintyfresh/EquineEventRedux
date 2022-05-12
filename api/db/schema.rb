@@ -66,11 +66,11 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_11_042440) do
 
   create_view "player_score_cards", sql_definition: <<-SQL
       SELECT players.id AS player_id,
-      count(DISTINCT matches.id) AS matches_count,
-      count(DISTINCT matches.id) FILTER (WHERE (matches.winner_id = players.id)) AS wins_count,
-      count(DISTINCT matches.id) FILTER (WHERE ((matches.winner_id IS NOT NULL) AND (matches.winner_id <> players.id))) AS losses_count,
-      count(DISTINCT matches.id) FILTER (WHERE matches.draw) AS draws_count,
-      array_agg(DISTINCT matches.id) AS match_ids,
+      count(matches.id) AS matches_count,
+      count(matches.id) FILTER (WHERE ((matches.winner_id IS NOT NULL) OR matches.draw)) AS completed_matches_count,
+      count(matches.id) FILTER (WHERE (matches.winner_id = players.id)) AS wins_count,
+      count(matches.id) FILTER (WHERE ((matches.winner_id IS NOT NULL) AND (matches.winner_id <> players.id))) AS losses_count,
+      count(matches.id) FILTER (WHERE matches.draw) AS draws_count,
       array_agg(DISTINCT opponents.id) AS opponent_ids
      FROM ((players
        LEFT JOIN matches ON (((matches.player1_id = players.id) OR (matches.player2_id = players.id))))
