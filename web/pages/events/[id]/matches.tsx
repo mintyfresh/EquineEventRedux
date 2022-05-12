@@ -3,7 +3,7 @@ import { GetServerSideProps } from 'next'
 import { Alert, Card } from 'react-bootstrap'
 import CreateRoundButton, { CREATE_ROUND_BUTTON_FRAGMENT } from '../../../components/CreateRoundButton'
 import EventLayout, { EVENT_LAYOUT_FRAGMENT } from '../../../components/EventLayout'
-import RoundList, { ROUND_LIST_FRAGMENT } from '../../../components/RoundList'
+import RoundList, { ROUND_LIST_ITEM_FRAGMENT } from '../../../components/RoundList'
 import { EventMatchesQuery, EventMatchesQueryVariables, useEventMatchesQuery } from '../../../lib/generated/graphql'
 import { initializeApolloClient } from '../../../lib/graphql/client'
 import { NextPageWithLayout } from '../../../lib/types/next-page'
@@ -15,7 +15,9 @@ const EVENT_MATCHES_QUERY = gql`
       name
       ...EventLayout
       ...CreateRoundButton
-      ...RoundList
+      rounds(orderBy: NUMBER, orderByDirection: DESC) {
+        ...RoundListItem
+      }
       players {
         totalCount
       }
@@ -23,7 +25,7 @@ const EVENT_MATCHES_QUERY = gql`
   }
   ${EVENT_LAYOUT_FRAGMENT}
   ${CREATE_ROUND_BUTTON_FRAGMENT}
-  ${ROUND_LIST_FRAGMENT}
+  ${ROUND_LIST_ITEM_FRAGMENT}
 `
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
@@ -68,7 +70,10 @@ const EventMatchesPage: NextPageWithLayout<EventMatchesQuery> = ({ event: { id }
         onCreate={() => refetch()}
         className="mb-3"
       />
-      <RoundList rounds={data.event.rounds} />
+      <RoundList
+        rounds={data.event.rounds}
+        onDelete={() => refetch()}
+      />
       {data.event.rounds.length === 0 && (
         <Card body>
           <Card.Text>No matches have been added to this event yet.</Card.Text>
