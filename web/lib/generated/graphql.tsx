@@ -134,6 +134,7 @@ export type Match = {
   player2?: Maybe<Player>;
   player2Id?: Maybe<Scalars['ID']>;
   roundId: Scalars['ID'];
+  table: Scalars['Int'];
   winnerId?: Maybe<Scalars['ID']>;
 };
 
@@ -474,9 +475,9 @@ export type PlayerActionsDeleteMutationVariables = Exact<{
 
 export type PlayerActionsDeleteMutation = { __typename?: 'Mutation', playerDelete?: { __typename?: 'DeletePlayerPayload', success?: boolean | null, errors?: Array<{ __typename?: 'Error', attribute: string, message: string }> | null } | null };
 
-export type RoundListFragment = { __typename?: 'Event', rounds: Array<{ __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, player1: { __typename?: 'Player', id: string, name: string }, player2?: { __typename?: 'Player', id: string, name: string } | null }> }> };
+export type RoundListFragment = { __typename?: 'Event', rounds: Array<{ __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, table: number, player1: { __typename?: 'Player', id: string, name: string }, player2?: { __typename?: 'Player', id: string, name: string } | null }> }> };
 
-export type RoundMatchListItemFragment = { __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, player1: { __typename?: 'Player', id: string, name: string }, player2?: { __typename?: 'Player', id: string, name: string } | null };
+export type RoundMatchListItemFragment = { __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, table: number, player1: { __typename?: 'Player', id: string, name: string }, player2?: { __typename?: 'Player', id: string, name: string } | null };
 
 export type RoundModalPlayerFragment = { __typename?: 'Player', id: string, name: string };
 
@@ -492,7 +493,7 @@ export type SlipEventFragment = { __typename?: 'Event', id: string, name: string
 
 export type SlipRoundFragment = { __typename?: 'Round', id: string, number: number };
 
-export type SlipMatchFragment = { __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, player1: { __typename?: 'Player', id: string, name: string, score: number }, player2?: { __typename?: 'Player', id: string, name: string, score: number } | null };
+export type SlipMatchFragment = { __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, table: number, player1: { __typename?: 'Player', id: string, name: string, score: number }, player2?: { __typename?: 'Player', id: string, name: string, score: number } | null };
 
 export type ErrorsFragment = { __typename?: 'Error', attribute: string, message: string };
 
@@ -508,7 +509,7 @@ export type EventMatchesQueryVariables = Exact<{
 }>;
 
 
-export type EventMatchesQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, players: { __typename?: 'PlayerConnection', totalCount: number }, rounds: Array<{ __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, player1: { __typename?: 'Player', id: string, name: string }, player2?: { __typename?: 'Player', id: string, name: string } | null }> }> } };
+export type EventMatchesQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, players: { __typename?: 'PlayerConnection', totalCount: number }, rounds: Array<{ __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, table: number, player1: { __typename?: 'Player', id: string, name: string }, player2?: { __typename?: 'Player', id: string, name: string } | null }> }> } };
 
 export type EventPlayersQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -524,7 +525,7 @@ export type EventSlipsQueryVariables = Exact<{
 }>;
 
 
-export type EventSlipsQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, rounds: Array<{ __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, player1: { __typename?: 'Player', id: string, name: string, score: number }, player2?: { __typename?: 'Player', id: string, name: string, score: number } | null }> }> } };
+export type EventSlipsQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, rounds: Array<{ __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, table: number, player1: { __typename?: 'Player', id: string, name: string, score: number }, player2?: { __typename?: 'Player', id: string, name: string, score: number } | null }> }> } };
 
 export type EventsIndexQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -609,6 +610,7 @@ export const RoundMatchListItemFragmentDoc = gql`
   }
   winnerId
   draw
+  table
 }
     `;
 export const RoundListFragmentDoc = gql`
@@ -656,6 +658,7 @@ export const SlipMatchFragmentDoc = gql`
   }
   winnerId
   draw
+  table
 }
     `;
 export const ErrorsFragmentDoc = gql`

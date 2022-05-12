@@ -10,14 +10,16 @@
 #  player2_id :uuid
 #  winner_id  :uuid
 #  draw       :boolean          default(FALSE), not null
+#  table      :integer          not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
 # Indexes
 #
-#  index_matches_on_player1_id  (player1_id)
-#  index_matches_on_player2_id  (player2_id)
-#  index_matches_on_round_id    (round_id)
+#  index_matches_on_player1_id          (player1_id)
+#  index_matches_on_player2_id          (player2_id)
+#  index_matches_on_round_id            (round_id)
+#  index_matches_on_round_id_and_table  (round_id,table) UNIQUE
 #
 # Foreign Keys
 #
@@ -48,6 +50,11 @@ RSpec.describe Match, type: :model do
   it 'is valid without a player 2' do
     match.player2 = nil
     expect(match).to be_valid
+  end
+
+  it 'is invalid without a table number' do
+    match.table = nil
+    expect(match).to be_invalid
   end
 
   it 'is valid without a winner' do

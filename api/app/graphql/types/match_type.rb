@@ -8,6 +8,7 @@ module Types
     field :player2_id, ID, null: true
     field :winner_id, ID
     field :draw, Boolean, null: false
+    field :table, Integer, null: false
 
     field :player1, Types::PlayerType, null: false
     field :player2, Types::PlayerType, null: true

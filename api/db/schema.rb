@@ -28,10 +28,12 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_11_042440) do
     t.uuid "player2_id"
     t.uuid "winner_id"
     t.boolean "draw", default: false, null: false
+    t.integer "table", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["player1_id"], name: "index_matches_on_player1_id"
     t.index ["player2_id"], name: "index_matches_on_player2_id"
+    t.index ["round_id", "table"], name: "index_matches_on_round_id_and_table", unique: true
     t.index ["round_id"], name: "index_matches_on_round_id"
     t.check_constraint "NOT (winner_id IS NOT NULL AND draw = true)"
     t.check_constraint "winner_id IS NULL OR winner_id = player1_id OR winner_id = player2_id"

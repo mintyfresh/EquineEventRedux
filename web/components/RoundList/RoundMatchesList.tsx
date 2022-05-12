@@ -15,6 +15,7 @@ export const ROUND_MATCH_LIST_ITEM_FRAGMENT = gql`
     }
     winnerId
     draw
+    table
   }
 `
 
@@ -26,7 +27,7 @@ const RoundMatchesList: React.FC<RoundMatchesListProps> = ({ matches }) => (
   <ListGroup variant="flush">
     {matches.map((match) => (
       <ListGroup.Item key={match.id}>
-        {match.player1.name} vs. {match.player2?.name || 'N/A'}
+        Table {match.table} - {match.player1.name} vs. {match.player2?.name || 'N/A'}
       </ListGroup.Item>
     ))}
   </ListGroup>

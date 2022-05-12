@@ -10,14 +10,16 @@
 #  player2_id :uuid
 #  winner_id  :uuid
 #  draw       :boolean          default(FALSE), not null
+#  table      :integer          not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
 # Indexes
 #
-#  index_matches_on_player1_id  (player1_id)
-#  index_matches_on_player2_id  (player2_id)
-#  index_matches_on_round_id    (round_id)
+#  index_matches_on_player1_id          (player1_id)
+#  index_matches_on_player2_id          (player2_id)
+#  index_matches_on_round_id            (round_id)
+#  index_matches_on_round_id_and_table  (round_id,table) UNIQUE
 #
 # Foreign Keys
 #
@@ -31,6 +33,7 @@ FactoryBot.define do
 
     player1 { create(:player, event: round.event) }
     player2 { create(:player, event: round.event) }
+    table { (round.matches.map(&:table).max || 0) + 1 }
 
     trait :with_winner do
       winner_id { [player1, player2].compact.sample.id }

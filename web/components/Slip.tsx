@@ -30,6 +30,7 @@ export const SLIP_MATCH_FRAGMENT = gql`
     }
     winnerId
     draw
+    table
   }
 `
 
@@ -60,7 +61,7 @@ const Slip: React.FC<SlipProps> = ({ event, round, match }) => {
       <text transform="matrix(1 0 0 1 453.0225 69.1245)" fontFamily="'MyriadPro-Regular'" fontSize="12">_______</text>
       <text transform="matrix(1 0 0 1 71 103.2485)" fontFamily="'MyriadPro-Regular'" fontSize="12">{match.player1.name}: _______________________</text>
       <text transform="matrix(1 0 0 1 289 103.2485)" fontFamily="'MyriadPro-Regular'" fontSize="12">{match.player2?.name ?? 'None'}: _______________________</text>
-      <text transform="matrix(1 0 0 1 2.999 110.0005)" fontFamily="'MyriadPro-Regular'" fontSize="12">match.table</text>
+      <text transform="matrix(1 0 0 1 2.999 110.0005)" fontFamily="'MyriadPro-Regular'" fontSize="12">Table {match.table}</text>
     </svg>
   )
 }

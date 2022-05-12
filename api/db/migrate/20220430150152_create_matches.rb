@@ -8,6 +8,7 @@ class CreateMatches < ActiveRecord::Migration[7.0]
       t.belongs_to :player2, null: true,  foreign_key: { to_table: :players }, type: :uuid
       t.uuid       :winner_id
       t.boolean    :draw, null: false, default: false
+      t.integer    :table, null: false
       t.timestamps
 
       # Ensure that the assigned winner is in the list of players
@@ -15,6 +16,8 @@ class CreateMatches < ActiveRecord::Migration[7.0]
 
       # Don't allow for a winner to be selected if the match is a draw
       t.check_constraint 'NOT (winner_id IS NOT NULL AND draw = true)'
+
+      t.index %i[round_id table], unique: true
     end
   end
 end
