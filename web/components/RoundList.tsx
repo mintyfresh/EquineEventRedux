@@ -31,13 +31,13 @@ const RoundList: React.FC<RoundListProps> = ({ rounds }) => {
             Round {round.number}
             <RoundControlsDropdown />
           </Card.Header>
-          <Card.Body>
-            {round.matches.length > 0 ? (
-              <RoundMatchesList matches={round.matches} />
-            ) : (
+          {round.matches.length > 0 ? (
+            <RoundMatchesList matches={round.matches} />
+          ) : (
+            <Card.Body>
               <Card.Text>No pairings have been added to this match yet.</Card.Text>
-            )}
-          </Card.Body>
+            </Card.Body>
+          )}
         </Card>
       ))}
     </>
