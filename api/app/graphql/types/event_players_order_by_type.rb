@@ -1,34 +1,35 @@
 # frozen_string_literal: true
 
 module Types
-  class EventPlayersOrderByType < BaseEnum
-    value 'NAME', value: lambda { |direction|
+  class EventPlayersOrderByType < BaseOrderByEnum
+    order_by 'NAME' do |direction|
       Player.order(name: direction)
-    }
-    value 'WINS_COUNT', value: lambda { |direction|
+    end
+
+    order_by 'WINS_COUNT' do |direction|
       Player.joins(:score_card)
         .merge(PlayerScoreCard.order(wins_count: direction))
         .order(created_at: direction, id: direction)
-    }
-    value 'DRAWS_COUNT', value: lambda { |direction|
+    end
+
+    order_by 'DRAWS_COUNT' do |direction|
       Player.joins(:score_card)
         .merge(PlayerScoreCard.order(draws_count: direction))
         .order(created_at: direction, id: direction)
-    }
-    value 'LOSSES_COUNT', value: lambda { |direction|
+    end
+
+    order_by 'LOSSES_COUNT' do |direction|
       Player.joins(:score_card)
         .merge(PlayerScoreCard.order(losses_count: direction))
         .order(created_at: direction, id: direction)
-    }
-    value 'SCORE', value: lambda { |direction|
+    end
+
+    order_by 'SCORE' do |direction|
       Player.joins(:score_card)
         .merge(PlayerScoreCard.order_by_score(direction))
         .order(created_at: direction, id: direction)
-    }
-
-    # @return [Proc]
-    def self.default_value
-      values['NAME'].value
     end
+
+    default_order_by 'NAME'
   end
 end
