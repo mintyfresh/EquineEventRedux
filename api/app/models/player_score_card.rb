@@ -39,6 +39,11 @@ class PlayerScoreCard < ApplicationRecord
     matches_count * POINTS_PER_WIN
   end
 
+  # @return [ActiveRecord::Relation<Player>]
+  def opponents
+    Player.where_any(:id, opponent_ids)
+  end
+
   # @return [Boolean]
   def readonly?
     true # Table is a database view
