@@ -14,7 +14,10 @@ class PlayerPairingService
     edges.map do |(player1, player2)|
       # Resolve players from the indices
       # The placeholder player is indexed beyond the end of this array so it becomes nil
-      [players[player1], players[player2]]
+      pairing = [players[player1], players[player2]]
+      pairing = pairing.reverse if pairing.first.nil?
+
+      pairing
     end
   end
 
