@@ -19,7 +19,7 @@ module Mutations
 
     def resolve(event_id:, input:)
       event = ::Event.find(event_id)
-      round = event.rounds.build(number: (event.rounds.maximum(:number) || 0) + 1)
+      round = event.rounds.build(number: event.next_round_number)
 
       input.matches.each_with_index do |match, index|
         round.matches.build(match.to_h.merge(table: index + 1))

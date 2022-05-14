@@ -16,7 +16,7 @@
 # Indexes
 #
 #  index_players_on_event_id           (event_id)
-#  index_players_on_event_id_and_name  (event_id,name) UNIQUE
+#  index_players_on_event_id_and_name  (event_id,name) UNIQUE WHERE (deleted_at IS NULL)
 #
 # Foreign Keys
 #

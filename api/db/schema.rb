@@ -47,7 +47,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_11_042440) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "deleted_at", precision: nil
-    t.index ["event_id", "name"], name: "index_players_on_event_id_and_name", unique: true
+    t.index ["event_id", "name"], name: "index_players_on_event_id_and_name", unique: true, where: "(deleted_at IS NULL)"
     t.index ["event_id"], name: "index_players_on_event_id"
   end
 
@@ -56,7 +56,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_11_042440) do
     t.integer "number", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["event_id", "number"], name: "index_rounds_on_event_id_and_number", unique: true
+    t.datetime "deleted_at", precision: nil
+    t.index ["event_id", "number"], name: "index_rounds_on_event_id_and_number", unique: true, where: "(deleted_at IS NULL)"
     t.index ["event_id"], name: "index_rounds_on_event_id"
   end
 

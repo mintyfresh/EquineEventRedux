@@ -9,17 +9,20 @@
 #  number     :integer          not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  deleted_at :datetime
 #
 # Indexes
 #
 #  index_rounds_on_event_id             (event_id)
-#  index_rounds_on_event_id_and_number  (event_id,number) UNIQUE
+#  index_rounds_on_event_id_and_number  (event_id,number) UNIQUE WHERE (deleted_at IS NULL)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (event_id => events.id)
 #
 class Round < ApplicationRecord
+  include SoftDeletable
+
   belongs_to :event, inverse_of: :rounds
 
   has_many :matches, autosave: true, dependent: :destroy, inverse_of: :round

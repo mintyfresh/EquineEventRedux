@@ -12,7 +12,7 @@ class CreatePlayers < ActiveRecord::Migration[7.0]
       t.timestamps null: false
       t.timestamp  :deleted_at
 
-      t.index %i[event_id name], unique: true
+      t.index %i[event_id name], unique: true, where: 'deleted_at IS NULL'
     end
   end
 end
