@@ -35,5 +35,9 @@ FactoryBot.define do
     trait :dropped do
       dropped { true }
     end
+
+    trait :deleted do
+      deleted { true }
+    end
   end
 end
