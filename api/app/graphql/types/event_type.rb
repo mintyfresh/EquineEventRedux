@@ -15,6 +15,7 @@ module Types
       end
     end
     field :rounds, [Types::RoundType], null: false do
+      extension Extensions::DeletedFilterExtension
       extension Extensions::OrderByExtension, type: Types::EventRoundsOrderByType
     end
 
@@ -31,9 +32,15 @@ module Types
       dataloader.with(Sources::RecordList, ::Player, :event_id, scope: players).load(object.id)
     end
 
+    # @param deleted [Proc]
+    # @param order_by [ActiveRecord::Relation]
     # @return [Array<::Round>]
-    def rounds(order_by:)
-      dataloader.with(Sources::RecordList, ::Round, :event_id, scope: order_by).load(object.id)
+    def rounds(deleted:, order_by:)
+      rounds = Round.all
+      rounds = deleted.call(rounds)
+      rounds = rounds.merge(order_by)
+
+      dataloader.with(Sources::RecordList, ::Round, :event_id, scope: rounds).load(object.id)
     end
   end
 end
