@@ -45,6 +45,15 @@ export type DeleteRoundPayload = {
   success?: Maybe<Scalars['Boolean']>;
 };
 
+export enum DeletedFilterInput {
+  /** Returns both deleted and non-deleted records */
+  All = 'ALL',
+  /** Returns only deleted records */
+  Deleted = 'DELETED',
+  /** Returns only non-deleted records */
+  NonDeleted = 'NON_DELETED'
+}
+
 export type Error = {
   __typename?: 'Error';
   attribute: Scalars['String'];
@@ -70,7 +79,7 @@ export type EventPlayersArgs = {
   activeOnly?: InputMaybe<Scalars['Boolean']>;
   after?: InputMaybe<Scalars['String']>;
   before?: InputMaybe<Scalars['String']>;
-  deleted?: InputMaybe<Scalars['Boolean']>;
+  deleted?: InputMaybe<DeletedFilterInput>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   orderBy?: InputMaybe<EventPlayersOrderBy>;
@@ -79,6 +88,7 @@ export type EventPlayersArgs = {
 
 
 export type EventRoundsArgs = {
+  deleted?: InputMaybe<DeletedFilterInput>;
   orderBy?: InputMaybe<EventRoundsOrderBy>;
   orderByDirection?: InputMaybe<OrderByDirection>;
 };

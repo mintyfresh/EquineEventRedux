@@ -191,6 +191,35 @@
         "possibleTypes": null
       },
       {
+        "kind": "ENUM",
+        "name": "DeletedFilterInput",
+        "description": null,
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "ALL",
+            "description": "Returns both deleted and non-deleted records",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "DELETED",
+            "description": "Returns only deleted records",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "NON_DELETED",
+            "description": "Returns only non-deleted records",
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "possibleTypes": null
+      },
+      {
         "kind": "OBJECT",
         "name": "Error",
         "description": null,
@@ -341,13 +370,13 @@
               },
               {
                 "name": "deleted",
-                "description": "Filters players by their deletion state",
+                "description": "Filters the list of returned objects by their deleted state.",
                 "type": {
-                  "kind": "SCALAR",
-                  "name": "Boolean",
+                  "kind": "ENUM",
+                  "name": "DeletedFilterInput",
                   "ofType": null
                 },
-                "defaultValue": "false",
+                "defaultValue": "NON_DELETED",
                 "isDeprecated": false,
                 "deprecationReason": null
               },
@@ -416,6 +445,18 @@
             "name": "rounds",
             "description": null,
             "args": [
+              {
+                "name": "deleted",
+                "description": "Filters the list of returned objects by their deleted state.",
+                "type": {
+                  "kind": "ENUM",
+                  "name": "DeletedFilterInput",
+                  "ofType": null
+                },
+                "defaultValue": "NON_DELETED",
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
               {
                 "name": "orderBy",
                 "description": null,

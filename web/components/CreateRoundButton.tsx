@@ -115,8 +115,6 @@ const CreateRoundButton: React.FC<CreateRoundButtonProps> = ({ event, onCreate, 
           onSubmit={() => createRound()}
         />
       )}
-      <br></br>
-      <pre>{JSON.stringify(input, null, 2)}</pre>
     </>
   )
 }
