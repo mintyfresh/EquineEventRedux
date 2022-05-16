@@ -39,19 +39,14 @@ class PlayerScoreCard < ApplicationRecord
     completed_matches_count * POINTS_PER_WIN
   end
 
-  # @return [Array<String>]
-  def match_ids
-    super.compact
-  end
-
-  # @return [Array<String>]
-  def opponent_ids
-    super.compact
-  end
-
   # @return [ActiveRecord::Relation<Player>]
   def opponents
-    Player.where_any(:id, opponent_ids)
+    Player.where_any(:id, opponent_ids.compact)
+  end
+
+  # @return [Integer]
+  def opponents_count
+    opponent_ids.count(&:present?) # Exclude the nil opponent ID
   end
 
   # @return [Boolean]

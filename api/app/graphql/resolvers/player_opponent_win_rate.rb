@@ -20,14 +20,14 @@ module Resolvers
 
     # @return [Integer]
     def total_opponents_count
-      score_card.opponent_ids.count
+      score_card.opponents_count
     end
 
     # @return [Array<::PlayerScoreCard>]
     def opponent_score_cards
       @opponent_score_cards ||= dataloader
         .with(Sources::Record, ::PlayerScoreCard, :player_id)
-        .load_all(score_card.opponent_ids)
+        .load_all(score_card.opponent_ids.compact)
     end
 
     # @return [::PlayerScoreCard]
