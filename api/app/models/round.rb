@@ -29,6 +29,24 @@ class Round < ApplicationRecord
 
   validates :number, numericality: { greater_than: 0 }
 
+  # @return [Integer]
+  def next_available_table
+    previous_table = 0
+
+    matches.sort_by(&:table).each do |match|
+      # Skip tables being removed as part of re-pairing.
+      next if match.marked_for_destruction?
+
+      # Check for gaps in the table numbers and return the next available.
+      return previous_table + 1 if match.table != previous_table + 1
+
+      previous_table = match.table
+    end
+
+    # No gaps, so allocate a new table.
+    previous_table + 1
+  end
+
   # @param pairings [Array<Array<String, nil>>]
   # @return [Boolean]
   def update_pairings(pairings)
@@ -44,7 +62,7 @@ class Round < ApplicationRecord
     end
 
     # Build the new matches.
-    pairings.each { |player_ids| matches.build(player_ids:) }
+    pairings.each { |player_ids| matches.build(player_ids:, table: next_available_table) }
 
     save
   end

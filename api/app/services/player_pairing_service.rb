@@ -11,7 +11,7 @@ class PlayerPairingService
     graph = GraphMatching::Graph::WeightedGraph[*weighted_edges]
     edges = graph.maximum_weighted_matching(true).edges
 
-    edges.map do |(player1, player2)|
+    pairings = edges.map do |(player1, player2)|
       # Resolve players from the indices
       # The placeholder player is indexed beyond the end of this array so it becomes nil
       pairing = [players[player1], players[player2]]
@@ -19,6 +19,9 @@ class PlayerPairingService
 
       pairing
     end
+
+    # Place the pairing with the placeholder player at the last table.
+    pairings.sort_by { |(_, player2)| player2.nil? ? 1 : 0 }
   end
 
 private
