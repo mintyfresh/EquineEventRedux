@@ -45,7 +45,7 @@ export type DeleteRoundPayload = {
   success?: Maybe<Scalars['Boolean']>;
 };
 
-export enum DeletedFilterInput {
+export enum DeletedFilter {
   /** Returns both deleted and non-deleted records */
   All = 'ALL',
   /** Returns only deleted records */
@@ -79,7 +79,7 @@ export type EventPlayersArgs = {
   activeOnly?: InputMaybe<Scalars['Boolean']>;
   after?: InputMaybe<Scalars['String']>;
   before?: InputMaybe<Scalars['String']>;
-  deleted?: InputMaybe<DeletedFilterInput>;
+  deleted?: InputMaybe<DeletedFilter>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   orderBy?: InputMaybe<EventPlayersOrderBy>;
@@ -88,7 +88,7 @@ export type EventPlayersArgs = {
 
 
 export type EventRoundsArgs = {
-  deleted?: InputMaybe<DeletedFilterInput>;
+  deleted?: InputMaybe<DeletedFilter>;
   orderBy?: InputMaybe<EventRoundsOrderBy>;
   orderByDirection?: InputMaybe<OrderByDirection>;
 };
@@ -536,6 +536,7 @@ export type EventShowQuery = { __typename?: 'Query', event: { __typename?: 'Even
 
 export type EventMatchesQueryVariables = Exact<{
   id: Scalars['ID'];
+  deleted?: InputMaybe<DeletedFilter>;
 }>;
 
 
@@ -543,6 +544,7 @@ export type EventMatchesQuery = { __typename?: 'Query', event: { __typename?: 'E
 
 export type EventPlayersQueryVariables = Exact<{
   id: Scalars['ID'];
+  deleted?: InputMaybe<DeletedFilter>;
   orderBy?: InputMaybe<EventPlayersOrderBy>;
   orderByDirection?: InputMaybe<OrderByDirection>;
 }>;
@@ -1145,13 +1147,13 @@ export type EventShowQueryHookResult = ReturnType<typeof useEventShowQuery>;
 export type EventShowLazyQueryHookResult = ReturnType<typeof useEventShowLazyQuery>;
 export type EventShowQueryResult = Apollo.QueryResult<EventShowQuery, EventShowQueryVariables>;
 export const EventMatchesDocument = gql`
-    query EventMatches($id: ID!) {
+    query EventMatches($id: ID!, $deleted: DeletedFilter) {
   event(id: $id) {
     id
     name
     ...EventLayout
     ...CreateRoundButton
-    rounds(orderBy: NUMBER, orderByDirection: DESC) {
+    rounds(deleted: $deleted, orderBy: NUMBER, orderByDirection: DESC) {
       ...RoundListItem
     }
     players {
@@ -1176,6 +1178,7 @@ ${RoundListItemFragmentDoc}`;
  * const { data, loading, error } = useEventMatchesQuery({
  *   variables: {
  *      id: // value for 'id'
+ *      deleted: // value for 'deleted'
  *   },
  * });
  */
@@ -1191,13 +1194,17 @@ export type EventMatchesQueryHookResult = ReturnType<typeof useEventMatchesQuery
 export type EventMatchesLazyQueryHookResult = ReturnType<typeof useEventMatchesLazyQuery>;
 export type EventMatchesQueryResult = Apollo.QueryResult<EventMatchesQuery, EventMatchesQueryVariables>;
 export const EventPlayersDocument = gql`
-    query EventPlayers($id: ID!, $orderBy: EventPlayersOrderBy, $orderByDirection: OrderByDirection) {
+    query EventPlayers($id: ID!, $deleted: DeletedFilter, $orderBy: EventPlayersOrderBy, $orderByDirection: OrderByDirection) {
   event(id: $id) {
     id
     name
     ...EventLayout
     ...CreatePlayerButton
-    players(orderBy: $orderBy, orderByDirection: $orderByDirection) {
+    players(
+      deleted: $deleted
+      orderBy: $orderBy
+      orderByDirection: $orderByDirection
+    ) {
       nodes {
         ...PlayerTable
       }
@@ -1221,6 +1228,7 @@ ${PlayerTableFragmentDoc}`;
  * const { data, loading, error } = useEventPlayersQuery({
  *   variables: {
  *      id: // value for 'id'
+ *      deleted: // value for 'deleted'
  *      orderBy: // value for 'orderBy'
  *      orderByDirection: // value for 'orderByDirection'
  *   },

@@ -192,7 +192,7 @@
       },
       {
         "kind": "ENUM",
-        "name": "DeletedFilterInput",
+        "name": "DeletedFilter",
         "description": null,
         "fields": null,
         "inputFields": null,
@@ -373,7 +373,7 @@
                 "description": "Filters the list of returned objects by their deleted state.",
                 "type": {
                   "kind": "ENUM",
-                  "name": "DeletedFilterInput",
+                  "name": "DeletedFilter",
                   "ofType": null
                 },
                 "defaultValue": "NON_DELETED",
@@ -450,7 +450,7 @@
                 "description": "Filters the list of returned objects by their deleted state.",
                 "type": {
                   "kind": "ENUM",
-                  "name": "DeletedFilterInput",
+                  "name": "DeletedFilter",
                   "ofType": null
                 },
                 "defaultValue": "NON_DELETED",

@@ -1,22 +1,22 @@
 import { gql } from '@apollo/client'
 import { GetServerSideProps } from 'next'
-import { Card } from 'react-bootstrap'
-import PlayerModal from '../../../components/PlayerModal'
+import { useState } from 'react'
+import { Button, ButtonToolbar, Card } from 'react-bootstrap'
+import CreatePlayerButton, { CREATE_PLAYER_BUTTON_FRAGMENT } from '../../../components/CreatePlayerButton'
 import EventLayout, { EVENT_LAYOUT_FRAGMENT } from '../../../components/EventLayout'
 import PlayerTable, { PLAYER_TABLE_FRAGMENT } from '../../../components/PlayerTable'
-import { EventPlayersQuery, EventPlayersQueryVariables, useEventPlayersQuery } from '../../../lib/generated/graphql'
+import { DeletedFilter, EventPlayersQuery, EventPlayersQueryVariables, useEventPlayersQuery } from '../../../lib/generated/graphql'
 import { initializeApolloClient } from '../../../lib/graphql/client'
 import { NextPageWithLayout } from '../../../lib/types/next-page'
-import CreatePlayerButton, { CREATE_PLAYER_BUTTON_FRAGMENT } from '../../../components/CreatePlayerButton'
 
 const EVENT_PLAYERS_QUERY = gql`
-  query EventPlayers($id: ID!, $orderBy: EventPlayersOrderBy, $orderByDirection: OrderByDirection) {
+  query EventPlayers($id: ID!, $deleted: DeletedFilter, $orderBy: EventPlayersOrderBy, $orderByDirection: OrderByDirection) {
     event(id: $id) {
       id
       name
       ...EventLayout
       ...CreatePlayerButton
-      players(orderBy: $orderBy, orderByDirection: $orderByDirection) {
+      players(deleted: $deleted, orderBy: $orderBy, orderByDirection: $orderByDirection) {
         nodes {
           ...PlayerTable
         }
@@ -50,8 +50,10 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 }
 
 const EventPlayersPage: NextPageWithLayout<EventPlayersQuery> = ({ event: { id } }) => {
+  const [deleted, setDeleted] = useState<boolean>(false)
+
   const { data, refetch, variables } = useEventPlayersQuery({
-    variables: { id }
+    variables: { id, deleted: deleted ? DeletedFilter.Deleted : undefined }
   })
 
   if (!data?.event) {
@@ -60,11 +62,16 @@ const EventPlayersPage: NextPageWithLayout<EventPlayersQuery> = ({ event: { id }
 
   return (
     <>
-      <CreatePlayerButton
-        event={data.event}
-        onCreate={() => refetch()}
-        className="mb-3"
-      />
+      <ButtonToolbar className="mb-3">
+        <Button variant="outline-secondary" onClick={() => setDeleted(!deleted)}>
+          {deleted ? 'Hide' : 'Show'} Deleted
+        </Button>
+        <CreatePlayerButton
+          event={data.event}
+          onCreate={() => refetch()}
+          className="ms-auto"
+        />
+      </ButtonToolbar>
       {data.event.players.nodes.length > 0 ? (
         <PlayerTable
           players={data.event.players.nodes}
@@ -77,7 +84,13 @@ const EventPlayersPage: NextPageWithLayout<EventPlayersQuery> = ({ event: { id }
         />
       ) : (
         <Card body>
-          <Card.Text>No players have been added to this event yet.</Card.Text>
+          <Card.Text>
+            {deleted ? (
+              <>No players have been deleted from this event yet.</>
+            ) : (
+              <>No players have been added to this event yet.</>
+            )}
+          </Card.Text>
         </Card>
       )}
     </>

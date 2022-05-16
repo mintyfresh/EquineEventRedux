@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Types
-  class DeletedFilterInputType < BaseEnum
+  class DeletedFilterType < BaseEnum
     value 'NON_DELETED', value: -> (scope) { scope.non_deleted } do
       description 'Returns only non-deleted records'
     end
