@@ -76,7 +76,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_11_042440) do
       count(matches.id) FILTER (WHERE matches.draw) AS draws_count,
       array_agg(DISTINCT opponents.id) AS opponent_ids
      FROM ((players
-       LEFT JOIN matches ON (((matches.player1_id = players.id) OR (matches.player2_id = players.id))))
+       LEFT JOIN matches ON ((((matches.player1_id = players.id) OR (matches.player2_id = players.id)) AND ( SELECT (rounds.deleted_at IS NULL)
+             FROM rounds
+            WHERE (rounds.id = matches.round_id)))))
        LEFT JOIN players opponents ON ((((opponents.id = matches.player1_id) OR (opponents.id = matches.player2_id)) AND (opponents.id <> players.id))))
     GROUP BY players.id;
   SQL

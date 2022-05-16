@@ -9,7 +9,7 @@ SELECT
 FROM
   players
 LEFT JOIN
-  matches ON matches.player1_id = players.id OR matches.player2_id = players.id
+  matches ON (matches.player1_id = players.id OR matches.player2_id = players.id) AND (SELECT rounds.deleted_at IS NULL FROM rounds WHERE rounds.id = matches.round_id)
 LEFT JOIN
   players AS opponents ON (opponents.id = matches.player1_id OR opponents.id = matches.player2_id) AND opponents.id != players.id
 GROUP BY
