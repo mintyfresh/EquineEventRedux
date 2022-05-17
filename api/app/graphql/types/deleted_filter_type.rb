@@ -8,7 +8,7 @@ module Types
     value 'DELETED', value: -> (scope) { scope.deleted } do
       description 'Returns only deleted records'
     end
-    value 'ALL', -> (scope) { scope.all } do
+    value 'ALL', value: -> (scope) { scope.all } do
       description 'Returns both deleted and non-deleted records'
     end
 
