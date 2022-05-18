@@ -31,7 +31,7 @@ module Types
 
     # @return [Array<String>]
     def player_ids
-      @player_ids ||= matches.map(&:player_ids).flatten.compact.uniq
+      @player_ids ||= matches.flat_map(&:player_ids).compact.uniq
     end
   end
 end
