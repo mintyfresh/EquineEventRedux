@@ -79,6 +79,7 @@ const EventMatchesPage: NextPageWithLayout<EventMatchesQuery> = ({ event: { id }
         />
       </ButtonToolbar>
       <RoundList
+        event={data.event}
         rounds={data.event.rounds}
         onDelete={() => refetch()}
       />

@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useState } from 'react'
 import { Button } from 'react-bootstrap'
 import { ERRORS_FRAGMENT } from '../lib/errors'
-import { CreateRoundButtonFragment, RoundCreateInput, useCreateRoundMutation, usePlayersForRoundCreateLazyQuery } from '../lib/generated/graphql'
+import { CreateRoundButtonFragment, RoundInput, useCreateRoundMutation, usePlayersForRoundCreateLazyQuery } from '../lib/generated/graphql'
 import RoundModal, { ROUND_MODAL_PLAYER_FRAGMENT } from './RoundModal'
 
 export const CREATE_ROUND_BUTTON_FRAGMENT = gql`
@@ -29,7 +29,7 @@ gql`
 `
 
 gql`
-  mutation CreateRound($eventId: ID!, $input: RoundCreateInput!) {
+  mutation CreateRound($eventId: ID!, $input: RoundInput!) {
     roundCreate(eventId: $eventId, input: $input) {
       round {
         id
@@ -42,8 +42,8 @@ gql`
   ${ERRORS_FRAGMENT}
 `
 
-const EMPTY_ROUND_CREATE_INPUT: RoundCreateInput = {
-  matches: []
+const EMPTY_ROUND_CREATE_INPUT: RoundInput = {
+  pairings: []
 }
 
 export interface CreateRoundButtonProps extends Omit<React.ComponentProps<typeof Button>, 'onClick'> {
@@ -53,7 +53,7 @@ export interface CreateRoundButtonProps extends Omit<React.ComponentProps<typeof
 
 const CreateRoundButton: React.FC<CreateRoundButtonProps> = ({ event, onCreate, ...props }) => {
   const [showModal, setShowModal] = useState(false)
-  const [input, setInput] = useState<RoundCreateInput>(EMPTY_ROUND_CREATE_INPUT)
+  const [input, setInput] = useState<RoundInput>(EMPTY_ROUND_CREATE_INPUT)
 
   const [loadPlayers, { data, loading: playersLoading }] = usePlayersForRoundCreateLazyQuery({
     variables: { id: event.id },
@@ -61,8 +61,8 @@ const CreateRoundButton: React.FC<CreateRoundButtonProps> = ({ event, onCreate, 
       if (event?.players?.nodes?.length) {
         setInput({
           ...input,
-          // Generate empty matches for each player
-          matches: event.players.nodes.map((player) => (
+          // Generate empty pairings for each player
+          pairings: event.players.nodes.map((player) => (
             { player1Id: player.id, player2Id: null }
           ))
         })
@@ -77,7 +77,7 @@ const CreateRoundButton: React.FC<CreateRoundButtonProps> = ({ event, onCreate, 
         setInput({
           ...input,
           // Reset inputs after successful creation
-          matches: data!.event.players.nodes.map((player) => (
+          pairings: data!.event.players.nodes.map((player) => (
             { player1Id: player.id, player2Id: null }
           ))
         })

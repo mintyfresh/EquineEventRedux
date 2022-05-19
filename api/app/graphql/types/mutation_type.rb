@@ -14,7 +14,7 @@ module Types
     field :player_delete, mutation: Mutations::PlayerDelete
 
     field :round_create, mutation: Mutations::RoundCreate
-    field :round_update_pairings, mutation: Mutations::RoundUpdatePairings
+    field :round_update, mutation: Mutations::RoundUpdate
     field :round_delete, mutation: Mutations::RoundDelete
   end
 end

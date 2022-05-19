@@ -19,18 +19,23 @@ export const ROUND_LIST_ITEM_FRAGMENT = gql`
 `
 
 export interface RoundListProps {
+  event: { id: string }
   rounds: RoundListItemFragment[]
   onDelete?: (round: RoundListItemFragment) => void
 }
 
-const RoundList: React.FC<RoundListProps> = ({ rounds, onDelete }) => {
+const RoundList: React.FC<RoundListProps> = ({ event, rounds, onDelete }) => {
   return (
     <>
       {rounds.map((round) => (
         <Card key={round.id} className="mb-3">
           <Card.Header>
             Round {round.number}
-            <RoundControlsDropdown round={round} onDelete={() => onDelete?.(round)} />
+            <RoundControlsDropdown
+              event={event}
+              round={round}
+              onDelete={() => onDelete?.(round)}
+            />
           </Card.Header>
           {round.matches.length > 0 ? (
             <RoundMatchesList matches={round.matches} />

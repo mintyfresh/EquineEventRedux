@@ -3,11 +3,14 @@ import { Dropdown } from 'react-bootstrap'
 import { ERRORS_FRAGMENT } from '../../lib/errors'
 import { RoundControlsDropdownFragment, useDeleteRoundMutation } from '../../lib/generated/graphql'
 import EllipsisDropdown from '../EllipsisDropdown'
+import EditRoundDropdownItem, { EDIT_ROUND_DROPDOWN_ITEM_FRAGMENT } from './EditRoundDropdownItem'
 
 export const ROUND_CONTROLS_DROPDOWN_FRAGMENT = gql`
   fragment RoundControlsDropdown on Round {
     id
+    ...EditRoundDropdownItem
   }
+  ${EDIT_ROUND_DROPDOWN_ITEM_FRAGMENT}
 `
 
 gql`
@@ -23,11 +26,12 @@ gql`
 `
 
 export interface RoundControlsDropdownProps {
+  event: { id: string }
   round: RoundControlsDropdownFragment
   onDelete?: () => void
 }
 
-const RoundControlsDropdown: React.FC<RoundControlsDropdownProps> = ({ round, onDelete }) => {
+const RoundControlsDropdown: React.FC<RoundControlsDropdownProps> = ({ event, round, onDelete }) => {
   const [deleteRound, { loading }] = useDeleteRoundMutation({
     variables: { id: round.id },
     onCompleted: ({ roundDelete }) => {
@@ -37,7 +41,10 @@ const RoundControlsDropdown: React.FC<RoundControlsDropdownProps> = ({ round, on
 
   return (
     <EllipsisDropdown align="end" className="float-end">
-      <Dropdown.Item disabled={loading}>Edit</Dropdown.Item>
+      <EditRoundDropdownItem
+        event={event}
+        round={round}
+      />
       <Dropdown.Divider />
       <Dropdown.Item
         className="text-danger"

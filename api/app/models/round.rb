@@ -47,12 +47,17 @@ class Round < ApplicationRecord
     previous_table + 1
   end
 
+  # @return [Array<Array<String, nil>>]
+  def pairings
+    matches.map(&:player_ids)
+  end
+
   # @param pairings [Array<Array<String, nil>>]
-  # @return [Boolean]
-  def update_pairings(pairings)
+  # @return [void]
+  def pairings=(pairings)
     # Filter and normalize the pairings.
     pairings = pairings.compact.map do |player_ids|
-      player_ids.first(2).sort_by(&PLAYER_IDS_COMPARATOR)
+      player_ids.first(2).sort_by(&Match::PLAYER_IDS_COMPARATOR)
     end
 
     matches.each do |match|
@@ -63,7 +68,5 @@ class Round < ApplicationRecord
 
     # Build the new matches.
     pairings.each { |player_ids| matches.build(player_ids:, table: next_available_table) }
-
-    save
   end
 end

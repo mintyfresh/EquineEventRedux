@@ -923,45 +923,6 @@
       },
       {
         "kind": "INPUT_OBJECT",
-        "name": "MatchCreateInput",
-        "description": null,
-        "fields": null,
-        "inputFields": [
-          {
-            "name": "player1Id",
-            "description": null,
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "ID",
-                "ofType": null
-              }
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "player2Id",
-            "description": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "ID",
-              "ofType": null
-            },
-            "defaultValue": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          }
-        ],
-        "interfaces": null,
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
-        "kind": "INPUT_OBJECT",
         "name": "MatchUpdateInput",
         "description": null,
         "fields": null,
@@ -1348,7 +1309,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "INPUT_OBJECT",
-                    "name": "RoundCreateInput",
+                    "name": "RoundInput",
                     "ofType": null
                   }
                 },
@@ -1395,40 +1356,12 @@
             "deprecationReason": null
           },
           {
-            "name": "roundUpdatePairings",
-            "description": "Updates the Match pairings for a Round",
+            "name": "roundUpdate",
+            "description": "Updates an existing Round by ID",
             "args": [
               {
-                "name": "pairings",
-                "description": "The IDs of the Players to pair",
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "LIST",
-                    "name": null,
-                    "ofType": {
-                      "kind": "NON_NULL",
-                      "name": null,
-                      "ofType": {
-                        "kind": "LIST",
-                        "name": null,
-                        "ofType": {
-                          "kind": "SCALAR",
-                          "name": "ID",
-                          "ofType": null
-                        }
-                      }
-                    }
-                  }
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
-                "name": "roundId",
-                "description": "The ID of the Round to update",
+                "name": "id",
+                "description": null,
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -1441,11 +1374,27 @@
                 "defaultValue": null,
                 "isDeprecated": false,
                 "deprecationReason": null
+              },
+              {
+                "name": "input",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "RoundInput",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
               }
             ],
             "type": {
               "kind": "OBJECT",
-              "name": "RoundUpdatePairingsPayload",
+              "name": "UpdateRoundPayload",
               "ofType": null
             },
             "isDeprecated": false,
@@ -1583,6 +1532,45 @@
         ],
         "inputFields": null,
         "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "PairingInput",
+        "description": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "player1Id",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "ID",
+                "ofType": null
+              }
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "player2Id",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "ID",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "interfaces": null,
         "enumValues": null,
         "possibleTypes": null
       },
@@ -2301,22 +2289,24 @@
             },
             "isDeprecated": false,
             "deprecationReason": null
-          }
-        ],
-        "inputFields": null,
-        "interfaces": [],
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
-        "kind": "INPUT_OBJECT",
-        "name": "RoundCreateInput",
-        "description": null,
-        "fields": null,
-        "inputFields": [
+          },
           {
-            "name": "matches",
+            "name": "players",
             "description": null,
+            "args": [
+              {
+                "name": "deleted",
+                "description": "Filters the list of returned objects by their deleted state.",
+                "type": {
+                  "kind": "ENUM",
+                  "name": "DeletedFilter",
+                  "ofType": null
+                },
+                "defaultValue": "NON_DELETED",
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
             "type": {
               "kind": "NON_NULL",
               "name": null,
@@ -2327,19 +2317,19 @@
                   "kind": "NON_NULL",
                   "name": null,
                   "ofType": {
-                    "kind": "INPUT_OBJECT",
-                    "name": "MatchCreateInput",
+                    "kind": "OBJECT",
+                    "name": "Player",
                     "ofType": null
                   }
                 }
               }
             },
-            "defaultValue": null,
             "isDeprecated": false,
             "deprecationReason": null
           }
         ],
-        "interfaces": null,
+        "inputFields": null,
+        "interfaces": [],
         "enumValues": null,
         "possibleTypes": null
       },
@@ -2382,7 +2372,7 @@
           },
           {
             "name": "round",
-            "description": "The Round that was created",
+            "description": null,
             "args": [],
             "type": {
               "kind": "OBJECT",
@@ -2399,45 +2389,37 @@
         "possibleTypes": null
       },
       {
-        "kind": "OBJECT",
-        "name": "RoundUpdatePairingsPayload",
-        "description": "Autogenerated return type of RoundUpdatePairings",
-        "fields": [
+        "kind": "INPUT_OBJECT",
+        "name": "RoundInput",
+        "description": null,
+        "fields": null,
+        "inputFields": [
           {
-            "name": "errors",
+            "name": "pairings",
             "description": null,
-            "args": [],
             "type": {
-              "kind": "LIST",
+              "kind": "NON_NULL",
               "name": null,
               "ofType": {
-                "kind": "NON_NULL",
+                "kind": "LIST",
                 "name": null,
                 "ofType": {
-                  "kind": "OBJECT",
-                  "name": "Error",
-                  "ofType": null
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "PairingInput",
+                    "ofType": null
+                  }
                 }
               }
             },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "round",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "OBJECT",
-              "name": "Round",
-              "ofType": null
-            },
+            "defaultValue": null,
             "isDeprecated": false,
             "deprecationReason": null
           }
         ],
-        "inputFields": null,
-        "interfaces": [],
+        "interfaces": null,
         "enumValues": null,
         "possibleTypes": null
       },
@@ -2569,6 +2551,49 @@
             "type": {
               "kind": "OBJECT",
               "name": "Player",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "UpdateRoundPayload",
+        "description": "Autogenerated return type of UpdateRound",
+        "fields": [
+          {
+            "name": "errors",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "Error",
+                  "ofType": null
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "round",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "Round",
               "ofType": null
             },
             "isDeprecated": false,

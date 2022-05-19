@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client'
 import { Button, ButtonGroup, Dropdown, Form, InputGroup, Modal } from 'react-bootstrap'
-import { RoundCreateInput, RoundModalPlayerFragment, useGeneratePairingsForRoundMutation } from '../lib/generated/graphql'
+import { RoundInput, RoundModalPlayerFragment, useGeneratePairingsForRoundMutation } from '../lib/generated/graphql'
 
 export const ROUND_MODAL_PLAYER_FRAGMENT = gql`
   fragment RoundModalPlayer on Player {
@@ -23,20 +23,20 @@ gql`
 
 type PlayerPairings = { [key: string]: string | null }
 
-const buildPairings = (matches: RoundCreateInput['matches']): PlayerPairings => {
-  const pairings: PlayerPairings = {}
+const buildPairings = (pairings: RoundInput['pairings']): PlayerPairings => {
+  const result: PlayerPairings = {}
 
-  matches.forEach((match) => {
-    match.player1Id && (pairings[match.player1Id] = match.player2Id || null)
-    match.player2Id && (pairings[match.player2Id] = match.player1Id || null)
+  pairings.forEach((pairing) => {
+    pairing.player1Id && (result[pairing.player1Id] = pairing.player2Id || null)
+    pairing.player2Id && (result[pairing.player2Id] = pairing.player1Id || null)
   })
 
-  return pairings
+  return result
 }
 
-const parsePairings = (pairings: PlayerPairings): RoundCreateInput['matches'] => {
+const parsePairings = (pairings: PlayerPairings): RoundInput['pairings'] => {
   const players: Set<string> = new Set()
-  const matches: RoundCreateInput['matches'] = []
+  const result: RoundInput['pairings'] = []
 
   Object.keys(pairings).forEach((playerId) => {
     const player1 = playerId
@@ -47,13 +47,13 @@ const parsePairings = (pairings: PlayerPairings): RoundCreateInput['matches'] =>
       return
     }
 
-    matches.push({ player1Id: player1, player2Id: player2 })
+    result.push({ player1Id: player1, player2Id: player2 })
 
     players.add(player1)
     player2 && players.add(player2)
   })
 
-  return matches
+  return result
 }
 
 export interface RoundModalProps {
@@ -61,14 +61,14 @@ export interface RoundModalProps {
   players: RoundModalPlayerFragment[]
   show: boolean
   disabled: boolean
-  input: RoundCreateInput
+  input: RoundInput
   onHide: () => void
-  onChange: (input: RoundCreateInput) => void
+  onChange: (input: RoundInput) => void
   onSubmit: () => void
 }
 
 const RoundModal: React.FC<RoundModalProps> = ({ event, players, show, disabled, input, onHide, onChange, onSubmit }) => {
-  const pairings = buildPairings(input.matches)
+  const pairings = buildPairings(input.pairings)
 
   const [generatePairings, {}] = useGeneratePairingsForRoundMutation({
     variables: {
@@ -86,7 +86,7 @@ const RoundModal: React.FC<RoundModalProps> = ({ event, players, show, disabled,
 
         onChange({
           ...input,
-          matches: parsePairings(newPairings)
+          pairings: parsePairings(newPairings)
         })
       }
     }
@@ -101,7 +101,7 @@ const RoundModal: React.FC<RoundModalProps> = ({ event, players, show, disabled,
   const clearAllPairings = () => {
     onChange({
       ...input,
-      matches: players.map((player) => ({ player1Id: player.id, player2Id: null }))
+      pairings: players.map((player) => ({ player1Id: player.id, player2Id: null }))
     })
   }
 
@@ -123,7 +123,7 @@ const RoundModal: React.FC<RoundModalProps> = ({ event, players, show, disabled,
 
     onChange({
       ...input,
-      matches: parsePairings(newPairings)
+      pairings: parsePairings(newPairings)
     })
   }
 
