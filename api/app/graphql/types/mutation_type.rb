@@ -12,9 +12,11 @@ module Types
     field :player_create, mutation: Mutations::PlayerCreate
     field :player_update, mutation: Mutations::PlayerUpdate
     field :player_delete, mutation: Mutations::PlayerDelete
+    field :player_restore, mutation: Mutations::PlayerRestore
 
     field :round_create, mutation: Mutations::RoundCreate
     field :round_update, mutation: Mutations::RoundUpdate
     field :round_delete, mutation: Mutations::RoundDelete
+    field :round_restore, mutation: Mutations::RoundRestore
   end
 end
