@@ -8,18 +8,20 @@ import RoundModal, { ROUND_MODAL_PLAYER_FRAGMENT } from '../RoundModal'
 export const EDIT_ROUND_DROPDOWN_ITEM_FRAGMENT = gql`
   fragment EditRoundDropdownItem on Round {
     id
+    number
     matches {
       id
       player1 {
         id
-        name
+        ...RoundModalPlayer
       }
       player2 {
         id
-        name
+        ...RoundModalPlayer
       }
     }
   }
+  ${ROUND_MODAL_PLAYER_FRAGMENT}
 `
 
 gql`
@@ -96,6 +98,7 @@ const EditRoundDropdownItem: React.FC<EditRoundDropdownItemProps> = ({ event, ro
       </Dropdown.Item>
       {data?.round?.players && (
         <RoundModal
+          title={`Edit Round ${round.number}`}
           event={event}
           players={data.round.players}
           show={visible}

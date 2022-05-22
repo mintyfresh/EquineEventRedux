@@ -57,6 +57,7 @@ const parsePairings = (pairings: PlayerPairings): RoundInput['pairings'] => {
 }
 
 export interface RoundModalProps {
+  title: string
   event: { id: string }
   players: RoundModalPlayerFragment[]
   show: boolean
@@ -67,7 +68,7 @@ export interface RoundModalProps {
   onSubmit: () => void
 }
 
-const RoundModal: React.FC<RoundModalProps> = ({ event, players, show, disabled, input, onHide, onChange, onSubmit }) => {
+const RoundModal: React.FC<RoundModalProps> = ({ title, event, players, show, disabled, input, onHide, onChange, onSubmit }) => {
   const pairings = buildPairings(input.pairings)
 
   const [generatePairings, {}] = useGeneratePairingsForRoundMutation({
@@ -161,7 +162,7 @@ const RoundModal: React.FC<RoundModalProps> = ({ event, players, show, disabled,
   return (
     <Modal show={show} onHide={onHide}>
       <Modal.Header closeButton>
-        <Modal.Title>Start New Round</Modal.Title>
+        <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
       <Form onSubmit={(event) => {
         event.preventDefault()

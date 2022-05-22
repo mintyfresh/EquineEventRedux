@@ -105,6 +105,7 @@ const CreateRoundButton: React.FC<CreateRoundButtonProps> = ({ event, onCreate, 
       </Button>
       {data?.event?.players?.nodes && (
         <RoundModal
+          title="Start New Round"
           event={data.event}
           players={data.event.players.nodes}
           show={showModal}
