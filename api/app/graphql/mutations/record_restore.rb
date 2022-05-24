@@ -2,36 +2,54 @@
 
 module Mutations
   class RecordRestore < BaseMutation
-    # @param model [Class<ActiveRecord::Base>]
+    # @param model_name [String]
+    # @param output_type [Class<Types::BaseObject>, Module<Types::BaseInterface>]
+    # @param output_name [Symbol]
     # @return [Class<RecordRestore>]
-    def self.[](model)
+    def self.[](
+      model_name,
+      output_type: default_output_type(model_name),
+      output_name: default_output_name(output_type)
+    )
       mutation = Class.new(self)
 
-      mutation.define_singleton_method(:model) { model }
-      mutation.graphql_name "Restore#{mutation.model_output_type.graphql_name}"
-      mutation.description "Restores a deleted #{mutation.model_output_type.graphql_name} by ID"
+      mutation.define_singleton_method(:model) { @model ||= model.constantize }
+      mutation.define_singleton_method(:model_input_name) { input_name }
 
-      mutation.argument(:id, 'ID', required: true)
-      mutation.field(mutation.model_output_name, mutation.model_output_type, null: true)
-      mutation.field(:errors, [Types::ErrorType], null: true)
+      mutation.graphql_name "#{output_type.graphql_name}Restore"
+      mutation.description "Restores a deleted #{output_type.graphql_name} by ID"
+
+      mutation.field(output_name, output_type, null: true)
 
       mutation
     end
 
+    argument :id, ID, required: true
+
+    field :errors, [Types::ErrorType], null: true
+
     # @abstract
     # @return [Class<ActiveRecord::Base>]
     def self.model
-      raise NotImplmentedError, "#{name}#model is not implemented"
+      raise NotImplmentedError, "#{name}.model is not implemented"
     end
 
+    # @abstract
     # @return [Symbol]
     def self.model_output_name
-      model.model_name.singular.to_sym
+      raise NotImplmentedError, "#{name}.model_output_name is not implemented"
     end
 
-    # @return [Class<Types::BaseObject>]
-    def self.model_output_type
-      "Types::#{model.name}Type".constantize
+    # @param model_name [String]
+    # @return [Class<Types::BaseObject>, Module<Types::BaseInterface>]
+    def self.default_output_type(model_name)
+      "Types::#{model_name}Type".constantize
+    end
+
+    # @param output_type [Class<Types::BaseObject>, Module<Types::BaseInterface>]
+    # @return [Symbol]
+    def self.default_output_name(output_type)
+      output_type.graphql_name.underscore.to_sym
     end
 
     def resolve(id:)

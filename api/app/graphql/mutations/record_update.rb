@@ -2,47 +2,68 @@
 
 module Mutations
   class RecordUpdate < BaseMutation
-    # @param model [Class<ActiveRecord::Base>]
+    # @param model_name [String]
     # @return [Class<RecordUpdate>]
-    def self.[](model)
+    def self.[](
+      model_name,
+      input_type:  default_input_type(model_name),
+      input_name:  :input,
+      output_type: default_output_type(model_name),
+      output_name: default_output_name(output_type)
+    )
       mutation = Class.new(self)
 
-      mutation.define_singleton_method(:model) { model }
-      mutation.graphql_name "Update#{mutation.model_output_type.graphql_name}"
-      mutation.description "Updates an existing #{mutation.model_output_type.graphql_name} by ID"
+      mutation.define_singleton_method(:model) { @model ||= model.constantize }
+      mutation.define_singleton_method(:model_input_name) { input_name }
+      mutation.define_singleton_method(:model_output_name) { output_name }
 
-      mutation.argument(:id, 'ID', required: true)
-      mutation.argument(mutation.model_input_name, mutation.model_input_type, required: true)
-      mutation.field(mutation.model_output_name, mutation.model_output_type, null: true)
-      mutation.field(:errors, [Types::ErrorType], null: true)
+      mutation.graphql_name "#{output_type.graphql_name}Update"
+      mutation.description "Updates an existing #{output_type.graphql_name} by ID"
+
+      mutation.argument(input_name, input_type, required: true)
+      mutation.field(output_name, output_type, null: true)
 
       mutation
     end
 
+    argument :id, ID, required: true
+
+    field :errors, [Types::ErrorType], null: true
+
     # @abstract
     # @return [Class<ActiveRecord::Base>]
     def self.model
-      raise NotImplmentedError, "#{name}#model is not implemented"
+      raise NotImplmentedError, "#{name}.model is not implemented"
     end
 
+    # @abstract
     # @return [Symbol]
     def self.model_input_name
-      :input
+      raise NotImplmentedError, "#{name}.model_input_name is not implemented"
     end
 
-    # @return [Class<Types::BaseInputObject>]
-    def self.model_input_type
-      "Types::#{model.name}UpdateInputType".safe_constantize || "Types::#{model.name}InputType".constantize
-    end
-
+    # @abstract
     # @return [Symbol]
     def self.model_output_name
-      model.model_name.singular.to_sym
+      raise NotImplmentedError, "#{name}.model_output_name is not implemented"
     end
 
+    # @param model_name [String]
+    # @return [Class<Types::BaseInputObject>]
+    def self.default_input_type(model_name)
+      "Types::#{model_name}UpdateInputType".safe_constantize || "Types::#{model_name}InputType".constantize
+    end
+
+    # @param model_name [String]
     # @return [Class<Types::BaseObject>]
-    def self.model_output_type
-      "Types::#{model.name}Type".constantize
+    def self.default_output_type(model_name)
+      "Types::#{model_name}Type".constantize
+    end
+
+    # @param output_type [Class<Types::BaseObject>, Module<Types::BaseInterface>]
+    # @return [Symbol]
+    def self.default_output_name(output_type)
+      output_type.graphql_name.underscore.to_sym
     end
 
     def resolve(id:, **arguments)

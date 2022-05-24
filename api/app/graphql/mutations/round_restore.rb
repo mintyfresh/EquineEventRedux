@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
 module Mutations
-  RoundRestore = RecordRestore[::Round]
+  RoundRestore = RecordRestore['Round']
 end

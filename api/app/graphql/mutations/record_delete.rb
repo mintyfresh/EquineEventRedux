@@ -2,31 +2,35 @@
 
 module Mutations
   class RecordDelete < BaseMutation
-    # @param model [Class<ActiveRecord::Base>]
+    # @param model_name [String]
+    # @param type [Class<Types::BaseObject>, Module<Types::BaseInterface>]
     # @return [Class<RecordDelete>]
-    def self.[](model)
+    def self.[](model_name, type: default_type(model_name))
       mutation = Class.new(self)
 
-      mutation.define_singleton_method(:model) { model }
-      mutation.graphql_name "Delete#{mutation.model_graphql_type.graphql_name}"
-      mutation.description "Deletes an existing #{mutation.model_graphql_type.graphql_name} by ID"
+      mutation.define_singleton_method(:model) { @model ||= model.constantize }
 
-      mutation.argument(:id, 'ID', required: true)
-      mutation.field(:success, 'Boolean', null: true)
-      mutation.field(:errors, [Types::ErrorType], null: true)
+      mutation.graphql_name "#{type.graphql_name}Delete"
+      mutation.description "Deletes an existing #{type.graphql_name} by ID"
 
       mutation
     end
 
+    argument :id, ID, required: true
+
+    field :success, Boolean, null: true
+    field :errors, [Types::ErrorType], null: true
+
     # @abstract
     # @return [Class<ActiveRecord::Base>]
     def self.model
-      raise NotImplmentedError, "#{name}#model is not implemented"
+      raise NotImplmentedError, "#{name}.model is not implemented"
     end
 
-    # @return [Class<Types::BaseObject>]
-    def self.model_graphql_type
-      "Types::#{model.name}Type".constantize
+    # @param model_name [String]
+    # @return [Class<Types::BaseObject>, Module<Types::BaseInterface>]
+    def self.default_type(model_name)
+      "Types::#{model_name}Type".constantize
     end
 
     def resolve(id:)

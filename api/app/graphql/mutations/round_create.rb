@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Mutations
-  class RoundCreate < RecordCreate[::Round]
+  class RoundCreate < RecordCreate['Round']
     field :event, Types::EventType, null: true do
       description 'The Event that the Round was added to'
     end

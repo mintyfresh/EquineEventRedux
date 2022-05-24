@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Mutations
-  class PlayerCreate < RecordCreate[::Player]
+  class PlayerCreate < RecordCreate['Player']
     field :event, Types::EventType, null: true do
       description 'The Event that the Player was added to'
     end
