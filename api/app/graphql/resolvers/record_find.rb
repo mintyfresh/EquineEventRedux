@@ -2,15 +2,16 @@
 
 module Resolvers
   class RecordFind < BaseResolver
-    # @param model [Class<ActiveRecord::Base>]
+    # @param model_name [String]
+    # @param type [Class<Types::BaseObject>, Module<Types::BaseInterface>]
     # @return [Class<RecordFind>]
-    def self.[](model)
+    def self.[](model_name, type: default_type(model_name))
       resolver = Class.new(self)
 
-      resolver.define_singleton_method(:model) { model }
-      resolver.description "Finds a #{resolver.model_graphql_type.graphql_name} by ID"
+      resolver.define_singleton_method(:model) { @model ||= model_name.constantize }
+      resolver.description("Finds a #{type.graphql_name} by ID")
 
-      resolver.type(resolver.model_graphql_type, null: false)
+      resolver.type(type, null: false)
       resolver.argument(:id, 'ID', required: true)
 
       resolver
@@ -19,12 +20,13 @@ module Resolvers
     # @abstract
     # @return [Class<ActiveRecord::Base>]
     def self.model
-      raise NotImplmentedError, "#{name}#model is not implemented"
+      raise NotImplmentedError, "#{name}.model is not implemented"
     end
 
-    # @return [Class<Types::BaseObject>]
-    def self.model_graphql_type
-      "Types::#{model.name}Type".constantize
+    # @param model_name [String]
+    # @return [Class<Types::BaseObject>, Module<Types::BaseInterface>]
+    def self.default_type(model_name)
+      "Types::#{model_name}Type".constantize
     end
 
     def resolve(id:)

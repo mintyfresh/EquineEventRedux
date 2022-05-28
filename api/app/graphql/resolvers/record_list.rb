@@ -2,15 +2,16 @@
 
 module Resolvers
   class RecordList < BaseResolver
-    # @param model [Class<ActiveRecord::Base>]
+    # @param model_name [String]
+    # @param type [Class<Types::BaseConnection>]
     # @return [Class<RecordList>]
-    def self.[](model)
+    def self.[](model_name, type: default_type(model_name))
       resolver = Class.new(self)
 
-      resolver.define_singleton_method(:model) { model }
-      resolver.description "Finds a list of #{resolver.model_graphql_type.graphql_name} objects"
+      resolver.define_singleton_method(:model) { @model ||= model_name.constantize }
+      resolver.description "Finds a list of #{type.node_type.graphql_name} objects"
 
-      resolver.type(resolver.model_connection_type, null: false)
+      resolver.type(type, null: false)
 
       resolver
     end
@@ -18,17 +19,13 @@ module Resolvers
     # @abstract
     # @return [Class<ActiveRecord::Base>]
     def self.model
-      raise NotImplmentedError, "#{name}#model is not implemented"
+      raise NotImplmentedError, "#{name}.model is not implemented"
     end
 
-    # @return [Class<Types::BaseObject>]
-    def self.model_graphql_type
-      "Types::#{model.name}Type".constantize
-    end
-
+    # @param model_name [String]
     # @return [Class<Types::BaseConnection>]
-    def self.model_connection_type
-      model_graphql_type.connection_type
+    def self.default_type(model_name)
+      "Types::#{model_name}ConnectionType".safe_constantize || "Types::#{model_name}Type".constantize.connection_type
     end
 
     def resolve
