@@ -42,7 +42,7 @@ class Match < ApplicationRecord
   validates :table, numericality: { greater_than: 0 }
 
   validate do
-    errors.add(:player1, :same_as_player2) if player1_id == player2_id
+    errors.add(:player1, :same_as_player2) if player2_id.present? && player1_id == player2_id
   end
 
   validate if: -> { round && player1_id_changed? } do

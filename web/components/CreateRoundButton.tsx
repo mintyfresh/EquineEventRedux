@@ -100,7 +100,10 @@ const CreateRoundButton: React.FC<CreateRoundButtonProps> = ({ event, onCreate, 
           errors={errors}
           disabled={loading}
           onHide={() => setShowModal(false)}
-          onInputChange={setInput}
+          onInputChange={(input) => {
+            setInput(input)
+            setErrors(null)
+          }}
           onSubmit={() => createRound()}
         />
       )}

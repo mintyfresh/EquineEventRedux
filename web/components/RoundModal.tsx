@@ -3,6 +3,16 @@ import { Errors } from '../lib/errors'
 import { MatchFormInputPlayerFragment, MatchInput, RoundInput } from '../lib/generated/graphql'
 import MatchFormInput from './MatchFormInput'
 
+const UnpairedPlayersCounter: React.FC<{ count: number }> = ({ count }) => (
+  <div className="mt-2 small text-center text-muted">
+    {count === 1 ? (
+      <>There is 1 player who has not yet been paired.</>
+    ) : (
+      <>There are {count} players who have not yet been paired.</>
+    )}
+  </div>
+)
+
 export interface RoundModalProps {
   title: string
   show: boolean
@@ -17,7 +27,23 @@ export interface RoundModalProps {
 }
 
 const RoundModal: React.FC<RoundModalProps> = ({ title, show, onHide, errors, players, disabled, input, onInputChange, onSubmit }) => {
-  const matches = input.matches ?? []
+  const matches = (input.matches ?? []).sort((a, b) => a.table - b.table)
+
+  const generateNextTable = () => {
+    if (matches.length === 0) {
+      return 1
+    }
+
+    // Fill in any gaps in the table numbers
+    for (let i = 0; i < matches.length; i++) {
+      if (matches[i].table !== i + 1) {
+        return i + 1
+      }
+    }
+
+    // Allocate a new table at the end of the list
+    return matches[matches.length - 1].table + 1
+  }
 
   const setMatch = (index: number, match: MatchInput) => {
     const newMatches = [...matches]
@@ -26,9 +52,11 @@ const RoundModal: React.FC<RoundModalProps> = ({ title, show, onHide, errors, pl
       // For unpersisted matches, just remove them from the list
       newMatches.splice(index, 1)
     } else {
-      const newPlayers = [match.player1Id, match.player2Id]
-
       newMatches[index] = match
+    }
+
+    if (matches[index].player1Id !== match.player1Id || matches[index].player2Id !== match.player2Id) {
+      const newPlayers = [match.player1Id, match.player2Id]
 
       // Prevent players from being added to multiple matches
       // If they appear in another match, remove them from that match
@@ -55,7 +83,7 @@ const RoundModal: React.FC<RoundModalProps> = ({ title, show, onHide, errors, pl
       ...input,
       matches: [
         ...matches,
-        { table: matches.length + 1, player1Id: '', player2Id: '' }
+        { table: generateNextTable(), player1Id: '', player2Id: '' }
       ]
     })
   }
@@ -64,7 +92,7 @@ const RoundModal: React.FC<RoundModalProps> = ({ title, show, onHide, errors, pl
   const unpairedPlayers = players.filter(({ id }) => !matches.some(({ player1Id, player2Id }) => player1Id === id || player2Id === id))
 
   return (
-    <Modal show={show} onHide={onHide}>
+    <Modal show={show} onHide={onHide} size="lg">
       <Modal.Header closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
@@ -79,7 +107,7 @@ const RoundModal: React.FC<RoundModalProps> = ({ title, show, onHide, errors, pl
               className="mb-3"
               pairedPlayers={pairedPlayers}
               unpairedPlayers={unpairedPlayers}
-              errors={errors}
+              errors={errors.prefix(`matches[${index}]`)}
               input={match}
               onInputChange={(match) => setMatch(index, match)}
             />
@@ -95,6 +123,9 @@ const RoundModal: React.FC<RoundModalProps> = ({ title, show, onHide, errors, pl
               Add Match
             </Button>
           </ButtonToolbar>
+          {unpairedPlayers.length > 0 && (
+            <UnpairedPlayersCounter count={unpairedPlayers.length} />
+          )}
         </Modal.Body>
         <Modal.Footer>
           <ButtonToolbar>

@@ -9,42 +9,78 @@ export const ERRORS_FRAGMENT = gql`
   }
 `
 
-export class Errors {
-  errors: { [key: string]: string[] } = {}
+export interface Errors {
+  any(attribute: string): boolean
 
-  constructor(errors: ErrorsFragment[]) {
-    errors.forEach(({ attribute, message }) => {
-      if (!this.errors[attribute]) {
-        this.errors[attribute] = []
-      }
+  get(attribute: string): string[]
 
-      this.errors[attribute].push(message)
-    })
-  }
+  prefix(scope: string): Errors
+}
 
-  static none(): Errors {
-    return new Errors([])
-  }
-
+class NullErrors implements Errors {
   any(attribute: string): boolean {
-    return !!this.errors[attribute]
+    return false
   }
 
   get(attribute: string): string[] {
-    return this.errors[attribute] || []
+    return []
+  }
+
+  prefix(scope: string): Errors {
+    return this
   }
 }
 
-export const useErrors = (): [Errors, (errors: Errors | ErrorsFragment[] | null | undefined) => void] => {
-  const [errors, _setErrors] = useState<Errors>(Errors.none())
+class ParsedErrors implements Errors {
+  private _errors: { [key: string]: string[] } = {}
 
-  const setErrors = (errors: Errors | ErrorsFragment[] | null | undefined) => {
-    if (errors instanceof Errors) {
-      _setErrors(errors)
-    } else if (errors) {
-      _setErrors(new Errors(errors))
+  constructor(errors: ErrorsFragment[]) {
+    errors.forEach(({ attribute, message }) => {
+      if (!this._errors[attribute]) {
+        this._errors[attribute] = []
+      }
+
+      this._errors[attribute].push(message)
+    })
+  }
+
+  any(attribute: string): boolean {
+    return !!this._errors[attribute]
+  }
+
+  get(attribute: string): string[] {
+    return this._errors[attribute] || []
+  }
+
+  prefix(prefix: string): Errors {
+    return new PrefixedErrors(this, prefix)
+  }
+}
+
+class PrefixedErrors implements Errors {
+  constructor(private _errors: Errors, private _prefix: string) {}
+
+  any(attribute: string): boolean {
+    return this._errors.any(`${this._prefix}.${attribute}`)
+  }
+
+  get(attribute: string): string[] {
+    return this._errors.get(`${this._prefix}.${attribute}`)
+  }
+
+  prefix(prefix: string): Errors {
+    return new PrefixedErrors(this._errors, `${this._prefix}.${prefix}`)
+  }
+}
+
+export const useErrors = (): [Errors, (errors: ErrorsFragment[] | null | undefined) => void] => {
+  const [errors, _setErrors] = useState<Errors>(new NullErrors())
+
+  const setErrors = (errors: ErrorsFragment[] | null | undefined) => {
+    if (errors) {
+      _setErrors(new ParsedErrors(errors))
     } else {
-      _setErrors(Errors.none())
+      _setErrors(new NullErrors())
     }
   }
 

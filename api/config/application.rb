@@ -37,5 +37,9 @@ module EquineEventApi
       g.test_framework :rspec
       g.fixture_replacement :factory_bot, dir: 'spec/factories'
     end
+
+    config.active_record.index_nested_attribute_errors = true
+
+    config.active_model.i18n_customize_full_message = true
   end
 end

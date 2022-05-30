@@ -2,6 +2,7 @@ import { gql } from '@apollo/client'
 import { Button, Col, Form, Row } from 'react-bootstrap'
 import { Errors } from '../lib/errors'
 import { MatchFormInputPlayerFragment, MatchInput } from '../lib/generated/graphql'
+import FormControlErrors from './Form/FormControlErrors'
 
 const optionsForPlayers = (players: MatchFormInputPlayerFragment[]) => (
   <>
@@ -16,13 +17,15 @@ const PlayerSelect: React.FC<{
   value: string,
   pairedPlayers: MatchFormInputPlayerFragment[],
   unpairedPlayers: MatchFormInputPlayerFragment[],
+  isInvalid?: boolean,
   onChange(value: string): void
-}> = ({ title, value, pairedPlayers, unpairedPlayers, onChange }) => {
+}> = ({ title, value, pairedPlayers, unpairedPlayers, isInvalid, onChange }) => {
   return (
     <Form.Select
       title={title}
       value={value}
       onChange={(event) => onChange(event.currentTarget.value)}
+      isInvalid={isInvalid}
     >
       <option value=""></option>
       {pairedPlayers.length > 0 && (
@@ -66,14 +69,16 @@ const MatchFormInput: React.FC<MatchFormInputProps> = ({ errors, pairedPlayers, 
 
   return (
     <Row {...props}>
-      <Form.Group as={Col}>
+      <Form.Group as={Col} xs="3">
         <Form.Label>Table</Form.Label>
         <Form.Control
           type="number"
           title="Table"
           value={input.table}
           onChange={(event) => onInputChange({ ...input, table: +event.target.value })}
+          isInvalid={errors.any('table')}
         />
+        <FormControlErrors name="table" errors={errors} />
       </Form.Group>
       <Form.Group as={Col}>
         <Form.Label>Player 1</Form.Label>
@@ -83,7 +88,9 @@ const MatchFormInput: React.FC<MatchFormInputProps> = ({ errors, pairedPlayers, 
           pairedPlayers={pairedPlayers.filter(({ id }) => input.player2Id !== id)}
           unpairedPlayers={unpairedPlayers}
           onChange={(value) => onInputChange({ ...input, player1Id: value })}
+          isInvalid={errors.any('player1')}
         />
+        <FormControlErrors name="player1" errors={errors} />
       </Form.Group>
       <Form.Group as={Col}>
         <Form.Label>Player 2</Form.Label>
@@ -93,9 +100,12 @@ const MatchFormInput: React.FC<MatchFormInputProps> = ({ errors, pairedPlayers, 
           pairedPlayers={pairedPlayers.filter(({ id }) => input.player1Id !== id)}
           unpairedPlayers={unpairedPlayers}
           onChange={(value) => onInputChange({ ...input, player2Id: value })}
+          isInvalid={errors.any('player2')}
         />
+        <FormControlErrors name="player2" errors={errors} />
       </Form.Group>
-      <Col xs="auto" className="mt-auto">
+      <Col xs="auto">
+        <Form.Label className="d-block">&nbsp;</Form.Label>
         {input._destroy ? (
           <Button variant="secondary" onClick={onRestore}>
             Restore
