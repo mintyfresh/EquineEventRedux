@@ -30,6 +30,6 @@ class Round < ApplicationRecord
   accepts_nested_attributes_for :matches, allow_destroy: true, reject_if: :all_blank
 
   before_create do
-    self.number = (event.rounds.maximum(:number) || 0) + 1
+    self.number = event.next_round_number
   end
 end
