@@ -58,12 +58,7 @@ const CreateRoundButton: React.FC<CreateRoundButtonProps> = ({ event, onCreate, 
   const [errors, setErrors] = useErrors()
 
   const [loadPlayers, { data, loading: playersLoading }] = usePlayersForRoundCreateLazyQuery({
-    variables: { id: event.id },
-    onCompleted: ({ event }) => {
-      if (event?.players?.nodes?.length) {
-        // TODO
-      }
-    }
+    variables: { id: event.id }
   })
 
   const [createRound, { loading }] = useCreateRoundMutation({
@@ -72,9 +67,10 @@ const CreateRoundButton: React.FC<CreateRoundButtonProps> = ({ event, onCreate, 
       setErrors(roundCreate?.errors)
 
       if (roundCreate?.round?.id) {
-        // TODO
-
+        // Reset input and modal state
+        setInput(EMPTY_ROUND_CREATE_INPUT)
         setShowModal(false)
+
         onCreate()
       }
     }
