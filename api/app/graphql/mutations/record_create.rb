@@ -13,7 +13,7 @@ module Mutations
     )
       mutation = Class.new(self)
 
-      mutation.define_singleton_method(:model) { @model ||= model.constantize }
+      mutation.define_singleton_method(:model) { @model ||= model_name.constantize }
       mutation.define_singleton_method(:model_input_name) { input_name }
       mutation.define_singleton_method(:model_output_name) { output_name }
 

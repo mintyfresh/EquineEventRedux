@@ -1,9 +1,10 @@
 import { gql } from '@apollo/client'
 import { useState } from 'react'
 import { Dropdown } from 'react-bootstrap'
-import { ERRORS_FRAGMENT } from '../../lib/errors'
+import { ERRORS_FRAGMENT, useErrors } from '../../lib/errors'
 import { EditRoundDropdownItemFragment, RoundInput, usePlayersForEditRoundLazyQuery, useUpdateRoundMutation } from '../../lib/generated/graphql'
-import RoundModal, { ROUND_MODAL_PLAYER_FRAGMENT } from '../RoundModal'
+import { MATCH_FORM_INPUT_PLAYER_FRAGMENT } from '../MatchFormInput'
+import RoundModal from '../RoundModal'
 
 export const EDIT_ROUND_DROPDOWN_ITEM_FRAGMENT = gql`
   fragment EditRoundDropdownItem on Round {
@@ -11,17 +12,18 @@ export const EDIT_ROUND_DROPDOWN_ITEM_FRAGMENT = gql`
     number
     matches {
       id
+      table
       player1 {
         id
-        ...RoundModalPlayer
+        ...MatchFormInputPlayer
       }
       player2 {
         id
-        ...RoundModalPlayer
+        ...MatchFormInputPlayer
       }
     }
   }
-  ${ROUND_MODAL_PLAYER_FRAGMENT}
+  ${MATCH_FORM_INPUT_PLAYER_FRAGMENT}
 `
 
 gql`
@@ -30,12 +32,12 @@ gql`
       id
       players(deleted: ALL) {
         id
-        ...RoundModalPlayer
+        ...MatchFormInputPlayer
       }
     }
   }
   ${EDIT_ROUND_DROPDOWN_ITEM_FRAGMENT}
-  ${ROUND_MODAL_PLAYER_FRAGMENT}
+  ${MATCH_FORM_INPUT_PLAYER_FRAGMENT}
 `
 
 gql`
@@ -55,7 +57,12 @@ gql`
 `
 
 const buildRoundInput = (round: EditRoundDropdownItemFragment): RoundInput => ({
-  pairings: round.matches.map((match) => ({ player1Id: match.player1.id, player2Id: match.player2?.id }))
+  matches: round.matches.map((match) => ({
+    id: match.id,
+    table: match.table,
+    player1Id: match.player1.id,
+    player2Id: match.player2?.id ?? ''
+  }))
 })
 
 export interface EditRoundDropdownItemProps {
@@ -66,6 +73,7 @@ export interface EditRoundDropdownItemProps {
 const EditRoundDropdownItem: React.FC<EditRoundDropdownItemProps> = ({ event, round }) => {
   const [visible, setVisible] = useState(false)
   const [input, setInput] = useState<RoundInput>(buildRoundInput(round))
+  const [errors, setErrors] = useErrors()
 
   const [loadPlayers, { data, loading: playersLoading }] = usePlayersForEditRoundLazyQuery({
     variables: { roundID: round.id }
@@ -74,6 +82,8 @@ const EditRoundDropdownItem: React.FC<EditRoundDropdownItemProps> = ({ event, ro
   const [updateRound, { loading }] = useUpdateRoundMutation({
     variables: { roundID: round.id, roundInput: input },
     onCompleted: ({ roundUpdate }) => {
+      setErrors(roundUpdate?.errors)
+
       if (roundUpdate?.round) {
         setVisible(false)
         setInput(buildRoundInput(roundUpdate.round))
@@ -99,13 +109,13 @@ const EditRoundDropdownItem: React.FC<EditRoundDropdownItemProps> = ({ event, ro
       {data?.round?.players && (
         <RoundModal
           title={`Edit Round ${round.number}`}
-          event={event}
-          players={data.round.players}
           show={visible}
-          onHide={hideModal}
+          players={data.round.players}
           input={input}
-          onChange={setInput}
+          errors={errors}
           disabled={loading}
+          onHide={hideModal}
+          onInputChange={setInput}
           onSubmit={() => updateRound()}
         />
       )}

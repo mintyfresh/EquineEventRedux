@@ -8,7 +8,7 @@ module Mutations
     def self.[](model_name, type: default_type(model_name))
       mutation = Class.new(self)
 
-      mutation.define_singleton_method(:model) { @model ||= model.constantize }
+      mutation.define_singleton_method(:model) { @model ||= model_name.constantize }
 
       mutation.graphql_name "#{type.graphql_name}Delete"
       mutation.description "Deletes an existing #{type.graphql_name} by ID"

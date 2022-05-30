@@ -2,6 +2,6 @@
 
 module Types
   class RoundInputType < BaseInputObject
-    argument :pairings, [Types::PairingInputType], required: true
+    argument :matches, [MatchInputType], required: false, as: :matches_attributes
   end
 end

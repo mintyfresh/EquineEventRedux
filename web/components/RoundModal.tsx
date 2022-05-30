@@ -1,163 +1,67 @@
-import { gql } from '@apollo/client'
-import { Button, ButtonGroup, Dropdown, Form, InputGroup, Modal } from 'react-bootstrap'
-import { RoundInput, RoundModalPlayerFragment, useGeneratePairingsForRoundMutation } from '../lib/generated/graphql'
-
-export const ROUND_MODAL_PLAYER_FRAGMENT = gql`
-  fragment RoundModalPlayer on Player {
-    id
-    name
-  }
-`
-
-gql`
-  mutation GeneratePairingsForRound($eventId: ID!, $playerIds: [ID!]!) {
-    eventGeneratePairings(eventId: $eventId, playerIds: $playerIds) {
-      pairings {
-        player1 { ...RoundModalPlayer }
-        player2 { ...RoundModalPlayer }
-      }
-    }
-  }
-  ${ROUND_MODAL_PLAYER_FRAGMENT}
-`
-
-type PlayerPairings = { [key: string]: string | null }
-
-const buildPairings = (pairings: RoundInput['pairings']): PlayerPairings => {
-  const result: PlayerPairings = {}
-
-  pairings.forEach((pairing) => {
-    pairing.player1Id && (result[pairing.player1Id] = pairing.player2Id || null)
-    pairing.player2Id && (result[pairing.player2Id] = pairing.player1Id || null)
-  })
-
-  return result
-}
-
-const parsePairings = (pairings: PlayerPairings): RoundInput['pairings'] => {
-  const players: Set<string> = new Set()
-  const result: RoundInput['pairings'] = []
-
-  Object.keys(pairings).forEach((playerId) => {
-    const player1 = playerId
-    const player2 = pairings[playerId] || null
-
-    // Skip if we've already included this pair of players
-    if (players.has(player1) || (player2 && players.has(player2))) {
-      return
-    }
-
-    result.push({ player1Id: player1, player2Id: player2 })
-
-    players.add(player1)
-    player2 && players.add(player2)
-  })
-
-  return result
-}
+import { Button, ButtonToolbar, Form, Modal } from 'react-bootstrap'
+import { Errors } from '../lib/errors'
+import { MatchFormInputPlayerFragment, MatchInput, RoundInput } from '../lib/generated/graphql'
+import MatchFormInput from './MatchFormInput'
 
 export interface RoundModalProps {
   title: string
-  event: { id: string }
-  players: RoundModalPlayerFragment[]
   show: boolean
-  disabled: boolean
   input: RoundInput
-  onHide: () => void
-  onChange: (input: RoundInput) => void
-  onSubmit: () => void
+  errors: Errors
+  players: MatchFormInputPlayerFragment[]
+  disabled?: boolean
+
+  onHide(): void
+  onInputChange(input: RoundInput): void
+  onSubmit(): void
 }
 
-const RoundModal: React.FC<RoundModalProps> = ({ title, event, players, show, disabled, input, onHide, onChange, onSubmit }) => {
-  const pairings = buildPairings(input.pairings)
+const RoundModal: React.FC<RoundModalProps> = ({ title, show, onHide, errors, players, disabled, input, onInputChange, onSubmit }) => {
+  const matches = input.matches ?? []
 
-  const [generatePairings, {}] = useGeneratePairingsForRoundMutation({
-    variables: {
-      eventId: event.id,
-      playerIds: Object.keys(pairings).filter((playerId) => !pairings[playerId])
-    },
-    onCompleted: ({ eventGeneratePairings }) => {
-      if (eventGeneratePairings) {
-        const newPairings = { ...pairings }
+  const setMatch = (index: number, match: MatchInput) => {
+    const newMatches = [...matches]
 
-        eventGeneratePairings.pairings.forEach(({ player1, player2 }) => {
-          player1 && (newPairings[player1.id] = player2?.id || null)
-          player2 && (newPairings[player2.id] = player1?.id || null)
-        })
+    if (match._destroy && !match.id) {
+      // For unpersisted matches, just remove them from the list
+      newMatches.splice(index, 1)
+    } else {
+      const newPlayers = [match.player1Id, match.player2Id]
 
-        onChange({
-          ...input,
-          pairings: parsePairings(newPairings)
-        })
-      }
-    }
-  })
+      newMatches[index] = match
 
-  const regenerateAllPairings = () => {
-    generatePairings({
-      variables: { eventId: event.id, playerIds: players.map((player) => player.id) }
-    })
-  }
+      // Prevent players from being added to multiple matches
+      // If they appear in another match, remove them from that match
+      newMatches.forEach((match, i) => {
+        if (i === index) {
+          return
+        }
 
-  const clearAllPairings = () => {
-    onChange({
-      ...input,
-      pairings: players.map((player) => ({ player1Id: player.id, player2Id: null }))
-    })
-  }
+        if (newPlayers.includes(match.player1Id)) {
+          newMatches[i] = { ...match, player1Id: '' }
+        }
 
-  const createPairing = (player: string, newValue: string | null) => {
-    const newPairings = { ...pairings }
-
-    Object.keys(newPairings).forEach((key) => {
-      // Remove any pairings that are for the same player
-      if (newPairings[key] === player || newPairings[key] === newValue) {
-        newPairings[key] = null
-      }
-    })
-
-    newPairings[player] = newValue
-
-    if (newValue) {
-      newPairings[newValue] = player
+        if (newPlayers.includes(match.player2Id)) {
+          newMatches[i] = { ...match, player2Id: '' }
+        }
+      })
     }
 
-    onChange({
+    onInputChange({ ...input, matches: newMatches })
+  }
+
+  const addNewMatch = () => {
+    onInputChange({
       ...input,
-      pairings: parsePairings(newPairings)
+      matches: [
+        ...matches,
+        { table: matches.length + 1, player1Id: '', player2Id: '' }
+      ]
     })
   }
 
-  const optionsForPlayer = (player: { id: string }) => {
-    // Exclude the player from the list of options they can pair with
-    const options  = players.filter((p) => p.id !== player.id)
-    const paired   = options.filter((p) => !!pairings[p.id])
-    const unpaired = options.filter((p) => !pairings[p.id])
-
-    return (
-      <>
-        <option value=""></option>
-        {unpaired.length > 0 && (
-          <optgroup label="Unpaired">
-            {unpaired.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-              </option>
-            ))}
-          </optgroup>
-        )}
-        {paired.length > 0 && (
-          <optgroup label="Paired">
-            {paired.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-              </option>
-            ))}
-          </optgroup>
-        )}
-      </>
-    )
-  }
+  const pairedPlayers   = players.filter(({ id }) => matches.some(({ player1Id, player2Id }) => player1Id === id || player2Id === id))
+  const unpairedPlayers = players.filter(({ id }) => !matches.some(({ player1Id, player2Id }) => player1Id === id || player2Id === id))
 
   return (
     <Modal show={show} onHide={onHide}>
@@ -169,46 +73,40 @@ const RoundModal: React.FC<RoundModalProps> = ({ title, event, players, show, di
         onSubmit()
       }}>
         <Modal.Body>
-          <div className="d-grid gap-3">
-            {players.map((player) => (
-              <InputGroup key={player.id}>
-                <Form.Control
-                  type="text"
-                  value={player.name}
-                  readOnly
-                />
-                <InputGroup.Text>
-                  vs.
-                </InputGroup.Text>
-                <Form.Select
-                  value={pairings[player.id] || ''}
-                  onChange={(event) => createPairing(player.id, event.currentTarget.value)}
-                  disabled={disabled}
-                >
-                  {optionsForPlayer(player)}
-                </Form.Select>
-              </InputGroup>
-            ))}
-          </div>
+          {matches.map((match, index) => (
+            <MatchFormInput
+              key={index}
+              className="mb-3"
+              pairedPlayers={pairedPlayers}
+              unpairedPlayers={unpairedPlayers}
+              errors={errors}
+              input={match}
+              onInputChange={(match) => setMatch(index, match)}
+            />
+          ))}
+          <ButtonToolbar>
+            <Button
+              type="button"
+              className="mx-auto"
+              variant="outline-secondary"
+              disabled={disabled}
+              onClick={addNewMatch}
+            >
+              Add Match
+            </Button>
+          </ButtonToolbar>
         </Modal.Body>
         <Modal.Footer>
-          <Dropdown as={ButtonGroup} className="me-auto">
-            <Button type="button" variant="secondary" disabled={disabled} onClick={() => generatePairings()}>
-              Fill Empty Pairings
+          <ButtonToolbar>
+            <Button
+              type="submit"
+              className="ms-auto"
+              variant="primary"
+              disabled={disabled}
+            >
+              Save
             </Button>
-            <Dropdown.Toggle split variant="secondary" disabled={disabled} />
-            <Dropdown.Menu align="end">
-              <Dropdown.Item onClick={() => regenerateAllPairings()}>
-                Regenerate All Pairings
-              </Dropdown.Item>
-              <Dropdown.Item onClick={() => clearAllPairings()}>
-                Clear All Pairings
-              </Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-          <Button type="submit" disabled={disabled}>
-            Create Round
-          </Button>
+          </ButtonToolbar>
         </Modal.Footer>
       </Form>
     </Modal>
