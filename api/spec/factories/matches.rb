@@ -29,11 +29,15 @@
 #
 FactoryBot.define do
   factory :match do
-    association :round, strategy: :create
+    round { create(:round, event:) }
 
     player1 { create(:player, event: round.event) }
     player2 { create(:player, event: round.event) }
     table { (round.matches.map(&:table).max || 0) + 1 }
+
+    transient do
+      event { build(:event) }
+    end
 
     trait :with_winner do
       winner_id { [player1, player2].compact.sample.id }

@@ -37,4 +37,9 @@ class Player < ApplicationRecord
   def active?
     !deleted? && paid? && !dropped?
   end
+
+  # @return [ActiveRecord::Relation<Match>]
+  def matches
+    Match.with_player(self)
+  end
 end
