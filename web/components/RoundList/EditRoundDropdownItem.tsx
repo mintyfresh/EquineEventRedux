@@ -109,6 +109,7 @@ const EditRoundDropdownItem: React.FC<EditRoundDropdownItemProps> = ({ event, ro
       {data?.round?.players && (
         <RoundModal
           title={`Edit Round ${round.number}`}
+          mode="update"
           show={visible}
           players={data.round.players}
           input={input}

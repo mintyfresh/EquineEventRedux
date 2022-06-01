@@ -15,6 +15,7 @@ const UnpairedPlayersCounter: React.FC<{ count: number }> = ({ count }) => (
 
 export interface RoundModalProps {
   title: string
+  mode: 'create' | 'update'
   show: boolean
   input: RoundInput
   errors: Errors
@@ -26,7 +27,7 @@ export interface RoundModalProps {
   onSubmit(): void
 }
 
-const RoundModal: React.FC<RoundModalProps> = ({ title, show, onHide, errors, players, disabled, input, onInputChange, onSubmit }) => {
+const RoundModal: React.FC<RoundModalProps> = ({ title, mode, show, onHide, errors, players, disabled, input, onInputChange, onSubmit }) => {
   const matches = (input.matches ?? []).sort((a, b) => a.table - b.table)
 
   const generateNextTable = () => {
@@ -45,18 +46,20 @@ const RoundModal: React.FC<RoundModalProps> = ({ title, show, onHide, errors, pl
     return matches[matches.length - 1].table + 1
   }
 
-  const setMatch = (index: number, match: MatchInput) => {
+  const setMatch = (index: number, newValue: MatchInput) => {
+    const oldValue = matches[index]
     const newMatches = [...matches]
 
-    if (match._destroy && !match.id) {
+    if (newValue._destroy && !newValue.id) {
       // For unpersisted matches, just remove them from the list
       newMatches.splice(index, 1)
     } else {
-      newMatches[index] = match
+      newMatches[index] = newValue
     }
 
-    if (matches[index].player1Id !== match.player1Id || matches[index].player2Id !== match.player2Id) {
-      const newPlayers = [match.player1Id, match.player2Id]
+    // Check if one of the players has been reassigned
+    if (oldValue.player1Id !== newValue.player1Id || oldValue.player2Id !== newValue.player2Id) {
+      const newPlayers = [newValue.player1Id, newValue.player2Id]
 
       // Prevent players from being added to multiple matches
       // If they appear in another match, remove them from that match
@@ -135,7 +138,7 @@ const RoundModal: React.FC<RoundModalProps> = ({ title, show, onHide, errors, pl
               variant="primary"
               disabled={disabled}
             >
-              Save
+              {mode === 'create' ? 'Create' : 'Update'} Round
             </Button>
           </ButtonToolbar>
         </Modal.Footer>
