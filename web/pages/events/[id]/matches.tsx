@@ -54,7 +54,8 @@ const EventMatchesPage: NextPageWithLayout<EventMatchesQuery> = ({ event: { id }
   const [deleted, setDeleted] = useState<boolean>(false)
 
   const { data, refetch } = useEventMatchesQuery({
-    variables: { id, deleted: deleted ? DeletedFilter.Deleted : undefined }
+    variables: { id, deleted: deleted ? DeletedFilter.Deleted : undefined },
+    fetchPolicy: 'cache-and-network'
   })
 
   if (!data?.event) {
@@ -69,14 +70,12 @@ const EventMatchesPage: NextPageWithLayout<EventMatchesQuery> = ({ event: { id }
         </Alert>
       )}
       <ButtonToolbar className="mb-3">
-        <Button variant="outline-secondary" onClick={() => setDeleted(!deleted)}>
+        {!deleted && (
+          <CreateRoundButton event={data.event} onCreate={() => refetch()} />
+        )}
+        <Button variant="outline-secondary" className="ms-auto" onClick={() => setDeleted(!deleted)}>
           {deleted ? 'Hide' : 'Show'} Deleted
         </Button>
-        <CreateRoundButton
-          event={data.event}
-          onCreate={() => refetch()}
-          className="ms-auto"
-        />
       </ButtonToolbar>
       <RoundList
         event={data.event}

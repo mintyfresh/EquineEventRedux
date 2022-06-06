@@ -5,7 +5,7 @@ import { Button, ButtonToolbar, Card } from 'react-bootstrap'
 import CreatePlayerButton, { CREATE_PLAYER_BUTTON_FRAGMENT } from '../../../components/CreatePlayerButton'
 import EventLayout, { EVENT_LAYOUT_FRAGMENT } from '../../../components/EventLayout'
 import PlayerTable, { PLAYER_TABLE_FRAGMENT } from '../../../components/PlayerTable'
-import { DeletedFilter, EventPlayersQuery, EventPlayersQueryVariables, useEventPlayersQuery } from '../../../lib/generated/graphql'
+import { DeletedFilter, EventPlayersQuery, EventPlayersQueryVariables, PlayerTableFragment, useEventPlayersQuery } from '../../../lib/generated/graphql'
 import { initializeApolloClient } from '../../../lib/graphql/client'
 import { NextPageWithLayout } from '../../../lib/types/next-page'
 
@@ -52,8 +52,9 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 const EventPlayersPage: NextPageWithLayout<EventPlayersQuery> = ({ event: { id } }) => {
   const [deleted, setDeleted] = useState<boolean>(false)
 
-  const { data, refetch, variables } = useEventPlayersQuery({
-    variables: { id, deleted: deleted ? DeletedFilter.Deleted : undefined }
+  const { data, refetch, variables, client } = useEventPlayersQuery({
+    variables: { id, deleted: deleted ? DeletedFilter.Deleted : undefined },
+    fetchPolicy: 'cache-and-network'
   })
 
   if (!data?.event) {
@@ -63,21 +64,19 @@ const EventPlayersPage: NextPageWithLayout<EventPlayersQuery> = ({ event: { id }
   return (
     <>
       <ButtonToolbar className="mb-3">
-        <Button variant="outline-secondary" onClick={() => setDeleted(!deleted)}>
+        {!deleted && (
+          <CreatePlayerButton event={data.event} onCreate={() => refetch()} />
+        )}
+        <Button variant="outline-secondary" className="ms-auto" onClick={() => setDeleted(!deleted)}>
           {deleted ? 'Hide' : 'Show'} Deleted
         </Button>
-        <CreatePlayerButton
-          event={data.event}
-          onCreate={() => refetch()}
-          className="ms-auto"
-        />
       </ButtonToolbar>
       {data.event.players.nodes.length > 0 ? (
         <PlayerTable
           players={data.event.players.nodes}
           onDelete={() => refetch()}
           onOrderBy={(orderBy, orderByDirection) => {
-            if (orderBy != variables?.orderBy || orderByDirection != variables?.orderByDirection) {
+            if (orderBy !== variables?.orderBy || orderByDirection !== variables?.orderByDirection) {
               refetch(orderBy ? { orderBy, orderByDirection } : {})
             }
           }}
