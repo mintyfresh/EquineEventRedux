@@ -1,8 +1,10 @@
 import { gql } from '@apollo/client'
 import { GetServerSideProps } from 'next'
+import { useState } from 'react'
+import { ButtonToolbar, Card, Col, Form, Row } from 'react-bootstrap'
 import EventLayout, { EVENT_LAYOUT_FRAGMENT } from '../../../components/EventLayout'
 import Slip, { SLIP_EVENT_FRAGMENT, SLIP_MATCH_FRAGMENT, SLIP_ROUND_FRAGMENT } from '../../../components/Slip'
-import { EventSlipsQuery, EventSlipsQueryVariables, useEventSlipsQuery } from '../../../lib/generated/graphql'
+import { EventSlipsQuery, EventSlipsQueryVariables, SlipRoundFragment, useEventSlipsQuery } from '../../../lib/generated/graphql'
 import { initializeApolloClient } from '../../../lib/graphql/client'
 import { NextPageWithLayout } from '../../../lib/types/next-page'
 
@@ -13,7 +15,7 @@ const EVENT_SLIPS_QUERY = gql`
       name
       ...EventLayout
       ...SlipEvent
-      rounds {
+      rounds(orderBy: NUMBER, orderByDirection: DESC) {
         id
         ...SlipRound
         matches {
@@ -50,17 +52,46 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 }
 
 const EventSlipsPage: NextPageWithLayout<EventSlipsQuery> = ({ event: { id }}) => {
+  const [round, setRound] = useState<EventSlipsQuery['event']['rounds'][0] | null>(null)
+
   const { data } = useEventSlipsQuery({
-    variables: { id }
+    variables: { id },
+    onCompleted: ({ event }) => {
+      setRound(event.rounds[0])
+    }
   })
 
   if (!data?.event) {
     return null
   }
 
+  if (!round) {
+    return (
+      <Card body>
+        <Card.Text>
+          No rounds have been added to this event yet.
+        </Card.Text>
+      </Card>
+    )
+  }
+
   return (
     <>
-      {data.event.rounds.flatMap((round) => (
+      <ButtonToolbar as={Row} className="mb-3">
+        <Col xs="auto">
+          <Form.Select
+            title="Round"
+            onChange={(event) => setRound(data.event.rounds.find(({ id }) => id === event.target.value) || null)}
+          >
+            {data.event.rounds.map((round) => (
+              <option key={round.id} value={round.id}>
+                Round {round.number}
+              </option>
+            ))}
+          </Form.Select>
+        </Col>
+      </ButtonToolbar>
+      {round.matches.length > 0 ? (
         round.matches.map((match) => (
           <Slip
             key={match.id}
@@ -69,7 +100,13 @@ const EventSlipsPage: NextPageWithLayout<EventSlipsQuery> = ({ event: { id }}) =
             match={match}
           />
         ))
-      ))}
+      ) : (
+        <Card body>
+          <Card.Text>
+            No matches have been added to this round yet.
+          </Card.Text>
+        </Card>
+      )}
     </>
   )
 }

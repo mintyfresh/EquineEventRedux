@@ -1416,7 +1416,7 @@ export const EventSlipsDocument = gql`
     name
     ...EventLayout
     ...SlipEvent
-    rounds {
+    rounds(orderBy: NUMBER, orderByDirection: DESC) {
       id
       ...SlipRound
       matches {
