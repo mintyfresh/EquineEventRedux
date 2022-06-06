@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client'
 import { GetServerSideProps } from 'next'
 import { useState } from 'react'
-import { ButtonToolbar, Card, Col, Form, Row } from 'react-bootstrap'
+import { Button, ButtonToolbar, Card, Col, Form, Row } from 'react-bootstrap'
 import EventLayout, { EVENT_LAYOUT_FRAGMENT } from '../../../components/EventLayout'
 import Slip, { SLIP_EVENT_FRAGMENT, SLIP_MATCH_FRAGMENT, SLIP_ROUND_FRAGMENT } from '../../../components/Slip'
 import { EventSlipsQuery, EventSlipsQueryVariables, SlipRoundFragment, useEventSlipsQuery } from '../../../lib/generated/graphql'
@@ -89,6 +89,9 @@ const EventSlipsPage: NextPageWithLayout<EventSlipsQuery> = ({ event: { id }}) =
               </option>
             ))}
           </Form.Select>
+        </Col>
+        <Col xs="auto" className="ms-auto">
+          <Button variant="outline-secondary">Print</Button>
         </Col>
       </ButtonToolbar>
       {round.matches.length > 0 ? (
