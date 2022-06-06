@@ -34,6 +34,10 @@ gql`
         id
         ...MatchFormInputPlayer
       }
+      unpairedPlayers(deleted: NON_DELETED) {
+        id
+        ...MatchFormInputPlayer
+      }
     }
   }
   ${EDIT_ROUND_DROPDOWN_ITEM_FRAGMENT}
@@ -111,7 +115,7 @@ const EditRoundDropdownItem: React.FC<EditRoundDropdownItemProps> = ({ event, ro
           title={`Edit Round ${round.number}`}
           mode="update"
           show={visible}
-          players={data.round.players}
+          players={data.round.players.concat(data.round.unpairedPlayers)}
           event={event}
           input={input}
           errors={errors}

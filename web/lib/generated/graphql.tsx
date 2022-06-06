@@ -409,10 +409,16 @@ export type Round = {
   matches: Array<Match>;
   number: Scalars['Int'];
   players: Array<Player>;
+  unpairedPlayers: Array<Player>;
 };
 
 
 export type RoundPlayersArgs = {
+  deleted?: InputMaybe<DeletedFilter>;
+};
+
+
+export type RoundUnpairedPlayersArgs = {
   deleted?: InputMaybe<DeletedFilter>;
 };
 
@@ -534,7 +540,7 @@ export type PlayersForEditRoundQueryVariables = Exact<{
 }>;
 
 
-export type PlayersForEditRoundQuery = { __typename?: 'Query', round: { __typename?: 'Round', id: string, players: Array<{ __typename?: 'Player', id: string, name: string }> } };
+export type PlayersForEditRoundQuery = { __typename?: 'Query', round: { __typename?: 'Round', id: string, players: Array<{ __typename?: 'Player', id: string, name: string }>, unpairedPlayers: Array<{ __typename?: 'Player', id: string, name: string }> } };
 
 export type UpdateRoundMutationVariables = Exact<{
   roundID: Scalars['ID'];
@@ -1067,6 +1073,10 @@ export const PlayersForEditRoundDocument = gql`
   round(id: $roundID) {
     id
     players(deleted: ALL) {
+      id
+      ...MatchFormInputPlayer
+    }
+    unpairedPlayers(deleted: NON_DELETED) {
       id
       ...MatchFormInputPlayer
     }
