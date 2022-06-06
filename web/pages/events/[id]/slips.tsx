@@ -77,7 +77,7 @@ const EventSlipsPage: NextPageWithLayout<EventSlipsQuery> = ({ event: { id }}) =
 
   return (
     <>
-      <ButtonToolbar as={Row} className="mb-3">
+      <ButtonToolbar as={Row} className="mb-3 d-print-none">
         <Col xs="auto">
           <Form.Select
             title="Round"
@@ -91,7 +91,7 @@ const EventSlipsPage: NextPageWithLayout<EventSlipsQuery> = ({ event: { id }}) =
           </Form.Select>
         </Col>
         <Col xs="auto" className="ms-auto">
-          <Button variant="outline-secondary">Print</Button>
+          <Button variant="outline-secondary" onClick={() => window.print()}>Print</Button>
         </Col>
       </ButtonToolbar>
       {round.matches.length > 0 ? (

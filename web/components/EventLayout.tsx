@@ -20,8 +20,10 @@ const EventLayout: React.FC<EventLayoutProps> = ({ event, children }) => {
       <Head>
         <title>{event.name} - Equine Event Runner</title>
       </Head>
-      <h1>{event.name}</h1>
-      <EventNav event={event} />
+      <header className="d-print-none">
+        <h1>{event.name}</h1>
+        <EventNav event={event} />
+      </header>
       {children}
     </Layout>
   )

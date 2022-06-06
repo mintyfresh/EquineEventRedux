@@ -5,7 +5,7 @@ import ActiveLink from '../ActiveLink'
 export type AppNavbarProps = Omit<React.HTMLAttributes<HTMLDivElement>, 'onSelect'>
 
 const AppNavbar: React.FC<AppNavbarProps> = (props) => (
-  <Navbar {...props} bg="dark" variant="dark">
+  <Navbar {...props} bg="dark" variant="dark" className="d-print-none">
     <Container>
       <Link href="/" passHref>
         <Navbar.Brand>Equine Event Redux</Navbar.Brand>

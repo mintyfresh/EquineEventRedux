@@ -43,7 +43,7 @@ export interface SlipProps {
 const Slip: React.FC<SlipProps> = ({ event, round, match }) => {
   return (
     <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="600px"
-         height="129px" viewBox="0 0 540 115" enableBackground="new 0 0 540 115" xmlSpace="preserve">
+         height="129px" viewBox="0 0 540 115" enableBackground="new 0 0 540 115" xmlSpace="preserve" className="d-block">
       <rect x="0.5" y="0.5" fill="none" stroke="#231F20" strokeMiterlimit="10" width="539" height="114"/>
       <text transform="matrix(1 0 0 1 2.999 13.5493)" fontFamily="'MyriadPro-Regular'" fontSize="12">{event.name} - Round {round.number}</text>
       <text transform="matrix(1 0 0 1 216.8911 13.5493)" fontFamily="'MyriadPro-Regular'" fontSize="12">Win</text>
