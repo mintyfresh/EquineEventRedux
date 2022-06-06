@@ -97,6 +97,7 @@ const CreateRoundButton: React.FC<CreateRoundButtonProps> = ({ event, onCreate, 
           mode="create"
           show={showModal}
           players={data.event.players.nodes}
+          event={data.event}
           input={input}
           errors={errors}
           disabled={loading}

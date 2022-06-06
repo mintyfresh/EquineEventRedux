@@ -1,7 +1,26 @@
-import { Button, ButtonToolbar, Form, Modal } from 'react-bootstrap'
+import { gql } from '@apollo/client'
+import { useMemo } from 'react'
+import { Button, ButtonGroup, ButtonToolbar, Dropdown, Form, Modal } from 'react-bootstrap'
 import { Errors } from '../lib/errors'
-import { MatchFormInputPlayerFragment, MatchInput, RoundInput } from '../lib/generated/graphql'
+import { MatchFormInputPlayerFragment, MatchInput, RoundInput, useGeneratePairingsMutation } from '../lib/generated/graphql'
 import MatchFormInput from './MatchFormInput'
+
+gql`
+  mutation GeneratePairings($eventId: ID!, $playerIds: [ID!]!) {
+    eventGeneratePairings(eventId: $eventId, playerIds: $playerIds) {
+      pairings {
+        player1 {
+          id
+          name
+        }
+        player2 {
+          id
+          name
+        }
+      }
+    }
+  }
+`
 
 const UnpairedPlayersCounter: React.FC<{ count: number }> = ({ count }) => (
   <div className="mt-2 small text-center text-muted">
@@ -17,6 +36,7 @@ export interface RoundModalProps {
   title: string
   mode: 'create' | 'update'
   show: boolean
+  event: { id: string }
   input: RoundInput
   errors: Errors
   players: MatchFormInputPlayerFragment[]
@@ -27,23 +47,35 @@ export interface RoundModalProps {
   onSubmit(): void
 }
 
-const RoundModal: React.FC<RoundModalProps> = ({ title, mode, show, onHide, errors, players, disabled, input, onInputChange, onSubmit }) => {
-  const matches = (input.matches ?? []).sort((a, b) => a.table - b.table)
+const calculateGaps = (matches: MatchInput[]): number[] => {
+  const gaps: number[] = []
 
-  const generateNextTable = () => {
-    if (matches.length === 0) {
-      return 1
-    }
+  for (let i = 0; i < matches.length; i++) {
+    const currTable = matches[i].table
+    const prevTable = matches[i - 1]?.table || 0
 
-    // Fill in any gaps in the table numbers
-    for (let i = 0; i < matches.length; i++) {
-      if (matches[i].table !== i + 1) {
-        return i + 1
+    if (currTable !== prevTable + 1) {
+      for (let gap = prevTable + 1; gap < currTable; gap++) {
+        gaps.push(gap)
       }
     }
+  }
 
-    // Allocate a new table at the end of the list
-    return matches[matches.length - 1].table + 1
+  return gaps
+}
+
+const RoundModal: React.FC<RoundModalProps> = ({ title, mode, show, onHide, errors, players, disabled, event, input, onInputChange, onSubmit }) => {
+  const matches = (input.matches ?? []).sort((a, b) => a.table - b.table)
+
+  const gaps = useMemo(() => calculateGaps(matches), [matches])
+
+  const generateNextTable = (after: number = 0) => {
+    const finalTable = matches.reduce((acc, match) => Math.max(acc, match.table), 0)
+    const nextAvailable = Math.max(after, finalTable) + 1
+
+    return gaps
+      .filter((gap) => gap > after)
+      .reduce((min, gap) => Math.min(min, gap), nextAvailable)
   }
 
   const setMatch = (index: number, newValue: MatchInput) => {
@@ -91,6 +123,37 @@ const RoundModal: React.FC<RoundModalProps> = ({ title, mode, show, onHide, erro
     })
   }
 
+  const clearAllMatches = () => {
+    onInputChange({
+      ...input,
+      matches: []
+    })
+  }
+
+  const [generatePairings, {}] = useGeneratePairingsMutation({
+    variables: {
+      eventId: event.id,
+      playerIds: players.map(({ id }) => id)
+    },
+    onCompleted: ({ eventGeneratePairings }) => {
+      if (eventGeneratePairings?.pairings) {
+        let previousTable = 0
+
+        onInputChange({
+          ...input,
+          matches: [
+            ...matches,
+            ...eventGeneratePairings.pairings.map((pairing) => ({
+              table: previousTable = generateNextTable(previousTable),
+              player1Id: pairing.player1.id,
+              player2Id: pairing.player2?.id
+            }))
+          ]
+        })
+      }
+    }
+  })
+
   const pairedPlayers   = players.filter(({ id }) => matches.some(({ player1Id, player2Id }) => player1Id === id || player2Id === id))
   const unpairedPlayers = players.filter(({ id }) => !matches.some(({ player1Id, player2Id }) => player1Id === id || player2Id === id))
 
@@ -121,7 +184,7 @@ const RoundModal: React.FC<RoundModalProps> = ({ title, mode, show, onHide, erro
               className="mx-auto"
               variant="outline-secondary"
               disabled={disabled}
-              onClick={addNewMatch}
+              onClick={() => addNewMatch()}
             >
               Add Match
             </Button>
@@ -131,7 +194,30 @@ const RoundModal: React.FC<RoundModalProps> = ({ title, mode, show, onHide, erro
           )}
         </Modal.Body>
         <Modal.Footer>
-          <ButtonToolbar>
+          <ButtonToolbar className="w-100">
+            <Dropdown as={ButtonGroup}>
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  generatePairings({
+                    variables: {
+                      eventId: event.id,
+                      playerIds: unpairedPlayers.map(({ id }) => id)
+                    }
+                  })
+                }}
+              >
+                Pair Remaining Players
+              </Button>
+              <Dropdown.Toggle split variant="secondary" />
+              <Dropdown.Menu align="end">
+                <Dropdown.Item onClick={() => {
+                  clearAllMatches()
+                  generatePairings()
+                }}>Pair All Players</Dropdown.Item>
+                <Dropdown.Item onClick={() => clearAllMatches()}>Clear All Pairings</Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
             <Button
               type="submit"
               className="ms-auto"

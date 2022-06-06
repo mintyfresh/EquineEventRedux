@@ -564,6 +564,14 @@ export type SetMatchResolutionMutation = { __typename?: 'Mutation', matchUpdate?
 
 export type RoundMatchListItemFragment = { __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, table: number, player1: { __typename?: 'Player', id: string, name: string, paid: boolean, dropped: boolean, deleted: boolean }, player2?: { __typename?: 'Player', id: string, name: string, paid: boolean, dropped: boolean, deleted: boolean } | null };
 
+export type GeneratePairingsMutationVariables = Exact<{
+  eventId: Scalars['ID'];
+  playerIds: Array<Scalars['ID']> | Scalars['ID'];
+}>;
+
+
+export type GeneratePairingsMutation = { __typename?: 'Mutation', eventGeneratePairings?: { __typename?: 'EventGeneratePairingsPayload', pairings: Array<{ __typename?: 'Pairing', player1: { __typename?: 'Player', id: string, name: string }, player2?: { __typename?: 'Player', id: string, name: string } | null }> } | null };
+
 export type SlipEventFragment = { __typename?: 'Event', id: string, name: string };
 
 export type SlipRoundFragment = { __typename?: 'Round', id: string, number: number };
@@ -1212,6 +1220,49 @@ export function useSetMatchResolutionMutation(baseOptions?: Apollo.MutationHookO
 export type SetMatchResolutionMutationHookResult = ReturnType<typeof useSetMatchResolutionMutation>;
 export type SetMatchResolutionMutationResult = Apollo.MutationResult<SetMatchResolutionMutation>;
 export type SetMatchResolutionMutationOptions = Apollo.BaseMutationOptions<SetMatchResolutionMutation, SetMatchResolutionMutationVariables>;
+export const GeneratePairingsDocument = gql`
+    mutation GeneratePairings($eventId: ID!, $playerIds: [ID!]!) {
+  eventGeneratePairings(eventId: $eventId, playerIds: $playerIds) {
+    pairings {
+      player1 {
+        id
+        name
+      }
+      player2 {
+        id
+        name
+      }
+    }
+  }
+}
+    `;
+export type GeneratePairingsMutationFn = Apollo.MutationFunction<GeneratePairingsMutation, GeneratePairingsMutationVariables>;
+
+/**
+ * __useGeneratePairingsMutation__
+ *
+ * To run a mutation, you first call `useGeneratePairingsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useGeneratePairingsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [generatePairingsMutation, { data, loading, error }] = useGeneratePairingsMutation({
+ *   variables: {
+ *      eventId: // value for 'eventId'
+ *      playerIds: // value for 'playerIds'
+ *   },
+ * });
+ */
+export function useGeneratePairingsMutation(baseOptions?: Apollo.MutationHookOptions<GeneratePairingsMutation, GeneratePairingsMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<GeneratePairingsMutation, GeneratePairingsMutationVariables>(GeneratePairingsDocument, options);
+      }
+export type GeneratePairingsMutationHookResult = ReturnType<typeof useGeneratePairingsMutation>;
+export type GeneratePairingsMutationResult = Apollo.MutationResult<GeneratePairingsMutation>;
+export type GeneratePairingsMutationOptions = Apollo.BaseMutationOptions<GeneratePairingsMutation, GeneratePairingsMutationVariables>;
 export const EventShowDocument = gql`
     query EventShow($id: ID!) {
   event(id: $id) {

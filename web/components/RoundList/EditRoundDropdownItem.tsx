@@ -112,6 +112,7 @@ const EditRoundDropdownItem: React.FC<EditRoundDropdownItemProps> = ({ event, ro
           mode="update"
           show={visible}
           players={data.round.players}
+          event={event}
           input={input}
           errors={errors}
           disabled={loading}
