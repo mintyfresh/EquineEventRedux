@@ -44,7 +44,7 @@ gql`
 `
 
 const EMPTY_ROUND_CREATE_INPUT: RoundInput = {
-  matches: [{ table: 1, player1Id: '', player2Id: '' }]
+  matches: []
 }
 
 export interface CreateRoundButtonProps extends Omit<React.ComponentProps<typeof Button>, 'onClick'> {
