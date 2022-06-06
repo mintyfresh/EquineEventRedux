@@ -36,7 +36,7 @@ const PlayerModal: React.FC<PlayerModalProps> = ({ title, mode, show, disabled, 
       }}>
         <Modal.Body>
           <Form.Group className="mb-3">
-            <Form.Label>Name</Form.Label>
+            <Form.Label><u>N</u>ame</Form.Label>
             <Form.Control
               ref={nameRef}
               title="Name"
@@ -44,27 +44,30 @@ const PlayerModal: React.FC<PlayerModalProps> = ({ title, mode, show, disabled, 
               onChange={(event) => onChange({ ...input, name: event.currentTarget.value })}
               isInvalid={errors.any('name')}
               disabled={disabled}
+              accessKey="n"
             />
             <FormControlErrors name="name" errors={errors} />
           </Form.Group>
           <Form.Group>
             <Form.Check
               title="Paid"
-              label="Paid"
+              label={<><u>P</u>aid</>}
               checked={input.paid || false}
               onChange={(event) => onChange({ ...input, paid: event.currentTarget.checked })}
               isInvalid={errors.any('paid')}
               disabled={disabled}
+              accessKey="p"
             />
           </Form.Group>
           <Form.Group>
             <Form.Check
               title="Dropped"
-              label="Dropped"
+              label={<>D<u>r</u>opped</>}
               checked={input.dropped || false}
               onChange={(event) => onChange({ ...input, dropped: event.currentTarget.checked })}
               isInvalid={errors.any('dropped')}
               disabled={disabled}
+              accessKey="r"
             />
           </Form.Group>
         </Modal.Body>
@@ -72,10 +75,11 @@ const PlayerModal: React.FC<PlayerModalProps> = ({ title, mode, show, disabled, 
           {mode === 'create' && (
             <Form.Check
               type="checkbox"
-              label="Create another player"
+              label={<><u>C</u>reate another player</>}
               checked={createAnother}
               onChange={(event) => setCreateAnother(event.currentTarget.checked)}
               className="me-auto"
+              accessKey="c"
             />
           )}
           <Button type="submit">
