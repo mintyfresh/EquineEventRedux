@@ -16,7 +16,15 @@ cp .env.template .env
 ruby -rsecurerandom -e 'puts SecureRandom.base64(128)'
 ```
 
- 3. Fill in a `POSTGRES_PASSWORD` environment variable. This is the password that will be configured for the Postgres instance. This should be a string of URL-safe characters.     
+ 3. Fill in a `POSTGRES_PASSWORD` environment variable. This is the password that will be configured for the Postgres instance. This should be a string of URL-safe characters.
+
+### Generating a .env file with Ruby
+
+If you have a system Ruby available, you can generate a `.env` file with the following command:
+
+```bash
+erb -r securerandom .env.template.erb > .env
+```
 
 ## Starting the Application
 
