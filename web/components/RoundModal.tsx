@@ -65,9 +65,18 @@ const calculateGaps = (matches: MatchInput[]): number[] => {
 }
 
 const RoundModal: React.FC<RoundModalProps> = ({ title, mode, show, onHide, errors, players, disabled, event, input, onInputChange, onSubmit }) => {
-  const matches = (input.matches ?? []).sort((a, b) => a.table - b.table)
-
+  const matches = useMemo(() => (input.matches ?? []).sort((a, b) => a.table - b.table), [input.matches])
   const gaps = useMemo(() => calculateGaps(matches), [matches])
+
+  const pairedPlayers = useMemo(() =>
+    players.filter(({ id }) => matches.some(({ player1Id, player2Id }) => player1Id === id || player2Id === id)),
+    [players, matches]
+  )
+
+  const unpairedPlayers = useMemo(() =>
+    players.filter(({ id }) => !matches.some(({ player1Id, player2Id }) => player1Id === id || player2Id === id)),
+    [players, matches]
+  )
 
   const generateNextTable = (after: number = 0) => {
     const finalTable = matches.reduce((acc, match) => Math.max(acc, match.table), 0)
@@ -126,14 +135,16 @@ const RoundModal: React.FC<RoundModalProps> = ({ title, mode, show, onHide, erro
   const clearAllMatches = () => {
     onInputChange({
       ...input,
-      matches: []
+      matches: matches
+        .filter((match) => match.id) // Only keep matches that have been persisted
+        .map((match) => ({ ...match, _destroy: true })) // Mark all persisted matches for deletion
     })
   }
 
-  const [generatePairings, {}] = useGeneratePairingsMutation({
+  const [pairRemainingPlayers, {}] = useGeneratePairingsMutation({
     variables: {
       eventId: event.id,
-      playerIds: players.map(({ id }) => id)
+      playerIds: unpairedPlayers.map(({ id }) => id)
     },
     onCompleted: ({ eventGeneratePairings }) => {
       if (eventGeneratePairings?.pairings) {
@@ -154,8 +165,29 @@ const RoundModal: React.FC<RoundModalProps> = ({ title, mode, show, onHide, erro
     }
   })
 
-  const pairedPlayers   = players.filter(({ id }) => matches.some(({ player1Id, player2Id }) => player1Id === id || player2Id === id))
-  const unpairedPlayers = players.filter(({ id }) => !matches.some(({ player1Id, player2Id }) => player1Id === id || player2Id === id))
+  const [pairAllPlayers, {}] = useGeneratePairingsMutation({
+    variables: {
+      eventId: event.id,
+      playerIds: players.map(({ id }) => id)
+    },
+    onCompleted: ({ eventGeneratePairings }) => {
+      if (eventGeneratePairings?.pairings) {
+        onInputChange({
+          ...input,
+          matches: [
+            ...matches
+              .filter((match) => match.id) // Only keep persisted matches
+              .map((match) => ({ ...match, _destroy: true })), // Mark all persisted matches for deletion
+            ...eventGeneratePairings.pairings.map((pairing, index) => ({
+              table: index + 1,
+              player1Id: pairing.player1.id,
+              player2Id: pairing.player2?.id
+            }))
+          ]
+        })
+      }
+    }
+  })
 
   return (
     <Modal show={show} onHide={onHide} size="lg">
@@ -196,26 +228,17 @@ const RoundModal: React.FC<RoundModalProps> = ({ title, mode, show, onHide, erro
         <Modal.Footer>
           <ButtonToolbar className="w-100">
             <Dropdown as={ButtonGroup}>
-              <Button
-                variant="secondary"
-                onClick={() => {
-                  generatePairings({
-                    variables: {
-                      eventId: event.id,
-                      playerIds: unpairedPlayers.map(({ id }) => id)
-                    }
-                  })
-                }}
-              >
+              <Button variant="secondary" onClick={() => pairRemainingPlayers()}>
                 Pair Remaining Players
               </Button>
               <Dropdown.Toggle split variant="secondary" />
               <Dropdown.Menu align="end">
-                <Dropdown.Item onClick={() => {
-                  clearAllMatches()
-                  generatePairings()
-                }}>Pair All Players</Dropdown.Item>
-                <Dropdown.Item onClick={() => clearAllMatches()}>Clear All Pairings</Dropdown.Item>
+                <Dropdown.Item onClick={() => pairAllPlayers()}>
+                  Pair All Players
+                </Dropdown.Item>
+                <Dropdown.Item onClick={() => clearAllMatches()}>
+                  Clear All Pairings
+                </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
             <Button
