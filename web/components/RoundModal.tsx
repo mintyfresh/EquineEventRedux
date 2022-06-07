@@ -217,8 +217,9 @@ const RoundModal: React.FC<RoundModalProps> = ({ title, mode, show, onHide, erro
               variant="outline-secondary"
               disabled={disabled}
               onClick={() => addNewMatch()}
+              accessKey="a"
             >
-              Add Match
+              <u>A</u>dd Match
             </Button>
           </ButtonToolbar>
           {unpairedPlayers.length > 0 && (
@@ -228,8 +229,8 @@ const RoundModal: React.FC<RoundModalProps> = ({ title, mode, show, onHide, erro
         <Modal.Footer>
           <ButtonToolbar className="w-100">
             <Dropdown as={ButtonGroup}>
-              <Button variant="secondary" onClick={() => pairRemainingPlayers()}>
-                Pair Remaining Players
+              <Button variant="secondary" onClick={() => pairRemainingPlayers()} accessKey="p">
+                <u>P</u>air Remaining Players
               </Button>
               <Dropdown.Toggle split variant="secondary" />
               <Dropdown.Menu align="end">

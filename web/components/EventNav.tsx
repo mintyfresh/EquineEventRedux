@@ -18,17 +18,17 @@ const EventNav: React.FC<{ event: EventNavFragment }> = ({ event }) => (
     </Nav.Item>
     <Nav.Item>
       <ActiveLink href="/events/[id]/players" as={`/events/${event.id}/players`} passHref>
-        <Nav.Link>Players</Nav.Link>
+        <Nav.Link accessKey="y">Pla<u>y</u>ers</Nav.Link>
       </ActiveLink>
     </Nav.Item>
     <Nav.Item>
       <ActiveLink href="/events/[id]/matches" as={`/events/${event.id}/matches`} passHref>
-        <Nav.Link>Matches</Nav.Link>
+        <Nav.Link accessKey="m"><u>M</u>atches</Nav.Link>
       </ActiveLink>
     </Nav.Item>
     <Nav.Item>
       <ActiveLink href="/events/[id]/slips" as={`/events/${event.id}/slips`} passHref>
-        <Nav.Link>Slips</Nav.Link>
+        <Nav.Link accessKey="s"><u>S</u>lips</Nav.Link>
       </ActiveLink>
     </Nav.Item>
   </Nav>

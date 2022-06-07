@@ -78,7 +78,7 @@ const CreateRoundButton: React.FC<CreateRoundButtonProps> = ({ event, onCreate, 
 
   return (
     <>
-      <Button disabled={playersLoading} {...props} onClick={() => {
+      <Button disabled={playersLoading} {...props} accessKey="n" onClick={() => {
         loadPlayers()
         setShowModal(true)
       }}>
@@ -88,7 +88,7 @@ const CreateRoundButton: React.FC<CreateRoundButtonProps> = ({ event, onCreate, 
             Loading players...
           </>
         ) : (
-          'Start Next Round'
+          <>Start <u>N</u>ext Round</>
         )}
       </Button>
       {data?.event?.players?.nodes && (
