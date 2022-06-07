@@ -32,9 +32,9 @@ private
     # Append a placeholder if the number of players is odd
     players = [*players, nil] if players.count.odd?
 
-    players.combination(2).map do |player1, player2|
+    (0...players.length).to_a.combination(2).map do |player1_index, player2_index|
       # Use indices into the array because the graph-matching library expects numeric edges
-      [players.index(player1), players.index(player2), calculate_weight_for_pairing(player1, player2)]
+      [player1_index, player2_index, calculate_weight_for_pairing(players[player1_index], players[player2_index])]
     end
   end
 

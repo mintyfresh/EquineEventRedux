@@ -26,7 +26,7 @@ FactoryBot.define do
   factory :player do
     association :event, strategy: :build
 
-    name { Faker::Internet.user_name }
+    sequence(:name) { |n| "#{Faker::Internet.user_name} #{n}" }
 
     trait :paid do
       paid { true }
