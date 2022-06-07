@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Button, ButtonToolbar, Card, Col, Form, Row } from 'react-bootstrap'
 import EventLayout, { EVENT_LAYOUT_FRAGMENT } from '../../../components/EventLayout'
 import Slip, { SLIP_EVENT_FRAGMENT, SLIP_MATCH_FRAGMENT, SLIP_ROUND_FRAGMENT } from '../../../components/Slip'
-import { EventSlipsQuery, EventSlipsQueryVariables, SlipRoundFragment, useEventSlipsQuery } from '../../../lib/generated/graphql'
+import { EventSlipsQuery, EventSlipsQueryVariables, useEventSlipsQuery } from '../../../lib/generated/graphql'
 import { initializeApolloClient } from '../../../lib/graphql/client'
 import { NextPageWithLayout } from '../../../lib/types/next-page'
 

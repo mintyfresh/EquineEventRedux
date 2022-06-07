@@ -2,6 +2,10 @@ import Link from 'next/link'
 import { Container, Nav, Navbar } from 'react-bootstrap'
 import ActiveLink from '../ActiveLink'
 
+const showTimer = () => {
+  window.open('/timer', 'Round Timer', 'menubar=no,toolbar=no,scrollbars=no,status=no,directories=no,location=no');
+}
+
 export type AppNavbarProps = Omit<React.HTMLAttributes<HTMLDivElement>, 'onSelect'>
 
 const AppNavbar: React.FC<AppNavbarProps> = (props) => (
@@ -16,6 +20,9 @@ const AppNavbar: React.FC<AppNavbarProps> = (props) => (
           <ActiveLink href="/events" passHref>
             <Nav.Link>Events</Nav.Link>
           </ActiveLink>
+          <Nav.Link onClick={showTimer}>
+            Timer
+          </Nav.Link>
         </Nav>
       </Navbar.Collapse>
     </Container>
