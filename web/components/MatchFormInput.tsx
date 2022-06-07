@@ -18,14 +18,16 @@ const PlayerSelect: React.FC<{
   pairedPlayers: MatchFormInputPlayerFragment[],
   unpairedPlayers: MatchFormInputPlayerFragment[],
   isInvalid?: boolean,
+  disabled?: boolean,
   onChange(value: string): void
-}> = ({ title, value, pairedPlayers, unpairedPlayers, isInvalid, onChange }) => {
+}> = ({ title, value, pairedPlayers, unpairedPlayers, isInvalid, disabled, onChange }) => {
   return (
     <Form.Select
       title={title}
       value={value}
       onChange={(event) => onChange(event.currentTarget.value)}
       isInvalid={isInvalid}
+      disabled={disabled}
     >
       <option value=""></option>
       {pairedPlayers.length > 0 && (
@@ -77,6 +79,7 @@ const MatchFormInput: React.FC<MatchFormInputProps> = ({ errors, pairedPlayers, 
           value={input.table}
           onChange={(event) => onInputChange({ ...input, table: +event.target.value })}
           isInvalid={errors.any('table')}
+          disabled={!!input._destroy}
         />
         <FormControlErrors name="table" errors={errors} />
       </Form.Group>
@@ -89,6 +92,7 @@ const MatchFormInput: React.FC<MatchFormInputProps> = ({ errors, pairedPlayers, 
           unpairedPlayers={unpairedPlayers}
           onChange={(value) => onInputChange({ ...input, player1Id: value })}
           isInvalid={errors.any('player1')}
+          disabled={!!input._destroy}
         />
         <FormControlErrors name="player1" errors={errors} />
       </Form.Group>
@@ -101,6 +105,7 @@ const MatchFormInput: React.FC<MatchFormInputProps> = ({ errors, pairedPlayers, 
           unpairedPlayers={unpairedPlayers}
           onChange={(value) => onInputChange({ ...input, player2Id: value })}
           isInvalid={errors.any('player2')}
+          disabled={!!input._destroy}
         />
         <FormControlErrors name="player2" errors={errors} />
       </Form.Group>
