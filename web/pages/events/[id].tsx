@@ -43,7 +43,9 @@ const EventShowPage: NextPageWithLayout<EventShowQuery> = ({ event: { id } }) =>
   })
 
   return (
-    <>TODO</>
+    <section>
+      <b>TODO:</b> Placeholder for event details page
+    </section>
   )
 }
 
