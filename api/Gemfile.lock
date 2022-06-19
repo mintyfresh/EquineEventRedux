@@ -1,3 +1,11 @@
+GIT
+  remote: https://github.com/mintyfresh/graphql-order_by.git
+  revision: 41375120b36589167637b0c99c46e35cd150c46d
+  specs:
+    graphql-order_by (0.1.0)
+      activerecord
+      graphql
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -246,6 +254,7 @@ DEPENDENCIES
   faker
   graph_matching
   graphql
+  graphql-order_by!
   graphql-rails_logger
   oj
   pg (~> 1.1)

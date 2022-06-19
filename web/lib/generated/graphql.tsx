@@ -264,7 +264,9 @@ export type MutationRoundUpdateArgs = {
 };
 
 export enum OrderByDirection {
+  /** Indicates that the results should be sorted in ascending order, from smallest to largest. */
   Asc = 'ASC',
+  /** Indicates that the results should be sorted in descending order, from largest to smallest. */
   Desc = 'DESC'
 }
 

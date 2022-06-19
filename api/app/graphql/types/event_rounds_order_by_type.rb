@@ -2,10 +2,8 @@
 
 module Types
   class EventRoundsOrderByType < BaseOrderByEnum
-    order_by 'NUMBER' do |direction|
+    order_by 'NUMBER', default: true do |direction|
       Round.order(number: direction)
     end
-
-    default_order_by 'NUMBER'
   end
 end

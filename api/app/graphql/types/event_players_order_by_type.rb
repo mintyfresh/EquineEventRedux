@@ -2,7 +2,7 @@
 
 module Types
   class EventPlayersOrderByType < BaseOrderByEnum
-    order_by 'NAME' do |direction|
+    order_by 'NAME', default: true do |direction|
       Player.order(name: direction)
     end
 
@@ -29,7 +29,5 @@ module Types
         .merge(PlayerScoreCard.order_by_score(direction))
         .order(created_at: direction, id: direction)
     end
-
-    default_order_by 'NAME'
   end
 end

@@ -234,7 +234,7 @@
               },
               {
                 "name": "orderBy",
-                "description": null,
+                "description": "Specifies the criteria by which to sort the results.",
                 "type": {
                   "kind": "ENUM",
                   "name": "EventPlayersOrderBy",
@@ -287,7 +287,7 @@
               },
               {
                 "name": "orderBy",
-                "description": null,
+                "description": "Specifies the criteria by which to sort the results.",
                 "type": {
                   "kind": "ENUM",
                   "name": "EventRoundsOrderBy",
@@ -1553,13 +1553,13 @@
         "enumValues": [
           {
             "name": "ASC",
-            "description": null,
+            "description": "Indicates that the results should be sorted in ascending order, from smallest to largest.",
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
             "name": "DESC",
-            "description": null,
+            "description": "Indicates that the results should be sorted in descending order, from largest to smallest.",
             "isDeprecated": false,
             "deprecationReason": null
           }
