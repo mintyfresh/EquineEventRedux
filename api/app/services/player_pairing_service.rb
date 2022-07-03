@@ -44,7 +44,7 @@ private
   def calculate_weight_for_pairing(player1, player2)
     # Apply a penalty for each time these players have been matched together.
     previous_matches_count = player1.times_matched_with(player2)
-    return PREVIOUSLY_PAIRED_PENALTY * previous_matches_count if previous_matches_count.nonzero?
+    penalty = PREVIOUSLY_PAIRED_PENALTY * previous_matches_count
 
     player1_score = player1 ? player1.score : 0
     player2_score = player2 ? player2.score : 0
@@ -52,6 +52,6 @@ private
     min = [player1_score, player2_score].min
     max = [player1_score, player2_score].max
 
-    ((max + min) / 2.0) - ((max - min)**2)
+    ((max + min) / 2.0) - ((max - min)**2) + penalty
   end
 end
