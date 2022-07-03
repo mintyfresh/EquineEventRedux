@@ -85,4 +85,15 @@ class Match < ApplicationRecord
   def player_ids=(ids)
     self.player1_id, self.player2_id = ids
   end
+
+  # @return [Array<(Player, Player | nil)>]
+  def players
+    [player1, player2]
+  end
+
+  # @param players [Array<(Player, Player | nil)>]
+  # @return [void]
+  def players=(players)
+    self.player1, self.player2 = players
+  end
 end

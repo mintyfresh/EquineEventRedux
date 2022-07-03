@@ -34,13 +34,7 @@ RSpec.describe Round, type: :model do
     expect(round).to be_invalid
   end
 
-  it 'is invalid without a number' do
-    round.number = nil
-    expect(round).to be_invalid
-  end
-
-  it 'is invalid with a number less than 1' do
-    round.number = 0
-    expect(round).to be_invalid
+  it 'sets a round number when created' do
+    expect { round.save }.to change { round.number }.to(1)
   end
 end
