@@ -42,10 +42,12 @@ private
   # @param player2 [Player, nil]
   # @return [Numeric]
   def calculate_weight_for_pairing(player1, player2)
-    return PREVIOUSLY_PAIRED_PENALTY if player1.score_card.opponent_ids.include?(player2&.id)
+    # Apply a penalty for each time these players have been matched together.
+    previous_matches_count = player1.times_matched_with(player2)
+    return PREVIOUSLY_PAIRED_PENALTY * previous_matches_count if previous_matches_count.nonzero?
 
-    player1_score = player1 ? player1.score_card.score : 0
-    player2_score = player2 ? player2.score_card.score : 0
+    player1_score = player1 ? player1.score : 0
+    player2_score = player2 ? player2.score : 0
 
     min = [player1_score, player2_score].min
     max = [player1_score, player2_score].max

@@ -50,6 +50,10 @@ Metrics/BlockLength:
     - 'lib/tasks/**/*.rake'
     - 'spec/**/*'
 
+Naming/PredicateName:
+  ForbiddenPrefixes:
+    - is_
+
 Naming/RescuedExceptionsVariableName:
   PreferredName: error
 

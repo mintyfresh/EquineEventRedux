@@ -42,4 +42,26 @@ class Player < ApplicationRecord
   def matches
     Match.with_player(self)
   end
+
+  # @param player [Player, nil]
+  # @return [Boolean]
+  def has_been_matched_with?(player)
+    score_card.opponent_ids.include?(player&.id)
+  end
+
+  # @!method score
+  #   @return [Integer]
+  delegate :score, to: :score_card, allow_nil: true
+
+  # Returns the number of times this player has been matched with the specified player.
+  #
+  # @param player [Player, nil]
+  # @return [Integer]
+  def times_matched_with(player)
+    matches
+      .joins(:round)
+      .merge(Round.non_deleted)
+      .with_player(player)
+      .count
+  end
 end
