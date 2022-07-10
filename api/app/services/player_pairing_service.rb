@@ -6,7 +6,8 @@ class PlayerPairingService
   # @param players [Array<Player>]
   # @return [Array<(Player, (Player, nil))>]
   def generate_pairings(players)
-    weighted_edges = generated_weighted_edges(players.shuffle)
+    players = players.shuffle
+    weighted_edges = generated_weighted_edges(players)
 
     graph = GraphMatching::Graph::WeightedGraph[*weighted_edges]
     edges = graph.maximum_weighted_matching(true).edges
