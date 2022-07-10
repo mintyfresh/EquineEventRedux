@@ -20,25 +20,25 @@ module Types
     end
 
     # @param deleted [Proc]
-    # @param order_by [ActiveRecord::Relation]
+    # @param order_by_scope [ActiveRecord::Relation]
     # @param active_only [Boolean]
     # @return [Array<::Player>]
-    def players(deleted:, order_by:, active_only: false)
+    def players(deleted:, order_by_scope:, active_only: false)
       players = Player.all
       players = players.active if active_only
       players = deleted.call(players)
-      players = players.merge(order_by)
+      players = players.merge(order_by_scope)
 
       dataloader.with(Sources::RecordList, ::Player, :event_id, scope: players).load(object.id)
     end
 
     # @param deleted [Proc]
-    # @param order_by [ActiveRecord::Relation]
+    # @param order_by_scope [ActiveRecord::Relation]
     # @return [Array<::Round>]
-    def rounds(deleted:, order_by:)
+    def rounds(deleted:, order_by_scope:)
       rounds = Round.all
       rounds = deleted.call(rounds)
-      rounds = rounds.merge(order_by)
+      rounds = rounds.merge(order_by_scope)
 
       dataloader.with(Sources::RecordList, ::Round, :event_id, scope: rounds).load(object.id)
     end
