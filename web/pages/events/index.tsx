@@ -1,14 +1,15 @@
 import { gql } from '@apollo/client'
 import type { GetServerSideProps, NextPage } from 'next'
-import { Card } from 'react-bootstrap'
+import { useState } from 'react'
+import { Button, ButtonToolbar, Card } from 'react-bootstrap'
 import CreateEventModal from '../../components/CreateEventModal'
 import EventList, { EVENT_LIST_FRAGMENT } from '../../components/EventList'
-import { EventsIndexQuery, useEventsIndexQuery } from '../../lib/generated/graphql'
+import { DeletedFilter, EventsIndexQuery, useEventsIndexQuery } from '../../lib/generated/graphql'
 import { initializeApolloClient } from '../../lib/graphql/client'
 
 const EVENTS_INDEX_QUERY = gql`
-  query EventsIndex {
-    events {
+  query EventsIndex($deleted: DeletedFilter) {
+    events(deleted: $deleted) {
       ...EventList
     }
   }
@@ -34,7 +35,11 @@ interface EventsIndexPageProps {
 }
 
 const EventsIndexPage: NextPage<EventsIndexPageProps> = () => {
-  const { data, refetch } = useEventsIndexQuery()
+  const [deleted, setDeleted] = useState(false)
+  const { data, refetch } = useEventsIndexQuery({
+    variables: { deleted: deleted ? DeletedFilter.Deleted : undefined },
+    fetchPolicy: 'cache-and-network'
+  })
 
   if (!data?.events) {
     return null
@@ -42,11 +47,21 @@ const EventsIndexPage: NextPage<EventsIndexPageProps> = () => {
 
   return (
     <>
-      <h1>Events</h1>
-      <CreateEventModal
-        onCreate={() => refetch()}
+      <h1>{deleted && 'Deleted'} Events</h1>
+      <ButtonToolbar className="mb-3">
+        {!deleted && (
+          <CreateEventModal
+            onCreate={() => refetch()}
+          />
+        )}
+        <Button variant="outline-secondary" className="ms-auto" onClick={() => setDeleted(!deleted)}>
+          {deleted ? 'Hide' : 'Show'} Deleted
+        </Button>
+      </ButtonToolbar>
+      <EventList
+        nodes={data.events.nodes}
+        onDelete={() => refetch()}
       />
-      <EventList nodes={data.events.nodes} />
       {data.events.nodes.length === 0 && (
         <Card body>
           <Card.Text>No events found.</Card.Text>

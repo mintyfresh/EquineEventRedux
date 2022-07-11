@@ -2299,6 +2299,18 @@
                 "deprecationReason": null
               },
               {
+                "name": "deleted",
+                "description": "Filters the list of returned objects by their deleted state.",
+                "type": {
+                  "kind": "ENUM",
+                  "name": "DeletedFilter",
+                  "ofType": null
+                },
+                "defaultValue": "NON_DELETED",
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
                 "name": "first",
                 "description": "Returns the first _n_ elements from the list.",
                 "type": {

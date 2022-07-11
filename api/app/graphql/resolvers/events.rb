@@ -2,8 +2,13 @@
 
 module Resolvers
   class Events < RecordList['Event']
-    def resolve
-      super.order(created_at: :desc, id: :desc)
+    extension Extensions::DeletedFilterExtension
+
+    # @param deleted [Proc]
+    def resolve(deleted:)
+      events = super().order(created_at: :desc, id: :desc)
+
+      deleted.call(events)
     end
   end
 end

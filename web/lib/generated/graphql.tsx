@@ -385,6 +385,7 @@ export type QueryEventArgs = {
 export type QueryEventsArgs = {
   after?: InputMaybe<Scalars['String']>;
   before?: InputMaybe<Scalars['String']>;
+  deleted?: InputMaybe<DeletedFilter>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
 };
@@ -497,6 +498,13 @@ export type EventLayoutFragment = { __typename?: 'Event', name: string, id: stri
 export type EventListFragment = { __typename?: 'EventConnection', nodes: Array<{ __typename?: 'Event', id: string, name: string }> };
 
 export type EventListItemFragment = { __typename?: 'Event', id: string, name: string };
+
+export type DeleteEventMutationVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type DeleteEventMutation = { __typename?: 'Mutation', eventDelete?: { __typename?: 'EventDeletePayload', success?: boolean | null } | null };
 
 export type EventNavFragment = { __typename?: 'Event', id: string };
 
@@ -620,7 +628,9 @@ export type EventSlipsQueryVariables = Exact<{
 
 export type EventSlipsQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, rounds: Array<{ __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, table: number, player1: { __typename?: 'Player', id: string, name: string, score: number }, player2?: { __typename?: 'Player', id: string, name: string, score: number } | null }> }> } };
 
-export type EventsIndexQueryVariables = Exact<{ [key: string]: never; }>;
+export type EventsIndexQueryVariables = Exact<{
+  deleted?: InputMaybe<DeletedFilter>;
+}>;
 
 
 export type EventsIndexQuery = { __typename?: 'Query', events: { __typename?: 'EventConnection', nodes: Array<{ __typename?: 'Event', id: string, name: string }> } };
@@ -951,6 +961,39 @@ export function useCreateRoundMutation(baseOptions?: Apollo.MutationHookOptions<
 export type CreateRoundMutationHookResult = ReturnType<typeof useCreateRoundMutation>;
 export type CreateRoundMutationResult = Apollo.MutationResult<CreateRoundMutation>;
 export type CreateRoundMutationOptions = Apollo.BaseMutationOptions<CreateRoundMutation, CreateRoundMutationVariables>;
+export const DeleteEventDocument = gql`
+    mutation DeleteEvent($id: ID!) {
+  eventDelete(id: $id) {
+    success
+  }
+}
+    `;
+export type DeleteEventMutationFn = Apollo.MutationFunction<DeleteEventMutation, DeleteEventMutationVariables>;
+
+/**
+ * __useDeleteEventMutation__
+ *
+ * To run a mutation, you first call `useDeleteEventMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteEventMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteEventMutation, { data, loading, error }] = useDeleteEventMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteEventMutation(baseOptions?: Apollo.MutationHookOptions<DeleteEventMutation, DeleteEventMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteEventMutation, DeleteEventMutationVariables>(DeleteEventDocument, options);
+      }
+export type DeleteEventMutationHookResult = ReturnType<typeof useDeleteEventMutation>;
+export type DeleteEventMutationResult = Apollo.MutationResult<DeleteEventMutation>;
+export type DeleteEventMutationOptions = Apollo.BaseMutationOptions<DeleteEventMutation, DeleteEventMutationVariables>;
 export const EditPlayerDocument = gql`
     mutation EditPlayer($id: ID!, $input: PlayerInput!) {
   playerUpdate(id: $id, input: $input) {
@@ -1460,8 +1503,8 @@ export type EventSlipsQueryHookResult = ReturnType<typeof useEventSlipsQuery>;
 export type EventSlipsLazyQueryHookResult = ReturnType<typeof useEventSlipsLazyQuery>;
 export type EventSlipsQueryResult = Apollo.QueryResult<EventSlipsQuery, EventSlipsQueryVariables>;
 export const EventsIndexDocument = gql`
-    query EventsIndex {
-  events {
+    query EventsIndex($deleted: DeletedFilter) {
+  events(deleted: $deleted) {
     ...EventList
   }
 }
@@ -1479,6 +1522,7 @@ export const EventsIndexDocument = gql`
  * @example
  * const { data, loading, error } = useEventsIndexQuery({
  *   variables: {
+ *      deleted: // value for 'deleted'
  *   },
  * });
  */
