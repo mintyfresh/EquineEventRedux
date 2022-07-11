@@ -5,6 +5,8 @@ module Types
     field :id, ID, null: false
     field :name, String, null: false
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false
+    field :deleted, Boolean, null: false
+    field :deleted_at, GraphQL::Types::ISO8601DateTime, null: true
 
     field :players, Types::PlayerConnectionType, null: false do
       extension Extensions::DeletedFilterExtension

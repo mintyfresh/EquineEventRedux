@@ -5,6 +5,7 @@ module Types
     field :event_create, mutation: Mutations::EventCreate
     field :event_update, mutation: Mutations::EventUpdate
     field :event_delete, mutation: Mutations::EventDelete
+    field :event_restore, mutation: Mutations::EventRestore
     field :event_generate_pairings, mutation: Mutations::EventGeneratePairings
 
     field :match_update, mutation: Mutations::MatchUpdate

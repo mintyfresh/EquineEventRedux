@@ -14,7 +14,7 @@ module Mutations
       mutation = Class.new(self)
 
       mutation.define_singleton_method(:model) { @model ||= model_name.constantize }
-      mutation.define_singleton_method(:model_input_name) { input_name }
+      mutation.define_singleton_method(:model_output_name) { output_name }
 
       mutation.graphql_name "#{output_type.graphql_name}Restore"
       mutation.description "Restores a deleted #{output_type.graphql_name} by ID"

@@ -47,9 +47,13 @@ const EventsIndexPage: NextPage<EventsIndexPageProps> = () => {
 
   return (
     <>
-      <h1>{deleted && 'Deleted'} Events</h1>
+      <h1>Events</h1>
       <ButtonToolbar className="mb-3">
-        {!deleted && (
+        {deleted ? (
+          <span className="text-muted mt-auto">
+            Viewing deleted events only.
+          </span>
+        ) : (
           <CreateEventModal
             onCreate={() => refetch()}
           />
@@ -61,10 +65,11 @@ const EventsIndexPage: NextPage<EventsIndexPageProps> = () => {
       <EventList
         nodes={data.events.nodes}
         onDelete={() => refetch()}
+        onRestore={() => refetch()}
       />
       {data.events.nodes.length === 0 && (
         <Card body>
-          <Card.Text>No events found.</Card.Text>
+          <Card.Text>No {deleted && 'deleted'} events found.</Card.Text>
         </Card>
       )}
     </>

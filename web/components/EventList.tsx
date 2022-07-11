@@ -15,15 +15,17 @@ export const EVENT_LIST_FRAGMENT = gql`
 
 export interface EventListProps extends EventListFragment {
   onDelete?: (event: EventListItemFragment) => void
+  onRestore?: (event: EventListItemFragment) => void
 }
 
-const EventList: React.FC<EventListProps> = ({ nodes, onDelete }) => (
+const EventList: React.FC<EventListProps> = ({ nodes, onDelete, onRestore }) => (
   <ListGroup>
     {nodes.map((event) => (
       <EventListItem
         key={event.id}
         event={event}
         onDelete={() => onDelete?.(event)}
+        onRestore={() => onRestore?.(event)}
       />
     ))}
   </ListGroup>
