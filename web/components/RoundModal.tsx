@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client'
 import { useMemo } from 'react'
-import { Button, ButtonGroup, ButtonToolbar, Dropdown, Form, Modal } from 'react-bootstrap'
+import { Alert, Button, ButtonGroup, ButtonToolbar, Dropdown, Form, Modal } from 'react-bootstrap'
 import { Errors } from '../lib/errors'
 import { MatchFormInputPlayerFragment, MatchInput, RoundInput, useGeneratePairingsMutation } from '../lib/generated/graphql'
 import MatchFormInput from './MatchFormInput'
@@ -199,6 +199,11 @@ const RoundModal: React.FC<RoundModalProps> = ({ title, mode, show, onHide, erro
         onSubmit()
       }}>
         <Modal.Body>
+          {players.length === 0 && (
+            <Alert variant="warning">
+              There are currently no paid, active players in this event.
+            </Alert> 
+          )}
           {matches.map((match, index) => (
             <MatchFormInput
               key={index}
