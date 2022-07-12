@@ -27,7 +27,7 @@ Layout/HashAlignment:
 
 Layout/LineLength:
   Max: 120
-  IgnoredPatterns:
+  AllowedPatterns:
     - '^# [^\n]+'
 
 Lint/MissingSuper:
