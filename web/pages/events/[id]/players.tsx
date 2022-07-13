@@ -5,18 +5,18 @@ import { Button, ButtonToolbar, Card } from 'react-bootstrap'
 import CreatePlayerButton, { CREATE_PLAYER_BUTTON_FRAGMENT } from '../../../components/CreatePlayerButton'
 import EventLayout, { EVENT_LAYOUT_FRAGMENT } from '../../../components/EventLayout'
 import PlayerTable, { PLAYER_TABLE_FRAGMENT } from '../../../components/PlayerTable'
-import { DeletedFilter, EventPlayersQuery, EventPlayersQueryVariables, PlayerTableFragment, useEventPlayersQuery } from '../../../lib/generated/graphql'
+import { DeletedFilter, EventPlayersQuery, EventPlayersQueryVariables, useEventPlayersQuery } from '../../../lib/generated/graphql'
 import { initializeApolloClient } from '../../../lib/graphql/client'
 import { NextPageWithLayout } from '../../../lib/types/next-page'
 
 const EVENT_PLAYERS_QUERY = gql`
-  query EventPlayers($id: ID!, $deleted: DeletedFilter, $orderBy: EventPlayersOrderBy, $orderByDirection: OrderByDirection) {
+  query EventPlayers($id: ID!, $deleted: DeletedFilter) {
     event(id: $id) {
       id
       name
       ...EventLayout
       ...CreatePlayerButton
-      players(deleted: $deleted, orderBy: $orderBy, orderByDirection: $orderByDirection) {
+      players(deleted: $deleted) {
         nodes {
           ...PlayerTable
         }
@@ -52,7 +52,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 const EventPlayersPage: NextPageWithLayout<EventPlayersQuery> = ({ event: { id } }) => {
   const [deleted, setDeleted] = useState<boolean>(false)
 
-  const { data, refetch, variables, client } = useEventPlayersQuery({
+  const { data, refetch } = useEventPlayersQuery({
     variables: { id, deleted: deleted ? DeletedFilter.Deleted : undefined },
     fetchPolicy: 'cache-and-network'
   })
@@ -75,11 +75,6 @@ const EventPlayersPage: NextPageWithLayout<EventPlayersQuery> = ({ event: { id }
         <PlayerTable
           players={data.event.players.nodes}
           onDelete={() => refetch()}
-          onOrderBy={(orderBy, orderByDirection) => {
-            if (orderBy !== variables?.orderBy || orderByDirection !== variables?.orderByDirection) {
-              refetch(orderBy ? { orderBy, orderByDirection } : {})
-            }
-          }}
         />
       ) : (
         <Card body>

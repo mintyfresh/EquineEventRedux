@@ -636,8 +636,6 @@ export type EventMatchesQuery = { __typename?: 'Query', event: { __typename?: 'E
 export type EventPlayersQueryVariables = Exact<{
   id: Scalars['ID'];
   deleted?: InputMaybe<DeletedFilter>;
-  orderBy?: InputMaybe<EventPlayersOrderBy>;
-  orderByDirection?: InputMaybe<OrderByDirection>;
 }>;
 
 
@@ -1462,17 +1460,13 @@ export type EventMatchesQueryHookResult = ReturnType<typeof useEventMatchesQuery
 export type EventMatchesLazyQueryHookResult = ReturnType<typeof useEventMatchesLazyQuery>;
 export type EventMatchesQueryResult = Apollo.QueryResult<EventMatchesQuery, EventMatchesQueryVariables>;
 export const EventPlayersDocument = gql`
-    query EventPlayers($id: ID!, $deleted: DeletedFilter, $orderBy: EventPlayersOrderBy, $orderByDirection: OrderByDirection) {
+    query EventPlayers($id: ID!, $deleted: DeletedFilter) {
   event(id: $id) {
     id
     name
     ...EventLayout
     ...CreatePlayerButton
-    players(
-      deleted: $deleted
-      orderBy: $orderBy
-      orderByDirection: $orderByDirection
-    ) {
+    players(deleted: $deleted) {
       nodes {
         ...PlayerTable
       }
@@ -1497,8 +1491,6 @@ ${PlayerTableFragmentDoc}`;
  *   variables: {
  *      id: // value for 'id'
  *      deleted: // value for 'deleted'
- *      orderBy: // value for 'orderBy'
- *      orderByDirection: // value for 'orderByDirection'
  *   },
  * });
  */

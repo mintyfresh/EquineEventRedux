@@ -1,10 +1,11 @@
 import { gql } from '@apollo/client'
-import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons'
+import { faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import React, { useEffect, useState } from 'react'
+import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, Header, SortingState, useReactTable } from '@tanstack/react-table'
+import React, { useMemo, useState } from 'react'
 import { Table } from 'react-bootstrap'
 import NumberFormat from 'react-number-format'
-import { EventPlayersOrderBy, OrderByDirection, PlayerTableFragment } from '../lib/generated/graphql'
+import { PlayerTableFragment } from '../lib/generated/graphql'
 import PlayerNameWithBadges, { PLAYER_NAME_WITH_BADGES_FRAGMENT } from './Players/PlayerNameWithBadges'
 import PlayerActionsDropdown, { PLAYER_ACTIONS_DROPDOWN_FRAGMENT } from './PlayerTable/PlayerActionsDropdown'
 
@@ -24,74 +25,133 @@ export const PLAYER_TABLE_FRAGMENT = gql`
   ${PLAYER_ACTIONS_DROPDOWN_FRAGMENT}
 `
 
-export interface PlayerTableProps {
-  players: PlayerTableFragment[]
-  onDelete?: (player: PlayerTableFragment) => void
-  onOrderBy?: (orderBy: EventPlayersOrderBy | null, orderByDirection: OrderByDirection | null) => void
-}
-
-const PlayerTable: React.FC<PlayerTableProps> = ({ players, onDelete, onOrderBy }) => {
-  const [orderBy, setOrderBy] = useState<EventPlayersOrderBy | null>(null)
-  const [orderByDirection, setOrderByDirection] = useState<OrderByDirection | null>(null)
-
-  const OrderableHeader: React.FC<{ children: React.ReactNode, orderBy: EventPlayersOrderBy }> = ({ children, ...props }) => {
-    const icon = orderBy === props.orderBy ? (
-      orderByDirection === OrderByDirection.Asc ? faSortUp : faSortDown
-    ) : (
-      faSort
-    );
-
+const PlayerTableHeader: React.FC<Header<PlayerTableFragment, unknown>> = (header) => {
+  if (header.isPlaceholder) {
     return (
-      <th role="button" className="user-select-none" onClick={() => {
-        if (orderBy === props.orderBy) {
-          setOrderByDirection(orderByDirection === OrderByDirection.Asc ? OrderByDirection.Desc : OrderByDirection.Asc)
-        } else {
-          setOrderBy(props.orderBy)
-          setOrderByDirection(OrderByDirection.Asc)
-        }
-      }}>
-        {children}
-        <FontAwesomeIcon icon={icon} className="ms-2" />
-      </th>
+      <th></th>
     )
   }
 
-  useEffect(() => {
-    onOrderBy?.(orderBy, orderByDirection)
-  }, [orderBy, orderByDirection])
+  const content = flexRender(
+    header.column.columnDef.header,
+    header.getContext()
+  )
+
+  if (!header.column.getCanSort()) {
+    return (
+      <th>{content}</th>
+    )
+  }
+
+  const icon = header.column.getIsSorted()
+    ? header.column.getIsSorted() === 'asc'
+      ? faSortUp
+      : faSortDown
+    : null;
+
+  return (
+    <th>
+      <div role="button" onClick={header.column.getToggleSortingHandler()}>
+        {content}
+        {icon && <FontAwesomeIcon icon={icon} className="ms-2" />}
+      </div>
+    </th>
+  )
+}
+
+export interface PlayerTableProps {
+  players: PlayerTableFragment[]
+  onDelete?: (player: PlayerTableFragment) => void
+}
+
+const PlayerTable: React.FC<PlayerTableProps> = ({ players, onDelete }) => {
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: 'score', desc: true },
+    { id: 'opponentWinRate', desc: false }
+  ])
+
+  const columns: ColumnDef<PlayerTableFragment>[] = useMemo(() => [
+    {
+      accessorKey: 'name',
+      header: 'Name',
+      cell: ({ row }) => (
+        <PlayerNameWithBadges player={row.original} />
+      )
+    },
+    {
+      accessorKey: 'winsCount',
+      header: 'Wins'
+    },
+    {
+      accessorKey: 'drawsCount',
+      header: 'Draws'
+    },
+    {
+      accessorKey: 'lossesCount',
+      header: 'Losses'
+    },
+    {
+      accessorKey: 'score',
+      header: 'Points'
+    },
+    {
+      accessorKey: 'opponentWinRate',
+      header: 'Opponent Win Rate',
+      cell: ({ row }) => (
+        <NumberFormat
+          suffix="%"
+          displayType="text"
+          decimalScale={2}
+          value={row.original.opponentWinRate * 100}
+        />
+      )
+    },
+    {
+      id: 'actions',
+      header: () => (
+        <span className="float-end">
+          Actions
+        </span>
+      ),
+      cell: ({ row }) => (
+        <span className="float-end">
+          <PlayerActionsDropdown
+            player={row.original}
+            onDelete={() => onDelete?.(row.original)}
+          />
+        </span>
+      )
+    }
+  ], [onDelete])
+
+  const table = useReactTable({
+    data: players,
+    columns,
+    state: { sorting },
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel()
+  })
 
   return (
     <Table variant="stripped">
       <thead>
-        <tr>
-          <OrderableHeader orderBy={EventPlayersOrderBy.Name}>Name</OrderableHeader>
-          <OrderableHeader orderBy={EventPlayersOrderBy.WinsCount}>Wins</OrderableHeader>
-          <OrderableHeader orderBy={EventPlayersOrderBy.DrawsCount}>Draws</OrderableHeader>
-          <OrderableHeader orderBy={EventPlayersOrderBy.LossesCount}>Losses</OrderableHeader>
-          <OrderableHeader orderBy={EventPlayersOrderBy.Score}>Points</OrderableHeader>
-          <th>Opponent Win Rate</th>
-          <th className="text-end">Actions</th>
-        </tr>
+        {table.getHeaderGroups().map((headerGroup) => (
+          <tr key={headerGroup.id}>
+            {headerGroup.headers.map((header) => (
+              <PlayerTableHeader key={header.id} {...header} />
+            ))}
+          </tr>
+        ))}
       </thead>
       <tbody>
-        {players.map((player) => (
-          <tr key={player.id}>
-            <td><PlayerNameWithBadges player={player} /></td>
-            <td>{player.winsCount}</td>
-            <td>{player.drawsCount}</td>
-            <td>{player.lossesCount}</td>
-            <td>{player.score}</td>
-            <td>
-              <NumberFormat
-                suffix="%"
-                displayType="text"
-                decimalScale={2}
-                value={player.opponentWinRate * 100}
-              />
-            </td>
-            <td className="text-end">
-              <PlayerActionsDropdown player={player} onDelete={() => onDelete?.(player)} />
-            </td>
+        {table.getRowModel().rows.map((row) => (
+          <tr key={row.id}>
+            {row.getVisibleCells().map((cell) => (
+              <td key={cell.id}>
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </td>
+            ))}
           </tr>
         ))}
       </tbody>
