@@ -1,9 +1,9 @@
 import { gql } from '@apollo/client'
 import { faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, Header, SortingState, useReactTable } from '@tanstack/react-table'
+import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, Header, SortingState, Table, useReactTable } from '@tanstack/react-table'
 import React, { useMemo, useState } from 'react'
-import { Table } from 'react-bootstrap'
+import { Badge, Table as BSTable } from 'react-bootstrap'
 import NumberFormat from 'react-number-format'
 import { PlayerTableFragment } from '../lib/generated/graphql'
 import PlayerNameWithBadges, { PLAYER_NAME_WITH_BADGES_FRAGMENT } from './Players/PlayerNameWithBadges'
@@ -25,7 +25,7 @@ export const PLAYER_TABLE_FRAGMENT = gql`
   ${PLAYER_ACTIONS_DROPDOWN_FRAGMENT}
 `
 
-const PlayerTableHeader: React.FC<Header<PlayerTableFragment, unknown>> = (header) => {
+const PlayerTableHeader: React.FC<{ table: Table<PlayerTableFragment>, header: Header<PlayerTableFragment, unknown> }> = ({ table, header }) => {
   if (header.isPlaceholder) {
     return (
       <th></th>
@@ -43,17 +43,22 @@ const PlayerTableHeader: React.FC<Header<PlayerTableFragment, unknown>> = (heade
     )
   }
 
+  const displaySortIndex =
+    header.column.getSortIndex() >= 0 &&
+    table.getState().sorting.length > 0
+
   const icon = header.column.getIsSorted()
     ? header.column.getIsSorted() === 'asc'
       ? faSortUp
       : faSortDown
-    : null;
+    : null
 
   return (
     <th>
-      <div role="button" onClick={header.column.getToggleSortingHandler()}>
+      <div role="button" className="user-select-none" onClick={header.column.getToggleSortingHandler()}>
         {content}
         {icon && <FontAwesomeIcon icon={icon} className="ms-2" />}
+        {displaySortIndex && <Badge bg="secondary" className="ms-2">{header.column.getSortIndex() + 1}</Badge>}
       </div>
     </th>
   )
@@ -67,7 +72,7 @@ export interface PlayerTableProps {
 const PlayerTable: React.FC<PlayerTableProps> = ({ players, onDelete }) => {
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'score', desc: true },
-    { id: 'opponentWinRate', desc: false }
+    { id: 'opponentWinRate', desc: true }
   ])
 
   const columns: ColumnDef<PlayerTableFragment>[] = useMemo(() => [
@@ -134,12 +139,16 @@ const PlayerTable: React.FC<PlayerTableProps> = ({ players, onDelete }) => {
   })
 
   return (
-    <Table variant="stripped">
+    <BSTable variant="stripped">
       <thead>
         {table.getHeaderGroups().map((headerGroup) => (
           <tr key={headerGroup.id}>
             {headerGroup.headers.map((header) => (
-              <PlayerTableHeader key={header.id} {...header} />
+              <PlayerTableHeader
+                key={header.id}
+                table={table}
+                header={header}
+              />
             ))}
           </tr>
         ))}
@@ -155,7 +164,7 @@ const PlayerTable: React.FC<PlayerTableProps> = ({ players, onDelete }) => {
           </tr>
         ))}
       </tbody>
-    </Table>
+    </BSTable>
   )
 }
 
