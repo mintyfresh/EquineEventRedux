@@ -45,6 +45,7 @@ const PlayerModal: React.FC<PlayerModalProps> = ({ title, mode, show, disabled, 
               isInvalid={errors.any('name')}
               disabled={disabled}
               accessKey="n"
+              autoComplete="don't"
             />
             <FormControlErrors name="name" errors={errors} />
           </Form.Group>

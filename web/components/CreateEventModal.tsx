@@ -71,6 +71,7 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ onCreate }) => {
                 onChange={(event) => setName(event.currentTarget.value)}
                 disabled={loading}
                 isInvalid={errors.any('name')}
+                autoComplete="don't"
               />
               <FormControlErrors name="name" errors={errors} />
             </Form.Group>
