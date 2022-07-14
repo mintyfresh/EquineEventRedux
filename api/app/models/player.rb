@@ -51,7 +51,9 @@ class Player < ApplicationRecord
 
   # @!method score
   #   @return [Integer]
-  delegate :score, to: :score_card, allow_nil: true
+  # @!method opponent_win_rate
+  #   @return [Float]
+  delegate :score, :opponent_win_rate, to: :score_card, allow_nil: true
 
   # Returns the number of times this player has been matched with the specified player.
   #

@@ -39,14 +39,35 @@ class PlayerScoreCard < ApplicationRecord
     completed_matches_count * POINTS_PER_WIN
   end
 
+  # The ratio of the player's score to the maximum possible score.
+  #
+  # @return [Float]
+  def score_ratio
+    return 0.0 if maximum_possible_score.zero?
+
+    score / maximum_possible_score.to_f
+  end
+
   # @return [ActiveRecord::Relation<Player>]
   def opponents
     Player.where_any(:id, opponent_ids.compact)
   end
 
+  # @return [ActiveRecord::Relation<PlayerScoreCard>]
+  def opponent_score_cards
+    PlayerScoreCard.joins(:player).merge(opponents)
+  end
+
   # @return [Integer]
   def opponents_count
     opponent_ids.count(&:present?) # Exclude the nil opponent ID
+  end
+
+  # @return [Float]
+  def opponent_win_rate
+    return 0.0 if opponents_count.zero?
+
+    opponent_score_cards.sum(&:score_ratio) / opponents_count
   end
 
   # @return [Boolean]

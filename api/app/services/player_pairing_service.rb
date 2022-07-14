@@ -21,8 +21,9 @@ class PlayerPairingService
       pairing
     end
 
-    # Place the pairing with the placeholder player at the last table.
-    pairings.sort_by { |(_, player2)| player2.nil? ? 1 : 0 }
+    # Place the highest ranking pairings at the top of the list.
+    # If a pairing has no opponent, it is placed at the bottom of the list.
+    sort_pairings_by_rankings(pairings)
   end
 
 private
@@ -54,5 +55,31 @@ private
     max = [player1_score, player2_score].max
 
     ((max + min) / 2.0) - ((max - min)**2) + penalty
+  end
+
+  # @param player1 [Player]
+  # @param player2 [Player, nil]
+  # @return [Array<(Numeric, Numeric)>]
+  def calculate_rankings_for_pairing(player1, player2)
+    return [0.0, 0.0] if player2.nil?
+
+    [
+      (player1.score + player2.score) / 2.0,
+      (player1.opponent_win_rate + player2.opponent_win_rate) / 2.0
+    ]
+  end
+
+  # @param pairings [Array<Array<Player>>]
+  # @return [Array<Array<Player>>]
+  def sort_pairings_by_rankings(pairings)
+    pairings.sort do |pair1, pair2|
+      next +1 if pair1[1].nil?
+      next -1 if pair2[1].nil?
+
+      rankings1 = calculate_rankings_for_pairing(*pair1)
+      rankings2 = calculate_rankings_for_pairing(*pair2)
+
+      rankings2 <=> rankings1
+    end
   end
 end
