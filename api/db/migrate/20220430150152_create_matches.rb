@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class CreateMatches < ActiveRecord::Migration[7.0]
-  def change
+  def change # rubocop:disable Metrics/MethodLength
     create_table :matches, id: :uuid do |t|
       t.belongs_to :round, null: false, foreign_key: true, type: :uuid
       t.belongs_to :player1, null: false, foreign_key: { to_table: :players }, type: :uuid
