@@ -28,7 +28,7 @@ const RoundList: React.FC<RoundListProps> = ({ event, rounds, onDelete }) => {
   return (
     <>
       {rounds.map((round) => (
-        <Card key={round.id} className="mb-3">
+        <Card key={round.id} className="mb-3" style={{ breakInside: 'avoid' }}>
           <Card.Header>
             Round {round.number}
             <RoundControlsDropdown

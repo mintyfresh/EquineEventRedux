@@ -114,12 +114,12 @@ const PlayerTable: React.FC<PlayerTableProps> = ({ players, onDelete }) => {
     {
       id: 'actions',
       header: () => (
-        <span className="float-end">
+        <span className="float-end d-print-none">
           Actions
         </span>
       ),
       cell: ({ row }) => (
-        <span className="float-end">
+        <span className="float-end d-print-none">
           <PlayerActionsDropdown
             player={row.original}
             onDelete={() => onDelete?.(row.original)}

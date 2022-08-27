@@ -67,7 +67,7 @@ const RoundMatchesList: React.FC<RoundMatchesListProps> = ({ matches }) => {
           {match.player2 ? <PlayerNameWithBadges player={match.player2} /> : <span className="text-muted">No-one</span>}
           {resolution(match)}
           {match.player2 && (
-            <EllipsisDropdown align="end" className="float-end">
+            <EllipsisDropdown align="end" className="float-end d-print-none">
               <Dropdown.Header>Table {match.table}</Dropdown.Header>
               <Dropdown.Item
                 disabled={loading || match.winnerId === match.player1.id}

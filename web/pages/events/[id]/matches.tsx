@@ -69,7 +69,7 @@ const EventMatchesPage: NextPageWithLayout<EventMatchesQuery> = ({ event: { id }
           No players have been added to this event yet.
         </Alert>
       )}
-      <ButtonToolbar className="mb-3">
+      <ButtonToolbar className="mb-3 d-print-none">
         {!deleted && (
           <CreateRoundButton event={data.event} onCreate={() => refetch()} />
         )}

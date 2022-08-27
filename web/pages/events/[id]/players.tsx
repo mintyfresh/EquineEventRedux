@@ -63,7 +63,7 @@ const EventPlayersPage: NextPageWithLayout<EventPlayersQuery> = ({ event: { id }
 
   return (
     <>
-      <ButtonToolbar className="mb-3">
+      <ButtonToolbar className="mb-3 d-print-none">
         {!deleted && (
           <CreatePlayerButton event={data.event} onCreate={() => refetch()} />
         )}

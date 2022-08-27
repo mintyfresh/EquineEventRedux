@@ -40,7 +40,7 @@ const RoundControlsDropdown: React.FC<RoundControlsDropdownProps> = ({ event, ro
   })
 
   return (
-    <EllipsisDropdown align="end" className="float-end">
+    <EllipsisDropdown align="end" className="float-end d-print-none">
       <EditRoundDropdownItem
         event={event}
         round={round}
