@@ -29,7 +29,31 @@ class Round < ApplicationRecord
 
   accepts_nested_attributes_for :matches, allow_destroy: true, reject_if: :all_blank
 
+  validate if: :matches_changed? do
+    tables = Set.new
+
+    matches.each_with_index do |match, index|
+      next if match.marked_for_destruction?
+
+      if tables.include?(match.table)
+        error = match.errors.add(:table, :taken)
+        errors.add("matches[#{index}].table", error.message)
+      else
+        tables << match.table
+      end
+    end
+  end
+
   before_create do
     self.number = event.next_round_number
+  end
+
+private
+
+  # @return [Boolean]
+  def matches_changed?
+    matches.target.any? do |match|
+      match.new_record? || match.changed? || match.marked_for_destruction?
+    end
   end
 end

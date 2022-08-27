@@ -37,4 +37,11 @@ RSpec.describe Round, type: :model do
   it 'sets a round number when created' do
     expect { round.save }.to change { round.number }.to(1)
   end
+
+  it 'is invalid when two matches have the same table number' do
+    round.event = create(:event)
+    round.matches << build(:match, event: round.event, round:, table: 1)
+    round.matches << build(:match, event: round.event, round:, table: 1)
+    expect(round).to be_invalid
+  end
 end
