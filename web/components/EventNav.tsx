@@ -31,6 +31,11 @@ const EventNav: React.FC<{ event: EventNavFragment }> = ({ event }) => (
         <Nav.Link accessKey="s"><u>S</u>lips</Nav.Link>
       </ActiveLink>
     </Nav.Item>
+    <Nav.Item>
+      <ActiveLink href="/events/[id]/export" as={`/events/${event.id}/export`} passHref>
+        <Nav.Link accessKey="x">E<u>x</u>port</Nav.Link>
+      </ActiveLink>
+    </Nav.Item>
   </Nav>
 )
 

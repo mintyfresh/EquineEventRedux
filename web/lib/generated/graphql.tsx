@@ -625,6 +625,13 @@ export type EventShowQueryVariables = Exact<{
 
 export type EventShowQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string } };
 
+export type EventExportQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type EventExportQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, players: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, score: number, winsCount: number, lossesCount: number, drawsCount: number, opponentWinRate: number }> }, rounds: Array<{ __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, table: number, player1: { __typename?: 'Player', id: string, name: string, winsCount: number, lossesCount: number, drawsCount: number }, player2?: { __typename?: 'Player', id: string, name: string, winsCount: number, lossesCount: number, drawsCount: number } | null }> }> } };
+
 export type EventMatchesQueryVariables = Exact<{
   id: Scalars['ID'];
   deleted?: InputMaybe<DeletedFilter>;
@@ -1412,6 +1419,75 @@ export function useEventShowLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<
 export type EventShowQueryHookResult = ReturnType<typeof useEventShowQuery>;
 export type EventShowLazyQueryHookResult = ReturnType<typeof useEventShowLazyQuery>;
 export type EventShowQueryResult = Apollo.QueryResult<EventShowQuery, EventShowQueryVariables>;
+export const EventExportDocument = gql`
+    query EventExport($id: ID!) {
+  event(id: $id) {
+    id
+    ...EventLayout
+    players(orderBy: SCORE, orderByDirection: DESC, activeOnly: true) {
+      nodes {
+        id
+        name
+        score
+        winsCount
+        lossesCount
+        drawsCount
+        opponentWinRate
+      }
+    }
+    rounds(orderBy: NUMBER, orderByDirection: DESC) {
+      id
+      number
+      matches {
+        id
+        table
+        player1 {
+          id
+          name
+          winsCount
+          lossesCount
+          drawsCount
+        }
+        player2 {
+          id
+          name
+          winsCount
+          lossesCount
+          drawsCount
+        }
+      }
+    }
+  }
+}
+    ${EventLayoutFragmentDoc}`;
+
+/**
+ * __useEventExportQuery__
+ *
+ * To run a query within a React component, call `useEventExportQuery` and pass it any options that fit your needs.
+ * When your component renders, `useEventExportQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useEventExportQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useEventExportQuery(baseOptions: Apollo.QueryHookOptions<EventExportQuery, EventExportQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<EventExportQuery, EventExportQueryVariables>(EventExportDocument, options);
+      }
+export function useEventExportLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<EventExportQuery, EventExportQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<EventExportQuery, EventExportQueryVariables>(EventExportDocument, options);
+        }
+export type EventExportQueryHookResult = ReturnType<typeof useEventExportQuery>;
+export type EventExportLazyQueryHookResult = ReturnType<typeof useEventExportLazyQuery>;
+export type EventExportQueryResult = Apollo.QueryResult<EventExportQuery, EventExportQueryVariables>;
 export const EventMatchesDocument = gql`
     query EventMatches($id: ID!, $deleted: DeletedFilter) {
   event(id: $id) {
