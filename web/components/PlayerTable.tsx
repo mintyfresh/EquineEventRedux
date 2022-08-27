@@ -57,8 +57,8 @@ const PlayerTableHeader: React.FC<{ table: Table<PlayerTableFragment>, header: H
     <th>
       <div role="button" className="user-select-none" onClick={header.column.getToggleSortingHandler()}>
         {content}
-        {icon && <FontAwesomeIcon icon={icon} className="ms-2" />}
-        {displaySortIndex && <Badge bg="secondary" className="ms-2">{header.column.getSortIndex() + 1}</Badge>}
+        {icon && <FontAwesomeIcon icon={icon} className="ms-2 d-print-none" />}
+        {displaySortIndex && <Badge bg="secondary" className="ms-2 d-print-none">{header.column.getSortIndex() + 1}</Badge>}
       </div>
     </th>
   )
@@ -143,6 +143,7 @@ const PlayerTable: React.FC<PlayerTableProps> = ({ players, onDelete }) => {
       <thead>
         {table.getHeaderGroups().map((headerGroup) => (
           <tr key={headerGroup.id}>
+            <th>Ordinal</th>
             {headerGroup.headers.map((header) => (
               <PlayerTableHeader
                 key={header.id}
@@ -154,8 +155,9 @@ const PlayerTable: React.FC<PlayerTableProps> = ({ players, onDelete }) => {
         ))}
       </thead>
       <tbody>
-        {table.getRowModel().rows.map((row) => (
+        {table.getRowModel().rows.map((row, index) => (
           <tr key={row.id}>
+            <td>#{index + 1}</td>
             {row.getVisibleCells().map((cell) => (
               <td key={cell.id}>
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
