@@ -2634,6 +2634,18 @@
             "description": null,
             "args": [
               {
+                "name": "activeOnly",
+                "description": "If true, unpaid and dropped players will be excluded",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
+                },
+                "defaultValue": "false",
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
                 "name": "deleted",
                 "description": "Filters the list of returned objects by their deleted state.",
                 "type": {
@@ -2670,6 +2682,18 @@
             "name": "unpairedPlayers",
             "description": null,
             "args": [
+              {
+                "name": "activeOnly",
+                "description": "If true, unpaid and dropped players will be excluded",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
+                },
+                "defaultValue": "false",
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
               {
                 "name": "deleted",
                 "description": "Filters the list of returned objects by their deleted state.",

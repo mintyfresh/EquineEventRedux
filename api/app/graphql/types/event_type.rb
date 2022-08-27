@@ -10,11 +10,8 @@ module Types
 
     field :players, Types::PlayerConnectionType, null: false do
       extension Extensions::DeletedFilterExtension
+      extension Extensions::Players::ActiveOnlyExtension
       extension GraphQL::OrderBy::Extension, type: EventPlayersOrderByType
-
-      argument :active_only, Boolean, required: false, default_value: false do
-        description 'If true, unpaid and dropped players will be excluded'
-      end
     end
     field :rounds, [Types::RoundType], null: false do
       extension Extensions::DeletedFilterExtension

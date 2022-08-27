@@ -9,9 +9,11 @@ module Types
     field :matches, [Types::MatchType], null: false
     field :players, [Types::PlayerType], null: false do
       extension Extensions::DeletedFilterExtension
+      extension Extensions::Players::ActiveOnlyExtension
     end
     field :unpaired_players, [Types::PlayerType], null: false do
       extension Extensions::DeletedFilterExtension
+      extension Extensions::Players::ActiveOnlyExtension
     end
 
     # @return [Array<::Match>]
@@ -22,19 +24,23 @@ module Types
     end
 
     # @param deleted [Proc]
+    # @param active_only [Boolean]
     # @return [Array<::Player>]
-    def players(deleted:)
+    def players(deleted:, active_only: false)
       players = Player.all
       players = deleted.call(players)
+      players = players.active if active_only
 
       dataloader.with(Sources::Record, ::Player, scope: players).load_all(player_ids).compact
     end
 
     # @param deleted [Proc]
+    # @param active_only [Boolean]
     # @return [Array<::Player>]
-    def unpaired_players(deleted:)
+    def unpaired_players(deleted:, active_only: false)
       players = Player.all
       players = deleted.call(players)
+      players = players.active if active_only
       players = players.where.not(id: player_ids)
 
       dataloader.with(Sources::RecordList, ::Player, :event_id, scope: players).load(object.event_id)

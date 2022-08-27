@@ -34,7 +34,7 @@ gql`
         id
         ...MatchFormInputPlayer
       }
-      unpairedPlayers(deleted: NON_DELETED) {
+      unpairedPlayers(activeOnly: true, deleted: NON_DELETED) {
         id
         ...MatchFormInputPlayer
       }

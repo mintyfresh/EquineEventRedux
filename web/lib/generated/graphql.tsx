@@ -432,11 +432,13 @@ export type Round = {
 
 
 export type RoundPlayersArgs = {
+  activeOnly?: InputMaybe<Scalars['Boolean']>;
   deleted?: InputMaybe<DeletedFilter>;
 };
 
 
 export type RoundUnpairedPlayersArgs = {
+  activeOnly?: InputMaybe<Scalars['Boolean']>;
   deleted?: InputMaybe<DeletedFilter>;
 };
 
@@ -1185,7 +1187,7 @@ export const PlayersForEditRoundDocument = gql`
       id
       ...MatchFormInputPlayer
     }
-    unpairedPlayers(deleted: NON_DELETED) {
+    unpairedPlayers(activeOnly: true, deleted: NON_DELETED) {
       id
       ...MatchFormInputPlayer
     }
