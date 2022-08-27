@@ -23,7 +23,13 @@ const CopyableTextBlock: React.FC<{ value: string }> = ({ value }) => (
 )
 
 const EventStandingsExport: React.FC<EventExportQuery> = ({ event }) => {
-  const data = event.players.nodes.map((player, index) =>
+  const players = event.players.nodes.sort((player1, player2) =>
+    player1.score !== player2.score
+      ? player2.score - player1.score
+      : player2.opponentWinRate - player1.opponentWinRate
+  )
+
+  const data = players.map((player, index) =>
     `#${index + 1} - ` +
     `${player.name} [${player.winsCount}, ${player.lossesCount}, ${player.drawsCount}] - ` +
     `${player.score} pts - ` +
