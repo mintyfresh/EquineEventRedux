@@ -41,8 +41,8 @@ const CreatePlayerButton: React.FC<CreatePlayerButtonProps> = ({ event, onCreate
       setErrors(playerCreate?.errors)
 
       if (playerCreate?.player?.id) {
-        // Clear inputs after successful creation
-        setInput({})
+        // Clear name after successful creation
+        setInput({  ...input, name: '' })
         onCreate()
       }
     }
