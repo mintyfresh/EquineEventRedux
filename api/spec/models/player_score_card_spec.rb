@@ -4,7 +4,7 @@
 #
 # Table name: player_score_cards
 #
-#  player_id               :uuid
+#  player_id               :uuid             primary key
 #  matches_count           :bigint
 #  completed_matches_count :bigint
 #  wins_count              :bigint

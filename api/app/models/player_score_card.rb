@@ -4,7 +4,7 @@
 #
 # Table name: player_score_cards
 #
-#  player_id               :uuid
+#  player_id               :uuid             primary key
 #  matches_count           :bigint
 #  completed_matches_count :bigint
 #  wins_count              :bigint
@@ -17,9 +17,10 @@ class PlayerScoreCard < ApplicationRecord
   POINTS_PER_DRAW = 1
   POINTS_PER_LOSS = 0
 
+  self.primary_key = :player_id
   self.implicit_order_column = :player_id
 
-  belongs_to :player
+  belongs_to :player, inverse_of: :score_card
 
   scope :order_by_score, -> (direction = 'ASC') { order(Arel.sql(<<-SQL.squish) => direction) }
     ("player_score_cards"."wins_count" * #{POINTS_PER_WIN})
