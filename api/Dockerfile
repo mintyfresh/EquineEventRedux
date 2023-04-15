@@ -25,6 +25,7 @@ RUN apt-get update \
 
 ARG RAILS_ENV=production
 ENV RAILS_ENV $RAILS_ENV
+ENV RACK_ENV  $RAILS_ENV
 
 RUN addgroup --system --gid 1001 rails
 RUN adduser  --system --uid 1001 rails --ingroup rails
