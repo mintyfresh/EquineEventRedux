@@ -22,7 +22,7 @@
 #
 FactoryBot.define do
   factory :round do
-    association :event, strategy: :build
+    event
 
     number { event.rounds.size + 1 }
   end

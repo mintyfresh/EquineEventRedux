@@ -12,7 +12,7 @@ gem 'graphql-order_by', github: 'mintyfresh/graphql-order_by'
 gem 'graphql-rails_logger'
 gem 'oj'
 gem 'pg', '~> 1.1'
-gem 'puma', '~> 5.0'
+gem 'puma', '~> 6.0'
 gem 'rails', '~> 7.0.2', '>= 7.0.2.3'
 gem 'scenic'
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]

@@ -29,7 +29,7 @@
 #
 require 'rails_helper'
 
-RSpec.describe Match, type: :model do
+RSpec.describe Match do
   subject(:match) { build(:match) }
 
   it 'has a valid factory' do

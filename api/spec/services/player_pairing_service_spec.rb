@@ -17,7 +17,7 @@ RSpec.describe PlayerPairingService, type: :service do
     end
 
     it 'includes all players in the pairings' do
-      expect(generate_pairings.flatten).to contain_exactly(*players)
+      expect(generate_pairings.flatten).to match_array(players)
     end
 
     it 'positions the players with the highest rankings first' do
@@ -26,7 +26,7 @@ RSpec.describe PlayerPairingService, type: :service do
       end
 
       best_players = event.players.joins(:score_card).order(wins_count: :desc).first(2)
-      expect(generate_pairings.first).to contain_exactly(*best_players)
+      expect(generate_pairings.first).to match_array(best_players)
     end
 
     context 'when there is an odd number of players' do

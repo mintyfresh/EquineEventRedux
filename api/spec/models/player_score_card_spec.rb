@@ -14,7 +14,7 @@
 #
 require 'rails_helper'
 
-RSpec.describe PlayerScoreCard, type: :model do
+RSpec.describe PlayerScoreCard do
   subject(:player_score_card) { player.score_card }
 
   let(:player) { create(:player) }

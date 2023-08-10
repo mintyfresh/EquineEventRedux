@@ -15,6 +15,9 @@ AllCops:
     - 'db/schema.rb'
     - 'vendor/**/*'
 
+FactoryBot/FactoryAssociationWithStrategy:
+  Enabled: false
+
 Layout/AccessModifierIndentation:
   EnforcedStyle: outdent
 
@@ -74,6 +77,9 @@ RSpec/HookArgument:
 
 RSpec/NestedGroups:
   Max: 5
+
+RSpec/Rails/NegationBeValid:
+  EnforcedStyle: be_invalid
 
 Style/AccessorGrouping:
   EnforcedStyle: separated

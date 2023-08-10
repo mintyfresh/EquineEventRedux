@@ -22,7 +22,7 @@
 #
 require 'rails_helper'
 
-RSpec.describe Round, type: :model do
+RSpec.describe Round do
   subject(:round) { build(:round) }
 
   it 'has a valid factory' do

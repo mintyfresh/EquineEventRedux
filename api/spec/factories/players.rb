@@ -24,7 +24,7 @@
 #
 FactoryBot.define do
   factory :player do
-    association :event, strategy: :build
+    event
 
     sequence(:name) { |n| "#{Faker::Internet.user_name} #{n}" }
 

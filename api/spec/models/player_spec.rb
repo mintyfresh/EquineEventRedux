@@ -24,7 +24,7 @@
 #
 require 'rails_helper'
 
-RSpec.describe Player, type: :model do
+RSpec.describe Player do
   subject(:player) { build(:player) }
 
   it 'has a valid factory' do
