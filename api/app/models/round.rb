@@ -37,7 +37,7 @@ class Round < ApplicationRecord
 
       if tables.include?(match.table)
         error = match.errors.add(:table, :taken)
-        errors.add("matches[#{index}].table", error.message)
+        errors.import(error, attribute: "matches[#{index}].#{error.attribute}")
       else
         tables << match.table
       end
