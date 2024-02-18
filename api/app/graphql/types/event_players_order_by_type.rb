@@ -19,7 +19,7 @@ module Types
     end
 
     order_by 'SCORE' do |direction|
-      Player.order_by_score(direction).order(created_at: direction, id: direction)
+      Player.order_by_score(direction).order(id: direction)
     end
   end
 end

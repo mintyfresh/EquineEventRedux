@@ -73,7 +73,8 @@ export interface PlayerTableProps {
 const PlayerTable: React.FC<PlayerTableProps> = ({ players, onDelete, onRestore }) => {
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'score', desc: true },
-    { id: 'opponentWinRate', desc: true }
+    { id: 'opponentWinRate', desc: true },
+    { id: 'id', desc: true }
   ])
 
   const columns: ColumnDef<PlayerTableFragment>[] = useMemo(() => [
@@ -113,6 +114,11 @@ const PlayerTable: React.FC<PlayerTableProps> = ({ players, onDelete, onRestore 
       )
     },
     {
+      accessorKey: 'id',
+      header: 'Player ID',
+      enableHiding: true
+    },
+    {
       id: 'actions',
       header: () => (
         <span className="float-end d-print-none">
@@ -134,7 +140,7 @@ const PlayerTable: React.FC<PlayerTableProps> = ({ players, onDelete, onRestore 
   const table = useReactTable({
     data: players,
     columns,
-    state: { sorting },
+    state: { sorting, columnVisibility: { 'id': false } },
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel()
@@ -145,7 +151,7 @@ const PlayerTable: React.FC<PlayerTableProps> = ({ players, onDelete, onRestore 
       <thead>
         {table.getHeaderGroups().map((headerGroup) => (
           <tr key={headerGroup.id}>
-            <th>Ordinal</th>
+            <th>Ranking</th>
             {headerGroup.headers.map((header) => (
               <PlayerTableHeader
                 key={header.id}
