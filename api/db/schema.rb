@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_18_034935) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_18_041042) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pgcrypto"
@@ -80,21 +80,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_18_034935) do
   add_foreign_key "players", "events"
   add_foreign_key "rounds", "events"
 
-  create_view "player_score_cards", sql_definition: <<-SQL
-      SELECT players.id AS player_id,
-      array_agg(DISTINCT opponents.id) AS opponent_ids,
-      COALESCE(avg(
-          CASE
-              WHEN (opponents.maximum_possible_score = 0) THEN (0)::numeric
-              ELSE ((opponents.score)::numeric / (opponents.maximum_possible_score)::numeric)
-          END), (0)::numeric) AS opponent_win_rate
-     FROM ((players
-       LEFT JOIN matches ON ((((matches.player1_id = players.id) OR (matches.player2_id = players.id)) AND ( SELECT (rounds.deleted_at IS NULL)
-             FROM rounds
-            WHERE (rounds.id = matches.round_id)))))
-       LEFT JOIN players opponents ON ((((opponents.id = matches.player1_id) OR (opponents.id = matches.player2_id)) AND (opponents.id <> players.id))))
-    GROUP BY players.id;
-  SQL
   create_view "player_matches", sql_definition: <<-SQL
       SELECT matches.id AS match_id,
       matches.round_id,
@@ -125,5 +110,18 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_18_034935) do
           END AS result
      FROM matches
     WHERE ((matches.player2_id IS NOT NULL) AND (matches.deleted_at IS NULL));
+  SQL
+  create_view "player_score_cards", sql_definition: <<-SQL
+      SELECT players.id AS player_id,
+      array_agg(DISTINCT opponents.id) AS opponent_ids,
+      COALESCE(avg(
+          CASE
+              WHEN (opponents.maximum_possible_score = 0) THEN (0)::numeric
+              ELSE ((opponents.score)::numeric / (opponents.maximum_possible_score)::numeric)
+          END), (0)::numeric) AS opponent_win_rate
+     FROM ((players
+       LEFT JOIN matches ON ((((matches.player1_id = players.id) OR (matches.player2_id = players.id)) AND (matches.deleted_at IS NULL))))
+       LEFT JOIN players opponents ON ((((opponents.id = matches.player1_id) OR (opponents.id = matches.player2_id)) AND (opponents.id <> players.id))))
+    GROUP BY players.id;
   SQL
 end
