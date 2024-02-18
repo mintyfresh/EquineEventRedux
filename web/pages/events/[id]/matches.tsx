@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client'
 import { GetServerSideProps } from 'next'
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import { Alert, Button, ButtonToolbar, Card } from 'react-bootstrap'
 import CreateRoundButton, { CREATE_ROUND_BUTTON_FRAGMENT } from '../../../components/CreateRoundButton'
 import EventLayout, { EVENT_LAYOUT_FRAGMENT } from '../../../components/EventLayout'
