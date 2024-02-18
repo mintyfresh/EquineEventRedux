@@ -8,6 +8,7 @@ export const EVENT_LIST_ITEM_FRAGMENT = gql`
   fragment EventListItem on Event {
     id
     name
+    slug
     deleted
   }
 `
@@ -59,7 +60,7 @@ const EventListItem: React.FC<EventListItemProps> = ({ event, onDelete, onRestor
 
   return (
     <ListGroup.Item>
-      <Link href="/events/[id]" as={`/events/${event.id}`}>
+      <Link href="/events/[id]" as={`/events/${event.deleted ? event.id : event.slug}`}>
         {event.name}
       </Link>
       <EllipsisDropdown align="end" className="float-end">

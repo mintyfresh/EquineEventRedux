@@ -7,6 +7,7 @@ export const EVENT_LIST_FRAGMENT = gql`
   fragment EventList on EventConnection {
     nodes {
       id
+      slug
       ...EventListItem
     }
   }

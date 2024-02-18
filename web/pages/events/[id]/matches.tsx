@@ -69,12 +69,13 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   return {
     props: {
       initialApolloState: apolloClient.cache.extract(),
+      id: params.id,
       event: data.event
     }
   }
 }
 
-const EventMatchesPage: NextPageWithLayout<EventMatchesQuery> = ({ event: { id }}) => {
+const EventMatchesPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
   const [view, setView] = useState<'legacy' | 'modern'>('modern')
   const [deleted, setDeleted] = useState<boolean>(false)
 

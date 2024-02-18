@@ -46,12 +46,13 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   return {
     props: {
       initialApolloState: apolloClient.cache.extract(),
+      id: params.id,
       event: data.event
     }
   }
 }
 
-const EventSlipsPage: NextPageWithLayout<EventSlipsQuery> = ({ event: { id }}) => {
+const EventSlipsPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
   const [round, setRound] = useState<EventSlipsQuery['event']['rounds'][0] | null>(null)
 
   const { data } = useEventSlipsQuery({

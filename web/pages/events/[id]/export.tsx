@@ -165,6 +165,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   return {
     props: {
       initialApolloState: apolloClient.cache.extract(),
+      id: params.id,
       event: data.event
     }
   }

@@ -3,6 +3,7 @@
 module Types
   class EventType < BaseObject
     field :id, ID, null: false
+    field :slug, String, null: false
     field :name, String, null: false
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false
     field :deleted, Boolean, null: false

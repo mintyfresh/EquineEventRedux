@@ -47,12 +47,13 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   return {
     props: {
       initialApolloState: apolloClient.cache.extract(),
+      id: params.id,
       event: data.event
     }
   }
 }
 
-const EventPlayersPage: NextPageWithLayout<EventPlayersQuery> = ({ event: { id } }) => {
+const EventPlayersPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
   const [deleted, setDeleted] = useState<boolean>(false)
 
   const { data, refetch } = useEventPlayersQuery({

@@ -5,7 +5,7 @@ module Resolvers
     # @param model_name [String]
     # @param type [Class<Types::BaseObject>, Module<Types::BaseInterface>]
     # @return [Class<RecordFind>]
-    def self.[](model_name, type: default_type(model_name))
+    def self.[](model_name, type: default_type(model_name), &)
       resolver = Class.new(self)
 
       resolver.define_singleton_method(:model) { @model ||= model_name.constantize }
@@ -13,6 +13,7 @@ module Resolvers
 
       resolver.type(type, null: false)
       resolver.argument(:id, 'ID', required: true)
+      resolver.instance_eval(&) if block_given?
 
       resolver
     end
@@ -30,10 +31,18 @@ module Resolvers
     end
 
     def resolve(id:)
-      record = self.class.model.find(id)
+      record = find_record_by_id(id)
       yield(record) if block_given?
 
       record
+    end
+
+  protected
+
+    # @param id [String]
+    # @return [ActiveRecord::Base]
+    def find_record_by_id(id)
+      self.class.model.find(id)
     end
   end
 end

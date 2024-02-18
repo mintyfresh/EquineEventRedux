@@ -56,8 +56,8 @@ const EventsIndexPage: NextPage<EventsIndexPageProps> = () => {
           </span>
         ) : (
           <CreateEventModal
-            onCreate={({ id }) => {
-              router.push(`/events/${id}`)
+            onCreate={({ slug }) => {
+              router.push(`/events/${slug}`)
             }}
           />
         )}

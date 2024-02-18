@@ -9,6 +9,12 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  deleted_at :datetime
+#  slug       :string           not null
+#
+# Indexes
+#
+#  index_events_on_name  (name) UNIQUE WHERE (deleted_at IS NULL)
+#  index_events_on_slug  (slug) UNIQUE WHERE (deleted_at IS NULL)
 #
 require 'rails_helper'
 
@@ -26,6 +32,11 @@ RSpec.describe Event do
 
   it 'is invalid with a name longer than 50 characters' do
     event.name = 'a' * 51
+    expect(event).to be_invalid
+  end
+
+  it 'is invalid with a duplicate name' do
+    create(:event, name: event.name)
     expect(event).to be_invalid
   end
 end

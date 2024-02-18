@@ -56,6 +56,8 @@ class Player < ApplicationRecord
   validates :name, length: { maximum: 50 }, presence: true
   validates :name, uniqueness: { scope: :event, condition: -> { non_deleted }, if: :name_changed? }
 
+  strips_whitespace_from :name
+
   before_save :calculate_scores, if: :player_statistics_changed?
 
   # @!method self.active

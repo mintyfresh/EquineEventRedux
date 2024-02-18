@@ -9,6 +9,7 @@ export const CREATE_EVENT_FRAGMENT = gql`
   fragment CreateEvent on Event {
     id
     name
+    slug
   }
 `
 

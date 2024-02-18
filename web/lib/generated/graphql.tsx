@@ -45,6 +45,7 @@ export type Event = {
   name: Scalars['String'];
   players: PlayerConnection;
   rounds: Array<Round>;
+  slug: Scalars['String'];
 };
 
 
@@ -502,14 +503,14 @@ export type RoundUpdatePayload = {
   round?: Maybe<Round>;
 };
 
-export type CreateEventFragment = { __typename?: 'Event', id: string, name: string };
+export type CreateEventFragment = { __typename?: 'Event', id: string, name: string, slug: string };
 
 export type CreateEventMutationVariables = Exact<{
   input: EventInput;
 }>;
 
 
-export type CreateEventMutation = { __typename?: 'Mutation', eventCreate?: { __typename?: 'EventCreatePayload', event?: { __typename?: 'Event', id: string, name: string } | null, errors?: Array<{ __typename?: 'Error', attribute: string, message: string }> | null } | null };
+export type CreateEventMutation = { __typename?: 'Mutation', eventCreate?: { __typename?: 'EventCreatePayload', event?: { __typename?: 'Event', id: string, name: string, slug: string } | null, errors?: Array<{ __typename?: 'Error', attribute: string, message: string }> | null } | null };
 
 export type CreatePlayerMutationVariables = Exact<{
   eventID: Scalars['ID'];
@@ -538,11 +539,11 @@ export type CreateRoundMutationVariables = Exact<{
 
 export type CreateRoundMutation = { __typename?: 'Mutation', roundCreate?: { __typename?: 'RoundCreatePayload', round?: { __typename?: 'Round', id: string } | null, errors?: Array<{ __typename?: 'Error', attribute: string, message: string }> | null } | null };
 
-export type EventLayoutFragment = { __typename?: 'Event', name: string, id: string };
+export type EventLayoutFragment = { __typename?: 'Event', name: string, id: string, slug: string, deleted: boolean };
 
-export type EventListFragment = { __typename?: 'EventConnection', nodes: Array<{ __typename?: 'Event', id: string, name: string, deleted: boolean }> };
+export type EventListFragment = { __typename?: 'EventConnection', nodes: Array<{ __typename?: 'Event', id: string, slug: string, name: string, deleted: boolean }> };
 
-export type EventListItemFragment = { __typename?: 'Event', id: string, name: string, deleted: boolean };
+export type EventListItemFragment = { __typename?: 'Event', id: string, name: string, slug: string, deleted: boolean };
 
 export type DeleteEventMutationVariables = Exact<{
   id: Scalars['ID'];
@@ -556,9 +557,9 @@ export type RestoreEventMutationVariables = Exact<{
 }>;
 
 
-export type RestoreEventMutation = { __typename?: 'Mutation', eventRestore?: { __typename?: 'EventRestorePayload', event?: { __typename?: 'Event', id: string, name: string, deleted: boolean } | null } | null };
+export type RestoreEventMutation = { __typename?: 'Mutation', eventRestore?: { __typename?: 'EventRestorePayload', event?: { __typename?: 'Event', id: string, name: string, slug: string, deleted: boolean } | null } | null };
 
-export type EventNavFragment = { __typename?: 'Event', id: string };
+export type EventNavFragment = { __typename?: 'Event', id: string, slug: string, deleted: boolean };
 
 export type PlayerForImportFragment = { __typename?: 'Player', id: string, name: string, deleted: boolean };
 
@@ -675,14 +676,14 @@ export type EventShowQueryVariables = Exact<{
 }>;
 
 
-export type EventShowQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string } };
+export type EventShowQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, slug: string, deleted: boolean } };
 
 export type EventExportQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type EventExportQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, players: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, score: number, winsCount: number, lossesCount: number, drawsCount: number, opponentWinRate: number }> }, rounds: Array<{ __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, table: number, player1: { __typename?: 'Player', id: string, name: string, winsCount: number, lossesCount: number, drawsCount: number }, player2?: { __typename?: 'Player', id: string, name: string, winsCount: number, lossesCount: number, drawsCount: number } | null }> }> } };
+export type EventExportQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, slug: string, deleted: boolean, players: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, score: number, winsCount: number, lossesCount: number, drawsCount: number, opponentWinRate: number }> }, rounds: Array<{ __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, table: number, player1: { __typename?: 'Player', id: string, name: string, winsCount: number, lossesCount: number, drawsCount: number }, player2?: { __typename?: 'Player', id: string, name: string, winsCount: number, lossesCount: number, drawsCount: number } | null }> }> } };
 
 export type EventMatchesQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -690,7 +691,7 @@ export type EventMatchesQueryVariables = Exact<{
 }>;
 
 
-export type EventMatchesQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, rounds: Array<{ __typename?: 'Round', id: string, number: number, isComplete: boolean, matches: Array<{ __typename?: 'Match', id: string, table: number, winnerId?: string | null, draw: boolean, player1: { __typename?: 'Player', id: string, name: string, dropped: boolean, paid: boolean, deleted: boolean }, player2?: { __typename?: 'Player', id: string, name: string, dropped: boolean, paid: boolean, deleted: boolean } | null }> }>, players: { __typename?: 'PlayerConnection', totalCount: number } } };
+export type EventMatchesQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, slug: string, deleted: boolean, rounds: Array<{ __typename?: 'Round', id: string, number: number, isComplete: boolean, matches: Array<{ __typename?: 'Match', id: string, table: number, winnerId?: string | null, draw: boolean, player1: { __typename?: 'Player', id: string, name: string, dropped: boolean, paid: boolean, deleted: boolean }, player2?: { __typename?: 'Player', id: string, name: string, dropped: boolean, paid: boolean, deleted: boolean } | null }> }>, players: { __typename?: 'PlayerConnection', totalCount: number } } };
 
 export type SetMatchResolutionMutationVariables = Exact<{
   id: Scalars['ID'];
@@ -707,26 +708,27 @@ export type EventPlayersQueryVariables = Exact<{
 }>;
 
 
-export type EventPlayersQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, players: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, winsCount: number, drawsCount: number, lossesCount: number, score: number, opponentWinRate: number, paid: boolean, dropped: boolean, deleted: boolean }> }, allPlayers: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, deleted: boolean }> } } };
+export type EventPlayersQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, slug: string, deleted: boolean, players: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, winsCount: number, drawsCount: number, lossesCount: number, score: number, opponentWinRate: number, paid: boolean, dropped: boolean, deleted: boolean }> }, allPlayers: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, deleted: boolean }> } } };
 
 export type EventSlipsQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type EventSlipsQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, rounds: Array<{ __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, table: number, player1: { __typename?: 'Player', id: string, name: string, score: number }, player2?: { __typename?: 'Player', id: string, name: string, score: number } | null }> }> } };
+export type EventSlipsQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, slug: string, deleted: boolean, rounds: Array<{ __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, table: number, player1: { __typename?: 'Player', id: string, name: string, score: number }, player2?: { __typename?: 'Player', id: string, name: string, score: number } | null }> }> } };
 
 export type EventsIndexQueryVariables = Exact<{
   deleted?: InputMaybe<DeletedFilter>;
 }>;
 
 
-export type EventsIndexQuery = { __typename?: 'Query', events: { __typename?: 'EventConnection', nodes: Array<{ __typename?: 'Event', id: string, name: string, deleted: boolean }> } };
+export type EventsIndexQuery = { __typename?: 'Query', events: { __typename?: 'EventConnection', nodes: Array<{ __typename?: 'Event', id: string, slug: string, name: string, deleted: boolean }> } };
 
 export const CreateEventFragmentDoc = gql`
     fragment CreateEvent on Event {
   id
   name
+  slug
 }
     `;
 export const CreatePlayerButtonFragmentDoc = gql`
@@ -742,6 +744,8 @@ export const CreateRoundButtonFragmentDoc = gql`
 export const EventNavFragmentDoc = gql`
     fragment EventNav on Event {
   id
+  slug
+  deleted
 }
     `;
 export const EventLayoutFragmentDoc = gql`
@@ -754,6 +758,7 @@ export const EventListItemFragmentDoc = gql`
     fragment EventListItem on Event {
   id
   name
+  slug
   deleted
 }
     `;
@@ -761,6 +766,7 @@ export const EventListFragmentDoc = gql`
     fragment EventList on EventConnection {
   nodes {
     id
+    slug
     ...EventListItem
   }
 }

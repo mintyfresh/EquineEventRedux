@@ -32,12 +32,13 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   return {
     props: {
       initialApolloState: apolloClient.cache.extract(),
+      id: params.id,
       event: data.event
     }
   }
 }
 
-const EventShowPage: NextPageWithLayout<EventShowQuery> = ({ event: { id } }) => {
+const EventShowPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
   const { data } = useEventShowQuery({
     variables: { id }
   })
