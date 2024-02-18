@@ -5,7 +5,7 @@ module Resolvers
     # @param id [String]
     # @return [::Event]
     def find_record_by_id(id)
-      ::Event.find_by(slug: id) || super
+      dataloader.with(Sources::Record, ::Event, :slug).load(id) || super
     end
   end
 end

@@ -41,8 +41,10 @@ module Resolvers
 
     # @param id [String]
     # @return [ActiveRecord::Base]
+    # @raise [ActiveRecord::RecordNotFound]
     def find_record_by_id(id)
-      self.class.model.find(id)
+      dataloader.with(Sources::Record, self.class.model).load(id) or
+        raise self.class.model.raise_record_not_found_exception!
     end
   end
 end
