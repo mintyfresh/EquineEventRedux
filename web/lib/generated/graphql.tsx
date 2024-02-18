@@ -1630,7 +1630,7 @@ export const EventExportDocument = gql`
   event(id: $id) {
     id
     ...EventLayout
-    players(orderBy: SCORE, orderByDirection: DESC, activeOnly: true) {
+    players(orderBy: SCORE, orderByDirection: DESC) {
       nodes {
         id
         name
