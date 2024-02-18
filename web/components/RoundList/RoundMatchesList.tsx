@@ -1,30 +1,8 @@
 import { gql } from '@apollo/client'
 import { Dropdown, ListGroup } from 'react-bootstrap'
-import { ERRORS_FRAGMENT } from '../../lib/errors'
-import { RoundMatchListFragment, RoundMatchListItemFragment, useSetMatchResolutionMutation } from '../../lib/generated/graphql'
+import { RoundMatchListFragment, RoundMatchListItemFragment } from '../../lib/generated/graphql'
 import EllipsisDropdown from '../EllipsisDropdown'
-import PlayerDeletedBadge from '../Players/PlayerDeletedBadge'
 import PlayerNameWithBadges, { PLAYER_NAME_WITH_BADGES_FRAGMENT } from '../Players/PlayerNameWithBadges'
-
-gql`
-  mutation SetMatchResolution($id: ID!, $winnerId: ID, $draw: Boolean!) {
-    matchUpdate(id: $id, input: { winnerId: $winnerId, draw: $draw }) {
-      match {
-        id
-        winnerId
-        draw
-        round {
-          id
-          isComplete
-        }
-      }
-      errors {
-        ...Errors
-      }
-    }
-  }
-  ${ERRORS_FRAGMENT}
-`
 
 export const ROUND_MATCH_LIST_ITEM_FRAGMENT = gql`
   fragment RoundMatchListItem on Match {
@@ -56,18 +34,12 @@ export const ROUND_MATCH_LIST_FRAGMENT = gql`
 
 export interface RoundMatchesListProps {
   round: RoundMatchListFragment
-  onUpdate?: (round: RoundMatchListFragment) => void
+  disabled?: boolean
+  onSetWinner?: (matchId: string, winnerId: string) => void
+  onSetDraw?: (matchId: string) => void
 }
 
-const RoundMatchesList: React.FC<RoundMatchesListProps> = ({ round, onUpdate }) => {
-  const [setResolution, { loading }] = useSetMatchResolutionMutation({
-    onCompleted: ({ matchUpdate }) => {
-      if (matchUpdate?.match?.id) {
-        onUpdate?.({ ...round, ...matchUpdate.match.round })
-      }
-    }
-  })
-
+const RoundMatchesList: React.FC<RoundMatchesListProps> = ({ round, disabled, onSetWinner, onSetDraw }) => {
   const resolution = (match: RoundMatchListItemFragment) => {
     if (match.draw) {
       return ' - Draw'
@@ -91,20 +63,20 @@ const RoundMatchesList: React.FC<RoundMatchesListProps> = ({ round, onUpdate }) 
             <EllipsisDropdown align="end" className="float-end d-print-none">
               <Dropdown.Header>Table {match.table}</Dropdown.Header>
               <Dropdown.Item
-                disabled={loading || match.winnerId === match.player1.id}
-                onClick={() => setResolution({ variables: { id: match.id, winnerId: match.player1.id, draw: false } })}
+                disabled={disabled || match.winnerId === match.player1.id}
+                onClick={() => onSetWinner?.(match.id, match.player1.id)}
               >
                 Select {match.player1.name} as winner
               </Dropdown.Item>
               <Dropdown.Item
-                disabled={loading || match.winnerId === match.player2.id}
-                onClick={() => match.player2 && setResolution({ variables: { id: match.id, winnerId: match.player2.id, draw: false } })}
+                disabled={disabled || match.winnerId === match.player2.id}
+                onClick={() => match.player2 && onSetWinner?.(match.id, match.player2.id)}
               >
                 Select {match.player2.name} as winner
               </Dropdown.Item>
               <Dropdown.Item
-                disabled={loading || match.draw}
-                onClick={() => setResolution({ variables: { id: match.id, winnerId: null, draw: true } })}
+                disabled={disabled || match.draw}
+                onClick={() => onSetDraw?.(match.id)}
               >
                 Mark as a draw
               </Dropdown.Item>

@@ -5,7 +5,7 @@ module Types
     field :id, ID, null: false
     field :event_id, ID, null: false
     field :number, Integer, null: false
-    field :is_complete, Boolean, null: false, method: :complete? do
+    field :is_complete, Boolean, null: false, resolver_method: :complete? do
       description 'Whether all matches have been played (must include at least one match)'
     end
 
@@ -19,9 +19,14 @@ module Types
       extension Extensions::Players::ActiveOnlyExtension
     end
 
+    # @return [Boolean]
+    def complete?
+      matches.present? && matches.all?(&:complete?)
+    end
+
     # @return [Array<::Match>]
     def matches
-      scope = Match.paired_first.order(:created_at)
+      scope = Match.paired_first.order(:table, :created_at)
 
       dataloader.with(Sources::RecordList, ::Match, :round_id, scope:).load(object.id)
     end

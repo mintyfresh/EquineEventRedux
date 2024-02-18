@@ -18,11 +18,13 @@ export const ROUND_LIST_ITEM_FRAGMENT = gql`
 export interface RoundListProps {
   event: { id: string }
   rounds: RoundListItemFragment[]
-  onComplete?: (round: RoundListItemFragment) => void
+  disabled?: boolean
+  onSetWinner?: (matchId: string, winnerId: string) => void
+  onSetDraw?: (matchId: string) => void
   onDelete?: (round: RoundListItemFragment) => void
 }
 
-const RoundList: React.FC<RoundListProps> = ({ event, rounds, onComplete, onDelete }) => {
+const RoundList: React.FC<RoundListProps> = ({ event, rounds, disabled, onSetWinner, onSetDraw, onDelete }) => {
   return (
     <>
       {rounds.map((round) => (
@@ -38,11 +40,9 @@ const RoundList: React.FC<RoundListProps> = ({ event, rounds, onComplete, onDele
           {round.matches.length > 0 ? (
             <RoundMatchesList
               round={round}
-              onUpdate={(update) => {
-                if (update.isComplete && !round.isComplete) {
-                  onComplete?.(round)
-                }
-              }}
+              disabled={disabled}
+              onSetWinner={onSetWinner}
+              onSetDraw={onSetDraw}
             />
           ) : (
             <Card.Body>

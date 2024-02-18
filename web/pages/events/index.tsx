@@ -39,8 +39,7 @@ const EventsIndexPage: NextPage<EventsIndexPageProps> = () => {
   const router = useRouter()
   const [deleted, setDeleted] = useState(false)
   const { data, refetch } = useEventsIndexQuery({
-    variables: { deleted: deleted ? DeletedFilter.Deleted : undefined },
-    fetchPolicy: 'cache-and-network'
+    variables: { deleted: deleted ? DeletedFilter.Deleted : undefined }
   })
 
   if (!data?.events) {

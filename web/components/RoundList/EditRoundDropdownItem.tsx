@@ -13,6 +13,8 @@ export const EDIT_ROUND_DROPDOWN_ITEM_FRAGMENT = gql`
     matches {
       id
       table
+      winnerId
+      draw
       player1 {
         id
         ...MatchFormInputPlayer

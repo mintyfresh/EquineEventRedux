@@ -149,7 +149,7 @@ const ImportPlayersButton: React.FC<ImportPlayersButtonProps> = ({ event, onImpo
                 <option></option>
                 <optgroup label="Events">
                   {activeSourceEvents.map((event) => (
-                    <option value={event.id}>{event.name}</option>
+                    <option key={event.id} value={event.id}>{event.name}</option>
                   ))}
                   {activeSourceEvents.length === 0 && (
                     <option disabled>No events</option>
@@ -158,7 +158,7 @@ const ImportPlayersButton: React.FC<ImportPlayersButtonProps> = ({ event, onImpo
                 {deletedSourceEvents.length > 0 && (
                   <optgroup label="Deleted Events">
                     {deletedSourceEvents.map((event) => (
-                      <option value={event.id}>{event.name}</option>
+                      <option key={event.id} value={event.id}>{event.name}</option>
                     ))}
                   </optgroup>
                 )}
@@ -172,6 +172,7 @@ const ImportPlayersButton: React.FC<ImportPlayersButtonProps> = ({ event, onImpo
                   </Form.Label>
                   {sourceEvent.players.nodes.map((player) => (
                     <Form.Check
+                      key={player.id}
                       id={`player-check-${player.id}`}
                       label={(
                         <>

@@ -49,11 +49,10 @@ const EMPTY_ROUND_CREATE_INPUT: RoundInput = {
 
 export interface CreateRoundButtonProps extends Omit<React.ComponentProps<typeof Button>, 'onClick'> {
   event: CreateRoundButtonFragment
-  showCreateRoundModal: MutableRefObject<(() => void) | undefined>
   onCreate: () => void
 }
 
-const CreateRoundButton: React.FC<CreateRoundButtonProps> = ({ event, showCreateRoundModal, onCreate, ...props }) => {
+const CreateRoundButton: React.FC<CreateRoundButtonProps> = ({ event, onCreate, ...props }) => {
   const [showModal, setShowModal] = useState(false)
   const [input, setInput] = useState<RoundInput>(EMPTY_ROUND_CREATE_INPUT)
   const [errors, setErrors] = useErrors()
@@ -76,10 +75,6 @@ const CreateRoundButton: React.FC<CreateRoundButtonProps> = ({ event, showCreate
       }
     }
   })
-
-  useEffect(() => {
-    showCreateRoundModal.current = () => setShowModal(true)
-  }, [setShowModal, showCreateRoundModal])
 
   return (
     <>

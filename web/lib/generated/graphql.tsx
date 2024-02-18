@@ -578,6 +578,8 @@ export type ImportPlayersMutationVariables = Exact<{
 
 export type ImportPlayersMutation = { __typename?: 'Mutation', playerImportBulk?: { __typename?: 'PlayerImportBulkPayload', event?: { __typename?: 'Event', id: string, allPlayers: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, deleted: boolean }> } } | null } | null };
 
+export type MatchCardFragment = { __typename?: 'Match', id: string, table: number, winnerId?: string | null, draw: boolean, player1: { __typename?: 'Player', id: string, name: string, dropped: boolean }, player2?: { __typename?: 'Player', id: string, name: string, dropped: boolean } | null };
+
 export type MatchFormInputPlayerFragment = { __typename?: 'Player', id: string, name: string };
 
 export type PlayerTableFragment = { __typename?: 'Player', id: string, name: string, winsCount: number, drawsCount: number, lossesCount: number, score: number, opponentWinRate: number, paid: boolean, dropped: boolean, deleted: boolean };
@@ -618,9 +620,11 @@ export type PlayerActionsRestoreMutation = { __typename?: 'Mutation', playerRest
 
 export type PlayerNameWithBadgesFragment = { __typename?: 'Player', id: string, name: string, paid: boolean, dropped: boolean, deleted: boolean };
 
+export type RoundFragment = { __typename?: 'Round', id: string, number: number, isComplete: boolean, matches: Array<{ __typename?: 'Match', id: string, table: number, winnerId?: string | null, draw: boolean, player1: { __typename?: 'Player', id: string, name: string, dropped: boolean }, player2?: { __typename?: 'Player', id: string, name: string, dropped: boolean } | null }> };
+
 export type RoundListItemFragment = { __typename?: 'Round', id: string, number: number, isComplete: boolean, matches: Array<{ __typename?: 'Match', id: string, table: number, winnerId?: string | null, draw: boolean, player1: { __typename?: 'Player', id: string, name: string, paid: boolean, dropped: boolean, deleted: boolean }, player2?: { __typename?: 'Player', id: string, name: string, paid: boolean, dropped: boolean, deleted: boolean } | null }> };
 
-export type EditRoundDropdownItemFragment = { __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, table: number, player1: { __typename?: 'Player', id: string, name: string }, player2?: { __typename?: 'Player', id: string, name: string } | null }> };
+export type EditRoundDropdownItemFragment = { __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, table: number, winnerId?: string | null, draw: boolean, player1: { __typename?: 'Player', id: string, name: string }, player2?: { __typename?: 'Player', id: string, name: string } | null }> };
 
 export type PlayersForEditRoundQueryVariables = Exact<{
   roundID: Scalars['ID'];
@@ -635,9 +639,9 @@ export type UpdateRoundMutationVariables = Exact<{
 }>;
 
 
-export type UpdateRoundMutation = { __typename?: 'Mutation', roundUpdate?: { __typename?: 'RoundUpdatePayload', round?: { __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, table: number, player1: { __typename?: 'Player', id: string, name: string }, player2?: { __typename?: 'Player', id: string, name: string } | null }> } | null, errors?: Array<{ __typename?: 'Error', attribute: string, message: string }> | null } | null };
+export type UpdateRoundMutation = { __typename?: 'Mutation', roundUpdate?: { __typename?: 'RoundUpdatePayload', round?: { __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, table: number, winnerId?: string | null, draw: boolean, player1: { __typename?: 'Player', id: string, name: string }, player2?: { __typename?: 'Player', id: string, name: string } | null }> } | null, errors?: Array<{ __typename?: 'Error', attribute: string, message: string }> | null } | null };
 
-export type RoundControlsDropdownFragment = { __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, table: number, player1: { __typename?: 'Player', id: string, name: string }, player2?: { __typename?: 'Player', id: string, name: string } | null }> };
+export type RoundControlsDropdownFragment = { __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, table: number, winnerId?: string | null, draw: boolean, player1: { __typename?: 'Player', id: string, name: string }, player2?: { __typename?: 'Player', id: string, name: string } | null }> };
 
 export type DeleteRoundMutationVariables = Exact<{
   id: Scalars['ID'];
@@ -645,15 +649,6 @@ export type DeleteRoundMutationVariables = Exact<{
 
 
 export type DeleteRoundMutation = { __typename?: 'Mutation', roundDelete?: { __typename?: 'RoundDeletePayload', success?: boolean | null, errors?: Array<{ __typename?: 'Error', attribute: string, message: string }> | null } | null };
-
-export type SetMatchResolutionMutationVariables = Exact<{
-  id: Scalars['ID'];
-  winnerId?: InputMaybe<Scalars['ID']>;
-  draw: Scalars['Boolean'];
-}>;
-
-
-export type SetMatchResolutionMutation = { __typename?: 'Mutation', matchUpdate?: { __typename?: 'MatchUpdatePayload', match?: { __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, round: { __typename?: 'Round', id: string, isComplete: boolean } } | null, errors?: Array<{ __typename?: 'Error', attribute: string, message: string }> | null } | null };
 
 export type RoundMatchListItemFragment = { __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, table: number, player1: { __typename?: 'Player', id: string, name: string, paid: boolean, dropped: boolean, deleted: boolean }, player2?: { __typename?: 'Player', id: string, name: string, paid: boolean, dropped: boolean, deleted: boolean } | null };
 
@@ -695,7 +690,16 @@ export type EventMatchesQueryVariables = Exact<{
 }>;
 
 
-export type EventMatchesQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, rounds: Array<{ __typename?: 'Round', id: string, number: number, isComplete: boolean, matches: Array<{ __typename?: 'Match', id: string, table: number, winnerId?: string | null, draw: boolean, player1: { __typename?: 'Player', id: string, name: string, paid: boolean, dropped: boolean, deleted: boolean }, player2?: { __typename?: 'Player', id: string, name: string, paid: boolean, dropped: boolean, deleted: boolean } | null }> }>, players: { __typename?: 'PlayerConnection', totalCount: number } } };
+export type EventMatchesQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, rounds: Array<{ __typename?: 'Round', id: string, number: number, isComplete: boolean, matches: Array<{ __typename?: 'Match', id: string, table: number, winnerId?: string | null, draw: boolean, player1: { __typename?: 'Player', id: string, name: string, dropped: boolean, paid: boolean, deleted: boolean }, player2?: { __typename?: 'Player', id: string, name: string, dropped: boolean, paid: boolean, deleted: boolean } | null }> }>, players: { __typename?: 'PlayerConnection', totalCount: number } } };
+
+export type SetMatchResolutionMutationVariables = Exact<{
+  id: Scalars['ID'];
+  winnerId?: InputMaybe<Scalars['ID']>;
+  draw: Scalars['Boolean'];
+}>;
+
+
+export type SetMatchResolutionMutation = { __typename?: 'Mutation', matchUpdate?: { __typename?: 'MatchUpdatePayload', match?: { __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, round: { __typename?: 'Round', id: string, isComplete: boolean } } | null, errors?: Array<{ __typename?: 'Error', attribute: string, message: string }> | null } | null };
 
 export type EventPlayersQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -832,6 +836,24 @@ export const PlayerTableFragmentDoc = gql`
 }
     ${PlayerNameWithBadgesFragmentDoc}
 ${PlayerActionsDropdownFragmentDoc}`;
+export const MatchCardFragmentDoc = gql`
+    fragment MatchCard on Match {
+  id
+  table
+  winnerId
+  draw
+  player1 {
+    id
+    name
+    dropped
+  }
+  player2 {
+    id
+    name
+    dropped
+  }
+}
+    `;
 export const MatchFormInputPlayerFragmentDoc = gql`
     fragment MatchFormInputPlayer on Player {
   id
@@ -845,6 +867,8 @@ export const EditRoundDropdownItemFragmentDoc = gql`
   matches {
     id
     table
+    winnerId
+    draw
     player1 {
       id
       ...MatchFormInputPlayer
@@ -856,6 +880,18 @@ export const EditRoundDropdownItemFragmentDoc = gql`
   }
 }
     ${MatchFormInputPlayerFragmentDoc}`;
+export const RoundFragmentDoc = gql`
+    fragment Round on Round {
+  id
+  number
+  isComplete
+  matches {
+    ...MatchCard
+  }
+  ...EditRoundDropdownItem
+}
+    ${MatchCardFragmentDoc}
+${EditRoundDropdownItemFragmentDoc}`;
 export const RoundControlsDropdownFragmentDoc = gql`
     fragment RoundControlsDropdown on Round {
   id
@@ -1509,52 +1545,6 @@ export function useDeleteRoundMutation(baseOptions?: Apollo.MutationHookOptions<
 export type DeleteRoundMutationHookResult = ReturnType<typeof useDeleteRoundMutation>;
 export type DeleteRoundMutationResult = Apollo.MutationResult<DeleteRoundMutation>;
 export type DeleteRoundMutationOptions = Apollo.BaseMutationOptions<DeleteRoundMutation, DeleteRoundMutationVariables>;
-export const SetMatchResolutionDocument = gql`
-    mutation SetMatchResolution($id: ID!, $winnerId: ID, $draw: Boolean!) {
-  matchUpdate(id: $id, input: {winnerId: $winnerId, draw: $draw}) {
-    match {
-      id
-      winnerId
-      draw
-      round {
-        id
-        isComplete
-      }
-    }
-    errors {
-      ...Errors
-    }
-  }
-}
-    ${ErrorsFragmentDoc}`;
-export type SetMatchResolutionMutationFn = Apollo.MutationFunction<SetMatchResolutionMutation, SetMatchResolutionMutationVariables>;
-
-/**
- * __useSetMatchResolutionMutation__
- *
- * To run a mutation, you first call `useSetMatchResolutionMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useSetMatchResolutionMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [setMatchResolutionMutation, { data, loading, error }] = useSetMatchResolutionMutation({
- *   variables: {
- *      id: // value for 'id'
- *      winnerId: // value for 'winnerId'
- *      draw: // value for 'draw'
- *   },
- * });
- */
-export function useSetMatchResolutionMutation(baseOptions?: Apollo.MutationHookOptions<SetMatchResolutionMutation, SetMatchResolutionMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<SetMatchResolutionMutation, SetMatchResolutionMutationVariables>(SetMatchResolutionDocument, options);
-      }
-export type SetMatchResolutionMutationHookResult = ReturnType<typeof useSetMatchResolutionMutation>;
-export type SetMatchResolutionMutationResult = Apollo.MutationResult<SetMatchResolutionMutation>;
-export type SetMatchResolutionMutationOptions = Apollo.BaseMutationOptions<SetMatchResolutionMutation, SetMatchResolutionMutationVariables>;
 export const GeneratePairingsDocument = gql`
     mutation GeneratePairings($eventId: ID!, $playerIds: [ID!]!) {
   eventGeneratePairings(eventId: $eventId, playerIds: $playerIds) {
@@ -1713,6 +1703,7 @@ export const EventMatchesDocument = gql`
     ...CreateRoundButton
     rounds(deleted: $deleted, orderBy: NUMBER, orderByDirection: DESC) {
       ...RoundListItem
+      ...Round
     }
     players {
       totalCount
@@ -1721,7 +1712,8 @@ export const EventMatchesDocument = gql`
 }
     ${EventLayoutFragmentDoc}
 ${CreateRoundButtonFragmentDoc}
-${RoundListItemFragmentDoc}`;
+${RoundListItemFragmentDoc}
+${RoundFragmentDoc}`;
 
 /**
  * __useEventMatchesQuery__
@@ -1751,6 +1743,52 @@ export function useEventMatchesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptio
 export type EventMatchesQueryHookResult = ReturnType<typeof useEventMatchesQuery>;
 export type EventMatchesLazyQueryHookResult = ReturnType<typeof useEventMatchesLazyQuery>;
 export type EventMatchesQueryResult = Apollo.QueryResult<EventMatchesQuery, EventMatchesQueryVariables>;
+export const SetMatchResolutionDocument = gql`
+    mutation SetMatchResolution($id: ID!, $winnerId: ID, $draw: Boolean!) {
+  matchUpdate(id: $id, input: {winnerId: $winnerId, draw: $draw}) {
+    match {
+      id
+      winnerId
+      draw
+      round {
+        id
+        isComplete
+      }
+    }
+    errors {
+      ...Errors
+    }
+  }
+}
+    ${ErrorsFragmentDoc}`;
+export type SetMatchResolutionMutationFn = Apollo.MutationFunction<SetMatchResolutionMutation, SetMatchResolutionMutationVariables>;
+
+/**
+ * __useSetMatchResolutionMutation__
+ *
+ * To run a mutation, you first call `useSetMatchResolutionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSetMatchResolutionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [setMatchResolutionMutation, { data, loading, error }] = useSetMatchResolutionMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      winnerId: // value for 'winnerId'
+ *      draw: // value for 'draw'
+ *   },
+ * });
+ */
+export function useSetMatchResolutionMutation(baseOptions?: Apollo.MutationHookOptions<SetMatchResolutionMutation, SetMatchResolutionMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SetMatchResolutionMutation, SetMatchResolutionMutationVariables>(SetMatchResolutionDocument, options);
+      }
+export type SetMatchResolutionMutationHookResult = ReturnType<typeof useSetMatchResolutionMutation>;
+export type SetMatchResolutionMutationResult = Apollo.MutationResult<SetMatchResolutionMutation>;
+export type SetMatchResolutionMutationOptions = Apollo.BaseMutationOptions<SetMatchResolutionMutation, SetMatchResolutionMutationVariables>;
 export const EventPlayersDocument = gql`
     query EventPlayers($id: ID!, $deleted: DeletedFilter) {
   event(id: $id) {

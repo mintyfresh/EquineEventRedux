@@ -56,8 +56,7 @@ const EventPlayersPage: NextPageWithLayout<EventPlayersQuery> = ({ event: { id }
   const [deleted, setDeleted] = useState<boolean>(false)
 
   const { data, refetch } = useEventPlayersQuery({
-    variables: { id, deleted: deleted ? DeletedFilter.Deleted : undefined },
-    fetchPolicy: 'cache-and-network'
+    variables: { id, deleted: deleted ? DeletedFilter.Deleted : undefined }
   })
 
   if (!data?.event) {
