@@ -17,7 +17,10 @@
 /tmp/pids/*
 !/tmp/pids/
 !/tmp/pids/.keep
+/tmp/storage/*
 
+# Ignore uploaded files in development.
+/storage/*
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key

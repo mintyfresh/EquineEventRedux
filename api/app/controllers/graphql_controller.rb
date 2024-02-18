@@ -10,10 +10,8 @@ class GraphqlController < ApplicationController
     variables = prepare_variables(params[:variables])
     query = params[:query]
     operation_name = params[:operationName]
-    context = {
-      # Query context goes here, for example:
-      # current_user: current_user,
-    }
+    context = { host: request.host_with_port }
+
     result = EquineEventApiSchema.execute(query, variables:, context:, operation_name:)
     render json: result
   rescue StandardError => error

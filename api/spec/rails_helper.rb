@@ -61,4 +61,9 @@ RSpec.configure do |config|
   ensure
     Moonfire.message_bus = message_bus
   end
+
+  config.after(:suite) do
+    # Purge the storage directory after the test suite is finished.
+    FileUtils.rm_rf(Rails.root.join('tmp/storage'))
+  end
 end
