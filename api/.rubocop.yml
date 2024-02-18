@@ -57,8 +57,13 @@ Metrics/ClassLength:
   CountAsOne:
     - array
     - heredoc
-    - method_call
   Max: 200
+
+Metrics/MethodLength:
+  CountAsOne:
+    - array
+    - hash
+    - heredoc
 
 Naming/PredicateName:
   ForbiddenPrefixes:

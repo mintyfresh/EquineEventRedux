@@ -39,7 +39,13 @@ FactoryBot.define do
       event { build(:event) }
     end
 
+    trait :draw do
+      draw { true }
+      winner_id { nil }
+    end
+
     trait :with_winner do
+      draw { false }
       winner_id { [player1, player2].compact.sample.id }
     end
   end

@@ -18,24 +18,11 @@ class Match
 
     def perform
       Player.transaction do
-        Player.lock.find(affected_player_ids).each do |player|
-          update_player_statistics(player)
-        end
+        Player.lock.find(affected_player_ids).each(&:calculate_statistics!)
       end
     end
 
   private
-
-    # @param player [Player]
-    # @return [void]
-    def update_player_statistics(player)
-      player.update!(
-        completed_matches_count: player.matches.complete.count,
-        wins_count:              player.matches.where_winner(player).count,
-        draws_count:             player.matches.draw.count,
-        losses_count:            player.matches.where_loser(player).count
-      )
-    end
 
     # @return [Array<String>]
     def affected_player_ids

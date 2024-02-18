@@ -56,7 +56,7 @@ class Player < ApplicationRecord
   validates :name, length: { maximum: 50 }, presence: true
   validates :name, uniqueness: { scope: :event, condition: -> { non_deleted }, if: :name_changed? }
 
-  before_save :calculate_player_score, if: :player_statistics_changed?
+  before_save :calculate_scores, if: :player_statistics_changed?
 
   # @!method self.active
   #   @return [Class<Player>]
@@ -74,10 +74,22 @@ class Player < ApplicationRecord
     !deleted? && paid? && !dropped?
   end
 
+  # Calculates the player's statistics.
+  #
+  # @return [void]
+  def calculate_statistics!
+    update!(
+      completed_matches_count: matches.complete.count,
+      wins_count:              matches.where_winner(self).count,
+      draws_count:             matches.draw.count,
+      losses_count:            matches.where_loser(self).count
+    )
+  end
+
   # Calculates the player's score and maximum possible score.
   #
   # @return [void]
-  def calculate_player_score
+  def calculate_scores
     self.score = (wins_count * POINTS_PER_WIN) + (draws_count * POINTS_PER_DRAW) + (losses_count * POINTS_PER_LOSS)
     self.maximum_possible_score = completed_matches_count * POINTS_PER_WIN
   end

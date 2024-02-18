@@ -129,4 +129,18 @@ class Match < ApplicationRecord
   def players=(players)
     self.player1, self.player2 = players
   end
+
+  # Returns the winner of the match.
+  #
+  # @return [Player, nil]
+  def winner
+    winner_id && (player1_id == winner_id ? player1 : player2)
+  end
+
+  # Returns the loser of the match.
+  #
+  # @return [Player, nil]
+  def loser
+    winner_id && (player1_id == winner_id ? player2 : player1)
+  end
 end

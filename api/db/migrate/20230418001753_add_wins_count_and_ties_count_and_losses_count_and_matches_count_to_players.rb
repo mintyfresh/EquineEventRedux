@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class AddWinsCountAndTiesCountAndLossesCountAndMatchesCountToPlayers < ActiveRecord::Migration[7.0]
-  def change
+  def change # rubocop:disable Metrics/MethodLength
     change_table :players, bulk: true do |t|
       t.integer :completed_matches_count, null: false, default: 0
       t.integer :wins_count, null: false, default: 0

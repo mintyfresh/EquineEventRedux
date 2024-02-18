@@ -10,6 +10,7 @@ require_relative '../config/environment'
 abort('The Rails environment is running in production mode!') if Rails.env.production?
 
 require 'rspec/rails'
+require 'moonfire/rspec'
 # Add additional requires below this line. Rails is not loaded until this point!
 
 # Checks for pending migrations and applies them before tests are run.
@@ -52,4 +53,12 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
+
+  config.around(:each, type: :subscriber) do |example|
+    message_bus = Moonfire.message_bus
+    Moonfire.message_bus = Moonfire::RSpec::TestMessageBus.new
+    example.run
+  ensure
+    Moonfire.message_bus = message_bus
+  end
 end
