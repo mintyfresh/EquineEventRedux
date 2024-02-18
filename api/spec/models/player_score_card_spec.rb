@@ -4,13 +4,13 @@
 #
 # Table name: player_score_cards
 #
-#  player_id         :uuid
+#  player_id         :uuid             primary key
 #  opponent_ids      :uuid             is an Array
 #  opponent_win_rate :decimal(, )
 #
 require 'rails_helper'
 
-RSpec.describe PlayerScoreCard, type: :model do
+RSpec.describe PlayerScoreCard do
   subject(:player_score_card) { player.score_card }
 
   let(:player) { create(:player) }

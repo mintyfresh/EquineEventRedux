@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Button, ButtonToolbar, Card } from 'react-bootstrap'
 import CreatePlayerButton, { CREATE_PLAYER_BUTTON_FRAGMENT } from '../../../components/CreatePlayerButton'
 import EventLayout, { EVENT_LAYOUT_FRAGMENT } from '../../../components/EventLayout'
+import ImportPlayersButton, { IMPORT_PLAYERS_BUTTON_FRAGMENT } from '../../../components/ImportPlayersButton'
 import PlayerTable, { PLAYER_TABLE_FRAGMENT } from '../../../components/PlayerTable'
 import { DeletedFilter, EventPlayersQuery, EventPlayersQueryVariables, useEventPlayersQuery } from '../../../lib/generated/graphql'
 import { initializeApolloClient } from '../../../lib/graphql/client'
@@ -16,6 +17,7 @@ const EVENT_PLAYERS_QUERY = gql`
       name
       ...EventLayout
       ...CreatePlayerButton
+      ...ImportPlayersButton
       players(deleted: $deleted) {
         nodes {
           ...PlayerTable
@@ -25,6 +27,7 @@ const EVENT_PLAYERS_QUERY = gql`
   }
   ${EVENT_LAYOUT_FRAGMENT}
   ${CREATE_PLAYER_BUTTON_FRAGMENT}
+  ${IMPORT_PLAYERS_BUTTON_FRAGMENT}
   ${PLAYER_TABLE_FRAGMENT}
 `
 
@@ -65,7 +68,10 @@ const EventPlayersPage: NextPageWithLayout<EventPlayersQuery> = ({ event: { id }
     <>
       <ButtonToolbar className="mb-3 d-print-none">
         {!deleted && (
-          <CreatePlayerButton event={data.event} onCreate={() => refetch()} />
+          <>
+            <CreatePlayerButton event={data.event} onCreate={() => refetch()} />
+            <ImportPlayersButton event={data.event} onImport={() => refetch()} className="ms-2" />
+          </>
         )}
         <Button variant="outline-secondary" className="ms-auto" onClick={() => setDeleted(!deleted)}>
           {deleted ? 'Hide' : 'Show'} Deleted
@@ -75,6 +81,7 @@ const EventPlayersPage: NextPageWithLayout<EventPlayersQuery> = ({ event: { id }
         <PlayerTable
           players={data.event.players.nodes}
           onDelete={() => refetch()}
+          onRestore={() => refetch()}
         />
       ) : (
         <Card body>

@@ -12,7 +12,7 @@
 #
 require 'rails_helper'
 
-RSpec.describe Event, type: :model do
+RSpec.describe Event do
   subject(:event) { build(:event) }
 
   it 'has a valid factory' do

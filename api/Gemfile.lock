@@ -170,7 +170,7 @@ GEM
     pg (1.4.1)
     psych (5.1.2)
       stringio
-    puma (5.6.4)
+    puma (6.4.2)
       nio4r (~> 2.0)
     racc (1.7.3)
     rack (3.0.9)
@@ -306,7 +306,7 @@ DEPENDENCIES
   moonfire!
   oj
   pg (~> 1.1)
-  puma (~> 5.0)
+  puma (~> 6.0)
   rails (~> 7.1)
   rspec-rails
   rubocop

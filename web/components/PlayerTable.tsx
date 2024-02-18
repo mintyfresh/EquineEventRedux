@@ -67,9 +67,10 @@ const PlayerTableHeader: React.FC<{ table: Table<PlayerTableFragment>, header: H
 export interface PlayerTableProps {
   players: PlayerTableFragment[]
   onDelete?: (player: PlayerTableFragment) => void
+  onRestore?: (player: PlayerTableFragment) => void
 }
 
-const PlayerTable: React.FC<PlayerTableProps> = ({ players, onDelete }) => {
+const PlayerTable: React.FC<PlayerTableProps> = ({ players, onDelete, onRestore }) => {
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'score', desc: true },
     { id: 'opponentWinRate', desc: true }
@@ -123,6 +124,7 @@ const PlayerTable: React.FC<PlayerTableProps> = ({ players, onDelete }) => {
           <PlayerActionsDropdown
             player={row.original}
             onDelete={() => onDelete?.(row.original)}
+            onRestore={() => onRestore?.(row.original)}
           />
         </span>
       )

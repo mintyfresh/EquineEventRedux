@@ -14,6 +14,7 @@ module Types
     field :player_update, mutation: Mutations::PlayerUpdate
     field :player_delete, mutation: Mutations::PlayerDelete
     field :player_restore, mutation: Mutations::PlayerRestore
+    field :player_import_bulk, mutation: Mutations::PlayerImportBulk
 
     field :round_create, mutation: Mutations::RoundCreate
     field :round_update, mutation: Mutations::RoundUpdate
