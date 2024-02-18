@@ -22,4 +22,9 @@ class Event < ApplicationRecord
   def next_round_number
     (rounds.non_deleted.maximum(:number) || 0) + 1
   end
+
+  # @return [Round, nil]
+  def current_round
+    rounds.non_deleted.order(:number).last
+  end
 end

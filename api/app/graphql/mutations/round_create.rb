@@ -13,6 +13,12 @@ module Mutations
     def resolve(event_id:, **arguments)
       event = ::Event.find(event_id)
 
+      # Prevent the creation of additional rounds until the current round is complete
+      if (current_round = event.current_round).present? && !current_round.complete?
+        event.errors.add(:base, 'Cannot add a new round until the current round is complete')
+        return { event:, errors: event.errors }
+      end
+
       result = super(**arguments) do |round|
         round.event = event
       end

@@ -13,6 +13,8 @@ module Types
     field :player1, Types::PlayerType, null: false
     field :player2, Types::PlayerType, null: true
 
+    field :round, Types::RoundType, null: false
+
     # @return [::Player]
     def player1
       dataloader.with(Sources::Record, ::Player).load(object.player1_id)
@@ -21,6 +23,11 @@ module Types
     # @return [::Player, nil]
     def player2
       dataloader.with(Sources::Record, ::Player).load(object.player2_id) if object.player2_id
+    end
+
+    # @return [::Round]
+    def round
+      dataloader.with(Sources::Record, ::Round).load(object.round_id)
     end
   end
 end

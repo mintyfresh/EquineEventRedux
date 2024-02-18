@@ -37,7 +37,7 @@ class Round < ApplicationRecord
 
       if tables.include?(match.table)
         error = match.errors.add(:table, :taken)
-        errors.add("matches[#{index}].table", error.message)
+        errors.import(error, attribute: "matches[#{index}].#{error.attribute}")
       else
         tables << match.table
       end
@@ -48,7 +48,13 @@ class Round < ApplicationRecord
     self.number = event.next_round_number
   end
 
-private
+  # Determine if all matches in the round are complete.
+  # There must be at least one match for the round to be considered complete.
+  #
+  # @return [Boolean]
+  def complete?
+    matches.all?(&:complete?) && matches.any?
+  end
 
   # @return [Boolean]
   def matches_changed?

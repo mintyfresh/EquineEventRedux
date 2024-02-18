@@ -9,7 +9,7 @@ AllCops:
   ExtraDetails: true
   NewCops: enable
   SuggestExtensions: false
-  TargetRubyVersion: 3.1
+  TargetRubyVersion: 3.2
   Exclude:
     - 'bin/*'
     - 'db/schema.rb'
@@ -50,6 +50,13 @@ Metrics/BlockLength:
     - 'lib/tasks/**/*.rake'
     - 'spec/**/*'
 
+Metrics/ClassLength:
+  CountAsOne:
+    - array
+    - heredoc
+    - method_call
+  Max: 200
+
 Naming/PredicateName:
   ForbiddenPrefixes:
     - is_
@@ -62,8 +69,10 @@ Rails/DynamicFindBy:
 
 Rails/SkipsModelValidations:
   AllowedMethods:
-    - increment!
     - decrement!
+    - decrement_counter
+    - increment!
+    - increment_counter
     - touch
 
 RSpec/ExpectChange:

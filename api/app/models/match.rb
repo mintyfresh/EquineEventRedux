@@ -28,6 +28,10 @@
 #  fk_rails_...  (round_id => rounds.id)
 #
 class Match < ApplicationRecord
+  include Moonfire::Model
+
+  attr_readonly :round_id
+
   # Ensure a deterministic order of player IDs.
   # Also ensure that the first player ID is always one that is present.
   PLAYER_IDS_COMPARATOR = -> (id) { id ? id.tr('-', '').to_i(16) : Float::INFINITY }
@@ -54,7 +58,7 @@ class Match < ApplicationRecord
   end
 
   validate if: :winner_id? do
-    errors.add(:winner_id, :not_in_match) unless winner_id.in?([player1_id, player2_id])
+    errors.add(:winner_id, :not_in_match) unless winner_id.in?(player_ids)
   end
 
   before_validation do
@@ -65,33 +69,62 @@ class Match < ApplicationRecord
     self.winner_id = player1_id if player2_id.nil?
   end
 
+  publishes_messages_on :create, :update, :destroy
+
+  # @!method self.complete
+  #   @return [Class<Match>]
+  scope :complete, -> { where.not(winner_id: nil).or(draw) }
+
+  # @!method self.draw
+  #   @return [Class<Match>]
   scope :draw, -> { where(draw: true) }
 
+  # @!method self.with_player(player)
+  #   @param player [Player]
+  #   @return [Class<Match>]
   scope :with_player, lambda { |player|
     where(player1: player).or(where(player2: player))
   }
+
+  scope :where_winner, -> (player) { where(winner_id: player) }
+  scope :where_loser, -> (player) { with_player(player).where.not(winner_id: [player, nil]) }
 
   scope :paired_first, -> { order(Arel.sql(<<-SQL.squish) => 'ASC') }
     CASE WHEN "matches"."player2_id" IS NULL THEN 1 ELSE 0 END
   SQL
 
-  # @return [Array<(String, String | nil)>]
+  # Determines whether the match is complete.
+  #
+  # @return [Boolean]
+  def complete?
+    winner_id.present? || draw?
+  end
+
+  # Returns the IDs of the players in the match as a tuple.
+  #
+  # @return [(String, String), (String, nil)]
   def player_ids
     [player1_id, player2_id]
   end
 
-  # @param ids [Array<(String, String | nil)>]
+  # Sets the players in the match by their IDs.
+  #
+  # @param ids [(String, String), (String, nil)]
   # @return [void]
   def player_ids=(ids)
     self.player1_id, self.player2_id = ids
   end
 
-  # @return [Array<(Player, Player | nil)>]
+  # Returns the players in the match as a tuple.
+  #
+  # @return [(Player, Player), (Player, nil)]
   def players
     [player1, player2]
   end
 
-  # @param players [Array<(Player, Player | nil)>]
+  # Sets the players in the match.
+  #
+  # @param players [(Player, Player), (Player, nil)]
   # @return [void]
   def players=(players)
     self.player1, self.player2 = players

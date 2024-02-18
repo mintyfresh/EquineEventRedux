@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_07_11_215153) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_17_230618) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pgcrypto"
@@ -48,6 +48,12 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_11_215153) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "deleted_at", precision: nil
+    t.integer "completed_matches_count", default: 0, null: false
+    t.integer "wins_count", default: 0, null: false
+    t.integer "draws_count", default: 0, null: false
+    t.integer "losses_count", default: 0, null: false
+    t.integer "score", default: 0, null: false
+    t.integer "maximum_possible_score", default: 0, null: false
     t.index ["event_id", "name"], name: "index_players_on_event_id_and_name", unique: true, where: "(deleted_at IS NULL)"
     t.index ["event_id"], name: "index_players_on_event_id"
   end
@@ -70,12 +76,12 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_11_215153) do
 
   create_view "player_score_cards", sql_definition: <<-SQL
       SELECT players.id AS player_id,
-      count(matches.id) AS matches_count,
-      count(matches.id) FILTER (WHERE ((matches.winner_id IS NOT NULL) OR matches.draw)) AS completed_matches_count,
-      count(matches.id) FILTER (WHERE (matches.winner_id = players.id)) AS wins_count,
-      count(matches.id) FILTER (WHERE ((matches.winner_id IS NOT NULL) AND (matches.winner_id <> players.id))) AS losses_count,
-      count(matches.id) FILTER (WHERE matches.draw) AS draws_count,
-      array_agg(DISTINCT opponents.id) AS opponent_ids
+      array_agg(DISTINCT opponents.id) AS opponent_ids,
+      COALESCE(avg(
+          CASE
+              WHEN (opponents.maximum_possible_score = 0) THEN (0)::numeric
+              ELSE ((opponents.score)::numeric / (opponents.maximum_possible_score)::numeric)
+          END), (0)::numeric) AS opponent_win_rate
      FROM ((players
        LEFT JOIN matches ON ((((matches.player1_id = players.id) OR (matches.player2_id = players.id)) AND ( SELECT (rounds.deleted_at IS NULL)
              FROM rounds

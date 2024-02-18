@@ -4,14 +4,20 @@
 #
 # Table name: players
 #
-#  id         :uuid             not null, primary key
-#  event_id   :uuid             not null
-#  name       :citext           not null
-#  paid       :boolean          default(FALSE), not null
-#  dropped    :boolean          default(FALSE), not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  deleted_at :datetime
+#  id                      :uuid             not null, primary key
+#  event_id                :uuid             not null
+#  name                    :citext           not null
+#  paid                    :boolean          default(FALSE), not null
+#  dropped                 :boolean          default(FALSE), not null
+#  created_at              :datetime         not null
+#  updated_at              :datetime         not null
+#  deleted_at              :datetime
+#  completed_matches_count :integer          default(0), not null
+#  wins_count              :integer          default(0), not null
+#  draws_count             :integer          default(0), not null
+#  losses_count            :integer          default(0), not null
+#  score                   :integer          default(0), not null
+#  maximum_possible_score  :integer          default(0), not null
 #
 # Indexes
 #

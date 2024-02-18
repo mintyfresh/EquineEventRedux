@@ -5,6 +5,9 @@ module Types
     field :id, ID, null: false
     field :event_id, ID, null: false
     field :number, Integer, null: false
+    field :is_complete, Boolean, null: false, method: :complete? do
+      description 'Whether all matches have been played (must include at least one match)'
+    end
 
     field :matches, [Types::MatchType], null: false
     field :players, [Types::PlayerType], null: false do
