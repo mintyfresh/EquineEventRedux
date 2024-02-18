@@ -5,6 +5,10 @@ import { ERRORS_FRAGMENT, useErrors } from '../lib/errors'
 import { CreatePlayerButtonFragment, PlayerInput, useCreatePlayerMutation } from '../lib/generated/graphql'
 import PlayerModal from './PlayerModal'
 
+const defaultPlayerInput: PlayerInput = {
+  paid: true
+}
+
 gql`
   mutation CreatePlayer($eventID: ID!, $input: PlayerInput!) {
     playerCreate(eventId: $eventID, input: $input) {
@@ -32,7 +36,7 @@ export interface CreatePlayerButtonProps extends Omit<React.ComponentProps<typeo
 
 const CreatePlayerButton: React.FC<CreatePlayerButtonProps> = ({ event, onCreate, ...props }) => {
   const [showModal, setShowModal] = useState(false)
-  const [input, setInput] = useState<PlayerInput>({})
+  const [input, setInput] = useState<PlayerInput>(defaultPlayerInput)
   const [errors, setErrors] = useErrors()
 
   const [createPlayer, { loading }] = useCreatePlayerMutation({

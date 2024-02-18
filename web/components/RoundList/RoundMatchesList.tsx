@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client'
 import { Dropdown, ListGroup } from 'react-bootstrap'
 import { ERRORS_FRAGMENT } from '../../lib/errors'
-import { RoundMatchListItemFragment, useSetMatchResolutionMutation } from '../../lib/generated/graphql'
+import { RoundMatchListFragment, RoundMatchListItemFragment, useSetMatchResolutionMutation } from '../../lib/generated/graphql'
 import EllipsisDropdown from '../EllipsisDropdown'
 import PlayerDeletedBadge from '../Players/PlayerDeletedBadge'
 import PlayerNameWithBadges, { PLAYER_NAME_WITH_BADGES_FRAGMENT } from '../Players/PlayerNameWithBadges'
@@ -13,6 +13,10 @@ gql`
         id
         winnerId
         draw
+        round {
+          id
+          isComplete
+        }
       }
       errors {
         ...Errors
@@ -40,12 +44,29 @@ export const ROUND_MATCH_LIST_ITEM_FRAGMENT = gql`
   ${PLAYER_NAME_WITH_BADGES_FRAGMENT}
 `
 
+export const ROUND_MATCH_LIST_FRAGMENT = gql`
+  fragment RoundMatchList on Round {
+    isComplete
+    matches {
+      ...RoundMatchListItem
+    }
+  }
+  ${ROUND_MATCH_LIST_ITEM_FRAGMENT}
+`
+
 export interface RoundMatchesListProps {
-  matches: RoundMatchListItemFragment[]
+  round: RoundMatchListFragment
+  onUpdate?: (round: RoundMatchListFragment) => void
 }
 
-const RoundMatchesList: React.FC<RoundMatchesListProps> = ({ matches }) => {
-  const [setResolution, { loading }] = useSetMatchResolutionMutation()
+const RoundMatchesList: React.FC<RoundMatchesListProps> = ({ round, onUpdate }) => {
+  const [setResolution, { loading }] = useSetMatchResolutionMutation({
+    onCompleted: ({ matchUpdate }) => {
+      if (matchUpdate?.match?.id) {
+        onUpdate?.({ ...round, ...matchUpdate.match.round })
+      }
+    }
+  })
 
   const resolution = (match: RoundMatchListItemFragment) => {
     if (match.draw) {
@@ -61,7 +82,7 @@ const RoundMatchesList: React.FC<RoundMatchesListProps> = ({ matches }) => {
 
   return (
     <ListGroup variant="flush">
-      {matches.map((match) => (
+      {round.matches.map((match) => (
         <ListGroup.Item key={match.id}>
           Table {match.table} - <PlayerNameWithBadges player={match.player1} /> vs.{' '}
           {match.player2 ? <PlayerNameWithBadges player={match.player2} /> : <span className="text-muted">No-one</span>}

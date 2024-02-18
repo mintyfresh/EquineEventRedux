@@ -2,26 +2,33 @@ import { gql } from '@apollo/client'
 import { useRef, useState } from 'react'
 import { Button, Form, Modal } from 'react-bootstrap'
 import { ERRORS_FRAGMENT, useErrors } from '../lib/errors'
-import { useCreateEventMutation } from '../lib/generated/graphql'
+import { CreateEventFragment, useCreateEventMutation } from '../lib/generated/graphql'
 import FormControlErrors from './Form/FormControlErrors'
+
+export const CREATE_EVENT_FRAGMENT = gql`
+  fragment CreateEvent on Event {
+    id
+    name
+  }
+`
 
 gql`
   mutation CreateEvent($input: EventInput!) {
     eventCreate(input: $input) {
       event {
-        id
-        name
+        ...CreateEvent
       }
       errors {
         ...Errors
       }
     }
   }
+  ${CREATE_EVENT_FRAGMENT}
   ${ERRORS_FRAGMENT}
 `
 
 interface CreateEventModalProps {
-  onCreate: () => void
+  onCreate: (event: CreateEventFragment) => void
 }
 
 const CreateEventModal: React.FC<CreateEventModalProps> = ({ onCreate }) => {
@@ -37,7 +44,7 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ onCreate }) => {
       setErrors(eventCreate?.errors)
 
       if (eventCreate?.event?.id) {
-        onCreate()
+        onCreate(eventCreate.event)
         setShow(false)
         setName('')
       }

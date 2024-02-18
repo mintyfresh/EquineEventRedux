@@ -6,6 +6,7 @@ import CreateEventModal from '../../components/CreateEventModal'
 import EventList, { EVENT_LIST_FRAGMENT } from '../../components/EventList'
 import { DeletedFilter, EventsIndexQuery, useEventsIndexQuery } from '../../lib/generated/graphql'
 import { initializeApolloClient } from '../../lib/graphql/client'
+import { useRouter } from 'next/router'
 
 const EVENTS_INDEX_QUERY = gql`
   query EventsIndex($deleted: DeletedFilter) {
@@ -35,6 +36,7 @@ interface EventsIndexPageProps {
 }
 
 const EventsIndexPage: NextPage<EventsIndexPageProps> = () => {
+  const router = useRouter()
   const [deleted, setDeleted] = useState(false)
   const { data, refetch } = useEventsIndexQuery({
     variables: { deleted: deleted ? DeletedFilter.Deleted : undefined },
@@ -55,7 +57,9 @@ const EventsIndexPage: NextPage<EventsIndexPageProps> = () => {
           </span>
         ) : (
           <CreateEventModal
-            onCreate={() => refetch()}
+            onCreate={({ id }) => {
+              router.push(`/events/${id}`)
+            }}
           />
         )}
         <Button variant="outline-secondary" className="ms-auto" onClick={() => setDeleted(!deleted)}>

@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client'
 import { GetServerSideProps } from 'next'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Alert, Button, ButtonToolbar, Card } from 'react-bootstrap'
 import CreateRoundButton, { CREATE_ROUND_BUTTON_FRAGMENT } from '../../../components/CreateRoundButton'
 import EventLayout, { EVENT_LAYOUT_FRAGMENT } from '../../../components/EventLayout'
@@ -52,6 +52,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 
 const EventMatchesPage: NextPageWithLayout<EventMatchesQuery> = ({ event: { id }}) => {
   const [deleted, setDeleted] = useState<boolean>(false)
+  const showCreateRoundModal = useRef<() => void>()
 
   const { data, refetch } = useEventMatchesQuery({
     variables: { id, deleted: deleted ? DeletedFilter.Deleted : undefined },
@@ -71,7 +72,11 @@ const EventMatchesPage: NextPageWithLayout<EventMatchesQuery> = ({ event: { id }
       )}
       <ButtonToolbar className="mb-3 d-print-none">
         {!deleted && (
-          <CreateRoundButton event={data.event} onCreate={() => refetch()} />
+          <CreateRoundButton
+            event={data.event}
+            showCreateRoundModal={showCreateRoundModal}
+            onCreate={() => refetch()}
+          />
         )}
         <Button variant="outline-secondary" className="ms-auto" onClick={() => setDeleted(!deleted)}>
           {deleted ? 'Hide' : 'Show'} Deleted
@@ -80,6 +85,10 @@ const EventMatchesPage: NextPageWithLayout<EventMatchesQuery> = ({ event: { id }
       <RoundList
         event={data.event}
         rounds={data.event.rounds}
+        onComplete={() => {
+          // Automatically show the create round modal if the last round is complete
+          showCreateRoundModal.current?.()
+        }}
         onDelete={() => refetch()}
       />
       {data.event.rounds.length === 0 && (

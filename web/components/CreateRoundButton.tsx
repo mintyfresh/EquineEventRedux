@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client'
 import { faSpinner } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { useState } from 'react'
+import { MutableRefObject, useEffect, useState } from 'react'
 import { Button } from 'react-bootstrap'
 import { ERRORS_FRAGMENT, useErrors } from '../lib/errors'
 import { CreateRoundButtonFragment, RoundInput, useCreateRoundMutation, usePlayersForRoundCreateLazyQuery } from '../lib/generated/graphql'
@@ -49,10 +49,11 @@ const EMPTY_ROUND_CREATE_INPUT: RoundInput = {
 
 export interface CreateRoundButtonProps extends Omit<React.ComponentProps<typeof Button>, 'onClick'> {
   event: CreateRoundButtonFragment
+  showCreateRoundModal: MutableRefObject<(() => void) | undefined>
   onCreate: () => void
 }
 
-const CreateRoundButton: React.FC<CreateRoundButtonProps> = ({ event, onCreate, ...props }) => {
+const CreateRoundButton: React.FC<CreateRoundButtonProps> = ({ event, showCreateRoundModal, onCreate, ...props }) => {
   const [showModal, setShowModal] = useState(false)
   const [input, setInput] = useState<RoundInput>(EMPTY_ROUND_CREATE_INPUT)
   const [errors, setErrors] = useErrors()
@@ -75,6 +76,10 @@ const CreateRoundButton: React.FC<CreateRoundButtonProps> = ({ event, onCreate, 
       }
     }
   })
+
+  useEffect(() => {
+    showCreateRoundModal.current = () => setShowModal(true)
+  }, [setShowModal, showCreateRoundModal])
 
   return (
     <>

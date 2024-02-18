@@ -2,29 +2,27 @@ import { gql } from '@apollo/client'
 import { Card } from 'react-bootstrap'
 import { RoundListItemFragment } from '../lib/generated/graphql'
 import RoundControlsDropdown, { ROUND_CONTROLS_DROPDOWN_FRAGMENT } from './RoundList/RoundControlsDropdown'
-import RoundMatchesList, { ROUND_MATCH_LIST_ITEM_FRAGMENT } from './RoundList/RoundMatchesList'
+import RoundMatchesList, { ROUND_MATCH_LIST_FRAGMENT } from './RoundList/RoundMatchesList'
 
 export const ROUND_LIST_ITEM_FRAGMENT = gql`
   fragment RoundListItem on Round {
     id
     number
     ...RoundControlsDropdown
-    matches {
-      id
-      ...RoundMatchListItem
-    }
+    ...RoundMatchList
   }
   ${ROUND_CONTROLS_DROPDOWN_FRAGMENT}
-  ${ROUND_MATCH_LIST_ITEM_FRAGMENT}
+  ${ROUND_MATCH_LIST_FRAGMENT}
 `
 
 export interface RoundListProps {
   event: { id: string }
   rounds: RoundListItemFragment[]
+  onComplete?: (round: RoundListItemFragment) => void
   onDelete?: (round: RoundListItemFragment) => void
 }
 
-const RoundList: React.FC<RoundListProps> = ({ event, rounds, onDelete }) => {
+const RoundList: React.FC<RoundListProps> = ({ event, rounds, onComplete, onDelete }) => {
   return (
     <>
       {rounds.map((round) => (
@@ -38,7 +36,14 @@ const RoundList: React.FC<RoundListProps> = ({ event, rounds, onDelete }) => {
             />
           </Card.Header>
           {round.matches.length > 0 ? (
-            <RoundMatchesList matches={round.matches} />
+            <RoundMatchesList
+              round={round}
+              onUpdate={(update) => {
+                if (update.isComplete && !round.isComplete) {
+                  onComplete?.(round)
+                }
+              }}
+            />
           ) : (
             <Card.Body>
               <Card.Text>No pairings have been added to this match yet.</Card.Text>
