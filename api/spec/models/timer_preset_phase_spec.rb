@@ -63,4 +63,10 @@ RSpec.describe TimerPresetPhase do
     timer_preset_phase.duration_unit = 'unknown'
     expect(timer_preset_phase).to be_invalid
   end
+
+  it 'is invalid with a duration less than 10 seconds' do
+    timer_preset_phase.duration_amount = 1
+    timer_preset_phase.duration_unit = 'seconds'
+    expect(timer_preset_phase).to be_invalid
+  end
 end

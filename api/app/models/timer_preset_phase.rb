@@ -37,7 +37,17 @@ class TimerPresetPhase < ApplicationRecord
   validates :duration_amount, numericality: { greater_than: 0 }
   validates :duration_unit, inclusion: { in: DURATION_UNITS }
 
+  validate if: -> { duration.present? } do
+    errors.add(:duration, :too_short, count: 10.seconds) if duration < 10.seconds
+  end
+
   scope :ordered, -> { order(:position, :id) }
+
+  # @!method self.after(phase)
+  #   Returns phases after the given phase.
+  #   @param phase [TimerPresetPhase]
+  #   @return [Class<TimerPresetPhase>]
+  scope :after, -> (phase) { where(arel_table[:position].gt(bind_param('position', phase.position))) }
 
   before_create do
     self.position ||= timer_preset.next_phase_position

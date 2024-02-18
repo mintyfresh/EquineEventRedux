@@ -28,7 +28,7 @@ FactoryBot.define do
     timer_preset
 
     sequence(:name) { |n| "Phase #{Faker::Lorem.word} #{n}" }
-    duration_amount { rand(1..10) }
-    duration_unit { TimerPresetPhase::DURATION_UNITS.sample }
+    duration_amount { 10 }
+    duration_unit { 'minutes' }
   end
 end

@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe PlayerPairingService, type: :service do
   subject(:service) { described_class.new }
 
-  describe '#generate_pairings' do
+  describe '#generate_pairings', :deliver_published_messages do
     subject(:generate_pairings) { service.generate_pairings(players) }
 
     let(:players) { create_list(:player, 4, event:) }

@@ -20,5 +20,13 @@ module Types
     field :round_update, mutation: Mutations::RoundUpdate
     field :round_delete, mutation: Mutations::RoundDelete
     field :round_restore, mutation: Mutations::RoundRestore
+
+    field :timer_create, mutation: Mutations::TimerCreate
+    field :timer_update, mutation: Mutations::TimerUpdate
+    field :timer_delete, mutation: Mutations::TimerDelete
+    field :timer_pause, mutation: Mutations::TimerPause
+    field :timer_unpause, mutation: Mutations::TimerUnpause
+    field :timer_skip_to_next_phase, mutation: Mutations::TimerSkipToNextPhase
+    field :timer_reset, mutation: Mutations::TimerReset
   end
 end

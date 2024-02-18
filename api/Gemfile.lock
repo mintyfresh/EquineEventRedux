@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/mintyfresh/moonfire.git
-  revision: 3038ec07144c86f153c83ffd27b2b942dff40c12
+  revision: 8019d8bd9bcb435e7c400b3c143ef543d001423f
   specs:
     moonfire (0.1.0)
       rails (>= 7)

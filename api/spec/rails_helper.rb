@@ -54,9 +54,16 @@ RSpec.configure do |config|
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
 
-  config.around(:each, type: :subscriber) do |example|
+  config.around(:each, :freeze_time) do |example|
+    freeze_time { example.run }
+  end
+
+  config.around(:each) do |example|
     message_bus = Moonfire.message_bus
-    Moonfire.message_bus = Moonfire::RSpec::TestMessageBus.new
+
+    example.metadata[:deliver_published_messages] or
+      Moonfire.message_bus = Moonfire::RSpec::TestMessageBus.new
+
     example.run
   ensure
     Moonfire.message_bus = message_bus

@@ -52,4 +52,7 @@ Rails.application.configure do
 
   # Store files locally.
   config.active_storage.service = :local
+
+  # Allow Action Cable access from any origin.
+  config.action_cable.disable_request_forgery_protection = true
 end

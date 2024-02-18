@@ -70,6 +70,15 @@ class TimerPreset < ApplicationRecord
     (phases.reject(&:marked_for_destruction?).filter_map(&:position).max || 0) + 1
   end
 
+  # Returns the phase after the given phase.
+  # If the given phase is the last phase, then `nil` is returned.
+  #
+  # @param phase [TimerPresetPhase]
+  # @return [TimerPresetPhase, nil]
+  def phase_after(phase)
+    phases.after(phase).first
+  end
+
   # Calculates the total duration of all the phases.
   #
   # @return [ActiveSupport::Duration, nil]
