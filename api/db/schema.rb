@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_18_023453) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_18_034935) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pgcrypto"
@@ -35,9 +35,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_18_023453) do
     t.integer "table", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at", precision: nil
+    t.uuid "deleted_in"
     t.index ["player1_id"], name: "index_matches_on_player1_id"
     t.index ["player2_id"], name: "index_matches_on_player2_id"
-    t.index ["round_id", "table"], name: "index_matches_on_round_id_and_table", unique: true
+    t.index ["round_id", "table"], name: "index_matches_on_round_id_and_table", unique: true, where: "(deleted_at IS NULL)"
     t.index ["round_id"], name: "index_matches_on_round_id"
     t.check_constraint "NOT (winner_id IS NOT NULL AND draw = true)"
     t.check_constraint "winner_id IS NULL OR winner_id = player1_id OR winner_id = player2_id"
@@ -67,6 +69,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_18_023453) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "deleted_at", precision: nil
+    t.uuid "deleted_in"
     t.index ["event_id", "number"], name: "index_rounds_on_event_id_and_number", unique: true, where: "(deleted_at IS NULL)"
     t.index ["event_id"], name: "index_rounds_on_event_id"
   end
@@ -91,5 +94,36 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_18_023453) do
             WHERE (rounds.id = matches.round_id)))))
        LEFT JOIN players opponents ON ((((opponents.id = matches.player1_id) OR (opponents.id = matches.player2_id)) AND (opponents.id <> players.id))))
     GROUP BY players.id;
+  SQL
+  create_view "player_matches", sql_definition: <<-SQL
+      SELECT matches.id AS match_id,
+      matches.round_id,
+      matches.player1_id AS player_id,
+      matches.player2_id AS opponent_id,
+      matches."table",
+      (matches.draw OR (matches.winner_id IS NOT NULL)) AS complete,
+          CASE
+              WHEN matches.draw THEN 'draw'::text
+              WHEN (matches.winner_id = matches.player1_id) THEN 'win'::text
+              WHEN (matches.winner_id = matches.player2_id) THEN 'loss'::text
+              ELSE 'incomplete'::text
+          END AS result
+     FROM matches
+    WHERE (matches.deleted_at IS NULL)
+  UNION ALL
+   SELECT matches.id AS match_id,
+      matches.round_id,
+      matches.player2_id AS player_id,
+      matches.player1_id AS opponent_id,
+      matches."table",
+      (matches.draw OR (matches.winner_id IS NOT NULL)) AS complete,
+          CASE
+              WHEN matches.draw THEN 'draw'::text
+              WHEN (matches.winner_id = matches.player2_id) THEN 'win'::text
+              WHEN (matches.winner_id = matches.player1_id) THEN 'loss'::text
+              ELSE 'incomplete'::text
+          END AS result
+     FROM matches
+    WHERE ((matches.player2_id IS NOT NULL) AND (matches.deleted_at IS NULL));
   SQL
 end

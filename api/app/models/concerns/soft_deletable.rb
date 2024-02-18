@@ -8,6 +8,16 @@ module SoftDeletable
     scope :non_deleted, -> { where(deleted_at: nil) }
   end
 
+  class_methods do
+    def after_soft_delete(**options, &)
+      after_save(if: [-> { saved_change_to_deleted?(to: true) }, *options[:if]], &)
+    end
+
+    def after_restore(**options, &)
+      after_save(if: [-> { saved_change_to_deleted?(to: false) }, *options[:if]], &)
+    end
+  end
+
   # @return [Boolean]
   def deleted
     deleted_at.present?
@@ -19,7 +29,10 @@ module SoftDeletable
   # @return [void]
   def deleted=(value)
     if ActiveRecord::Type::Boolean.new.cast(value)
-      self.deleted_at ||= Time.current
+      return if deleted? # no-op
+
+      self.deleted_at = Time.current
+      self.deleted_in = nil
     else
       self.deleted_at = nil
     end
@@ -53,14 +66,16 @@ module SoftDeletable
       (from == :__unspecified__ || deleted_before_last_save == from)
   end
 
+  # @param deleted_in [String]
   # @return [Boolean]
-  def destroy
-    update(deleted: true)
+  def destroy(deleted_in: SecureRandom.uuid)
+    deleted? or update(deleted: true, deleted_in:)
   end
 
+  # @param deleted_in [String]
   # @return [Boolean]
-  def destroy!
-    update!(deleted: true)
+  def destroy!(deleted_in: SecureRandom.uuid)
+    deleted? or update!(deleted: true, deleted_in:)
   end
 
   # @return [Boolean]

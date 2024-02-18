@@ -10,6 +10,7 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  deleted_at :datetime
+#  deleted_in :uuid
 #
 # Indexes
 #
@@ -43,5 +44,27 @@ RSpec.describe Round do
     round.matches << build(:match, event: round.event, round:, table: 1)
     round.matches << build(:match, event: round.event, round:, table: 1)
     expect(round).to be_invalid
+  end
+
+  it 'deletes all matches when soft deleted' do
+    round.save!
+    matches = create_list(:match, 3, round:, event: round.event)
+    round.destroy!
+    expect(matches.each(&:reload)).to all be_deleted
+  end
+
+  it 'restores the matches that were deleted with the round' do
+    round.save!
+    matches = create_list(:match, 3, round:, event: round.event)
+    round.destroy! && round.restore!
+    expect(matches.each(&:reload).map(&:deleted?)).to all be(false)
+  end
+
+  it 'does not restore matches that were deleted separately' do
+    round.save!
+    matches = create_list(:match, 3, round:, event: round.event)
+    matches.first.destroy!
+    round.destroy! && round.restore!
+    expect(matches.each(&:reload).map(&:deleted?)).to eq([true, false, false])
   end
 end

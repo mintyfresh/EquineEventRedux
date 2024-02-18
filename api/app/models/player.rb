@@ -53,6 +53,14 @@ class Player < ApplicationRecord
 
   has_one :score_card, class_name: 'PlayerScoreCard', dependent: false, inverse_of: :player
 
+  with_options class_name: 'PlayerMatch', dependent: false do
+    has_many :player_matches, inverse_of: :player
+    has_many :opponent_matches, foreign_key: :opponent_id, inverse_of: :opponent
+  end
+
+  has_many :matches, through: :player_matches
+  has_many :opponents, -> { distinct }, through: :player_matches
+
   validates :name, length: { maximum: 50 }, presence: true
   validates :name, uniqueness: { scope: :event, condition: -> { non_deleted }, if: :name_changed? }
 
@@ -80,11 +88,13 @@ class Player < ApplicationRecord
   #
   # @return [void]
   def calculate_statistics!
+    results = player_matches.complete.group(:result).count
+
     update!(
-      completed_matches_count: matches.complete.count,
-      wins_count:              matches.where_winner(self).count,
-      draws_count:             matches.draw.count,
-      losses_count:            matches.where_loser(self).count
+      completed_matches_count: results.values.sum,
+      wins_count:              results.fetch('win', 0),
+      draws_count:             results.fetch('draw', 0),
+      losses_count:            results.fetch('loss', 0)
     )
   end
 
@@ -94,33 +104,6 @@ class Player < ApplicationRecord
   def calculate_scores
     self.score = (wins_count * POINTS_PER_WIN) + (draws_count * POINTS_PER_DRAW) + (losses_count * POINTS_PER_LOSS)
     self.maximum_possible_score = completed_matches_count * POINTS_PER_WIN
-  end
-
-  # Returns the matches this player has been matched with.
-  # Excludes matches from soft-deleted rounds.
-  #
-  # @return [Class<Match>]
-  def matches
-    Match
-      .joins(:round)
-      .merge(Round.non_deleted)
-      .with_player(self)
-  end
-
-  # Returns a list of IDs of opponents this player has been matched with.
-  #
-  # @param scope [ActiveRecord::Relation<Match>, nil] an optional scope to apply to the matches considered
-  # @return [Array<String>]
-  def opponent_ids(scope: nil)
-    matches = self.matches
-    matches = matches.merge(scope) if scope
-
-    matches.distinct.pluck(
-      Match.arel_table[:player1_id]
-        .when(Player.bind_param('player1_id', id))
-        .then(Match.arel_table[:player2_id])
-        .else(Match.arel_table[:player1_id])
-    )
   end
 
   # @!method opponent_win_rate

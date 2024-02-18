@@ -10,6 +10,7 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  deleted_at :datetime
+#  deleted_in :uuid
 #
 # Indexes
 #
@@ -46,6 +47,14 @@ class Round < ApplicationRecord
 
   before_create do
     self.number = event.next_round_number
+  end
+
+  after_soft_delete do
+    matches.each { |match| match.destroy!(deleted_in:) }
+  end
+
+  after_restore do
+    matches.each { |match| match.restore! if match.deleted_in == deleted_in }
   end
 
   # Determine if all matches in the round are complete.

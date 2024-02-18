@@ -10,6 +10,7 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  deleted_at :datetime
+#  deleted_in :uuid
 #
 # Indexes
 #
@@ -25,5 +26,13 @@ FactoryBot.define do
     event
 
     number { event.rounds.size + 1 }
+
+    trait :with_matches do
+      transient do
+        matches_count { 3 }
+      end
+
+      matches { build_list(:match, matches_count, event:, round: instance) }
+    end
   end
 end

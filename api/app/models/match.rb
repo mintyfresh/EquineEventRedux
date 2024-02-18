@@ -13,13 +13,15 @@
 #  table      :integer          not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  deleted_at :datetime
+#  deleted_in :uuid
 #
 # Indexes
 #
 #  index_matches_on_player1_id          (player1_id)
 #  index_matches_on_player2_id          (player2_id)
 #  index_matches_on_round_id            (round_id)
-#  index_matches_on_round_id_and_table  (round_id,table) UNIQUE
+#  index_matches_on_round_id_and_table  (round_id,table) UNIQUE WHERE (deleted_at IS NULL)
 #
 # Foreign Keys
 #
@@ -29,6 +31,7 @@
 #
 class Match < ApplicationRecord
   include Moonfire::Model
+  include SoftDeletable
 
   attr_readonly :round_id
 
