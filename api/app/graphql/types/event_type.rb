@@ -18,6 +18,7 @@ module Types
       extension Extensions::DeletedFilterExtension
       extension GraphQL::OrderBy::Extension, type: EventRoundsOrderByType
     end
+    field :timers, [Types::TimerType], null: false
 
     # @param deleted [Proc]
     # @param order_by_scope [ActiveRecord::Relation]
@@ -41,6 +42,10 @@ module Types
       rounds = rounds.merge(order_by_scope)
 
       dataloader.with(Sources::RecordList, ::Round, :event_id, scope: rounds).load(object.id)
+    end
+
+    def timers
+      dataloader.with(Sources::RecordList, ::Timer, :event_id).load(object.id)
     end
   end
 end

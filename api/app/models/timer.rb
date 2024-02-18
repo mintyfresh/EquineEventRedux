@@ -50,10 +50,18 @@ class Timer < ApplicationRecord
   #   @return [Class<Timer>]
   scope :active, -> { where.not(current_phase: nil).where(paused_at: nil) }
 
+  # @!method self.paused
+  #   Returns paused timers.
+  #   @return [Class<Timer>]
+  scope :paused, -> { where.not(paused_at: nil) }
+
   # @!method self.phase_expired
   #   Returns timers with expired phases.
   #   @return [Class<Timer>]
-  scope :phase_expired, -> { where(arel_table[:phase_expires_at].lteq(bind_param('phase_expires_at', Time.current))) }
+  scope :phase_expired, lambda {
+    where(paused_at: nil) # paused timers should not expire
+      .where(arel_table[:phase_expires_at].lteq(bind_param('phase_expires_at', Time.current)))
+  }
 
   # Creates a duplicate of the timer with an offset added to the phase expiration time.
   #

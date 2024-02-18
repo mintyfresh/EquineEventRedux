@@ -24,6 +24,7 @@ class Event < ApplicationRecord
 
   has_many :players, dependent: :destroy, inverse_of: :event
   has_many :rounds, dependent: :destroy, inverse_of: :event
+  has_many :timers, dependent: :destroy, inverse_of: :event
 
   validates :name, length: { maximum: 50 }, presence: true
   validates :name, uniqueness: { condition: -> { non_deleted }, if: :name_changed? }
