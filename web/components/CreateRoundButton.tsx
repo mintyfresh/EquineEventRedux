@@ -88,7 +88,7 @@ const CreateRoundButton: React.FC<CreateRoundButtonProps> = ({ event, onCreate, 
             Loading players...
           </>
         ) : (
-          <>Start <u>N</u>ext Round</>
+          <>Start <u>n</u>ext round</>
         )}
       </Button>
       {data?.event?.players?.nodes && (

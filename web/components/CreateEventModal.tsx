@@ -55,7 +55,7 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ onCreate }) => {
   return (
     <>
       <Button accessKey="n" onClick={() => setShow(true)}>
-        Create <u>N</u>ew Event
+        Create <u>n</u>ew event
       </Button>
       <Modal
         show={show}

@@ -68,7 +68,7 @@ const CreatePlayerButton: React.FC<CreatePlayerButtonProps> = ({ event, onCreate
   return (
     <>
       <Button {...props} accessKey="n" onClick={() => setShowModal(true)}>
-        Create <u>N</u>ew Player
+        Create <u>n</u>ew player
       </Button>
       <PlayerModal
         title="Create Player"

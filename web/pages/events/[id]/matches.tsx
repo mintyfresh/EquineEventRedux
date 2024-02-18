@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client'
 import { GetServerSideProps } from 'next'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Alert, Button, ButtonToolbar, Card } from 'react-bootstrap'
 import CreateRoundButton, { CREATE_ROUND_BUTTON_FRAGMENT } from '../../../components/CreateRoundButton'
 import EventLayout, { EVENT_LAYOUT_FRAGMENT } from '../../../components/EventLayout'
@@ -93,14 +93,14 @@ const EventMatchesPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
     setResolution({ variables: { id: matchId, winnerId: null, draw: true } })
   }
 
-  // useEffect(() => {
-  //   const view = localStorage.getItem('event-matches-view') as 'legacy' | 'modern'
-  //   view && setView(view)
-  // }, [])
+  useEffect(() => {
+    const view = localStorage.getItem('event-matches-view') as 'legacy' | 'modern'
+    view && setView(view)
+  }, [])
 
-  // useEffect(() => {
-  //   localStorage.setItem('event-matches-view', view)
-  // }, [view])
+  useEffect(() => {
+    localStorage.setItem('event-matches-view', view)
+  }, [view])
 
   if (!data?.event) {
     return null
@@ -121,7 +121,7 @@ const EventMatchesPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
           />
         )}
         <Button variant="outline-secondary" className="ms-auto" onClick={() => setDeleted(!deleted)}>
-          {deleted ? 'Hide' : 'Show'} Deleted
+          {deleted ? 'Hide' : 'Show'} deleted
         </Button>
         <Button variant="outline-secondary" className="ms-2" onClick={() => setView(view === 'legacy' ? 'modern' : 'legacy')} title="Toggle view">
           Switch to {view === 'legacy' ? 'modern' : 'legacy'} view

@@ -121,7 +121,7 @@ const ImportPlayersButton: React.FC<ImportPlayersButtonProps> = ({ event, onImpo
         onClick={() => setShow(true)}
         disabled={loadingEvents || buttonProps.disabled}
       >
-        Import Players from Past Event
+        Import players from past event
       </Button>
       <Modal
         show={show && !loadingEvents}

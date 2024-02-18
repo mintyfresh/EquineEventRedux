@@ -62,7 +62,7 @@ const EventsIndexPage: NextPage<EventsIndexPageProps> = () => {
           />
         )}
         <Button variant="outline-secondary" className="ms-auto" onClick={() => setDeleted(!deleted)}>
-          {deleted ? 'Hide' : 'Show'} Deleted
+          {deleted ? 'Hide' : 'Show'} deleted
         </Button>
       </ButtonToolbar>
       <EventList
