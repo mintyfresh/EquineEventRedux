@@ -8,12 +8,38 @@ import { EventExportQuery, EventExportQueryVariables } from '../../../lib/genera
 import { initializeApolloClient } from '../../../lib/graphql/client'
 import { NextPageWithLayout } from '../../../lib/types/next-page'
 
+const copyToClipboard = (value: string) => {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(value)
+    return
+  }
+
+  const textArea = document.createElement('textarea')
+  textArea.value = value
+
+  textArea.style.position = 'absolute'
+  textArea.style.left = '-999999px'
+  textArea.style.opacity = '0'
+
+  document.body.appendChild(textArea)
+  textArea.focus()
+  textArea.select()
+
+  try {
+    document.execCommand('copy')
+  } catch (err) {
+    console.error('Unable to copy', err)
+  } finally {
+    document.body.removeChild(textArea)
+  }
+}
+
 const CopyableTextBlock: React.FC<{ value: string }> = ({ value }) => (
   <Card body>
     <Button
       variant="outline-secondary"
       className="float-end"
-      onClick={() => navigator.clipboard.writeText(value)}
+      onClick={() => copyToClipboard(value)}
     >
       <FontAwesomeIcon icon={faCopy} />
       <span className="visually-hidden">Copy to clipboard</span>
