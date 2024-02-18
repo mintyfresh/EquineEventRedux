@@ -30,5 +30,6 @@ module Types
     field :timer_unpause, mutation: Mutations::TimerUnpause
     field :timer_skip_to_next_phase, mutation: Mutations::TimerSkipToNextPhase
     field :timer_reset, mutation: Mutations::TimerReset
+    field :timer_clone_with_offset, mutation: Mutations::TimerCloneWithOffset
   end
 end

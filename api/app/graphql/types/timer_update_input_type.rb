@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Types
-  class TimerUpdateInput < BaseInputObject
+  class TimerUpdateInputType < BaseInputObject
     argument :label, String, required: false
   end
 end

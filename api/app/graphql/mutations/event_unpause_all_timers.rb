@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Mutations
-  class EventPauseAllTimers < BaseMutation
+  class EventUnpauseAllTimers < BaseMutation
     argument :event_id, ID, required: true do
       description 'The ID of the event for which the timers should be unpaused.'
     end

@@ -15,8 +15,10 @@ module TimerEvent
     @all ||= constants(false).map { |name| const_get(name) }.freeze
   end
 
-  # @!method self.each
-  #   @yieldparam event [Symbol]
-  #   @return [Enumerator<Symbol>]
-  delegate :each, to: :all
+  # @yieldparam event [Symbol]
+  # @yieldreturn [void]
+  # @return [Enumerator<Symbol>]
+  def self.each(&)
+    all.each(&)
+  end
 end
