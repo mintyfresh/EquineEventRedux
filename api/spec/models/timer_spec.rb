@@ -42,14 +42,24 @@ RSpec.describe Timer do
     expect(timer).to be_invalid
   end
 
-  it "sets the preset's first phase as the current phase as part of creation" do
-    timer.save!
-    expect(timer.current_phase).to eq(timer.preset.phases.first)
+  it 'is valid without a label' do
+    timer.label = nil
+    expect(timer).to be_valid
   end
 
-  it 'sets the phase expiration time as part of creation', :freeze_time do
+  it 'sets the expiration time as part of creation', :freeze_time do
     timer.save!
-    expect(timer.phase_expires_at).to eq(Time.current + timer.current_phase.duration)
+    expect(timer.expires_at).to eq(Time.current + timer.total_duration)
+  end
+
+  it 'creates phases from the preset' do
+    timer.save!
+    expect(timer.phases.map(&:preset_phase)).to eq(timer.preset.phases)
+  end
+
+  it 'starts at teh first phase' do
+    timer.save!
+    expect(timer.current_phase).to eq(timer.phases.first)
   end
 
   describe '#pause!' do
@@ -67,11 +77,6 @@ RSpec.describe Timer do
       pause!
       travel 30.minutes
       expect(timer.time_remaining).to eq(time_remaining)
-    end
-
-    it 'prevents the timer from moving to the next phase' do
-      pause!
-      expect { timer.move_to_next_phase! }.not_to change { timer.current_phase }
     end
 
     it 'prevents the timer from skipping to the next phase' do

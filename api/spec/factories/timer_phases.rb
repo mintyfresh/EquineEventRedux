@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: timer_phases
@@ -29,14 +31,13 @@
 #
 FactoryBot.define do
   factory :timer_phase do
-    timer { nil }
-    preset_phase { nil }
-    audio_clip { nil }
-    name { "MyString" }
-    position { 1 }
-    duration_amount { 1 }
-    duration_unit { "MyString" }
-    offset_from_start { 1 }
-    offset_from_end { 1 }
+    timer
+    preset_phase { build(:timer_preset_phase, timer_preset: timer.preset) }
+
+    audio_clip { preset_phase.audio_clip }
+    name { preset_phase.name }
+    position { preset_phase.position }
+    duration_amount { preset_phase.duration_amount }
+    duration_unit { preset_phase.duration_unit }
   end
 end

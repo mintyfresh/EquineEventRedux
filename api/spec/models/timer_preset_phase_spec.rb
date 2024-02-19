@@ -28,6 +28,7 @@
 #  fk_rails_...  (timer_preset_id => timer_presets.id)
 #
 require 'rails_helper'
+require_relative 'concerns/timer_phaseable'
 
 RSpec.describe TimerPresetPhase do
   subject(:timer_preset_phase) { build(:timer_preset_phase) }
@@ -36,8 +37,10 @@ RSpec.describe TimerPresetPhase do
     expect(timer_preset_phase).to be_valid
   end
 
-  it 'is invalid without a name' do
-    timer_preset_phase.name = nil
+  it_behaves_like TimerPhaseable
+
+  it 'is invalid without a timer preset' do
+    timer_preset_phase.timer_preset = nil
     expect(timer_preset_phase).to be_invalid
   end
 
@@ -46,29 +49,9 @@ RSpec.describe TimerPresetPhase do
     expect(timer_preset_phase).to be_invalid
   end
 
-  it 'is invalid without a duration amount' do
-    timer_preset_phase.duration_amount = nil
-    expect(timer_preset_phase).to be_invalid
-  end
-
-  it 'is invalid with a non-positive duration amount' do
-    timer_preset_phase.duration_amount = 0
-    expect(timer_preset_phase).to be_invalid
-  end
-
-  it 'is invalid without a duration unit' do
-    timer_preset_phase.duration_unit = nil
-    expect(timer_preset_phase).to be_invalid
-  end
-
-  it 'is invalid with an unknown duration unit' do
-    timer_preset_phase.duration_unit = 'unknown'
-    expect(timer_preset_phase).to be_invalid
-  end
-
-  it 'is invalid with a duration less than 10 seconds' do
-    timer_preset_phase.duration_amount = 1
-    timer_preset_phase.duration_unit = 'seconds'
-    expect(timer_preset_phase).to be_invalid
+  it 'assigns a position upon creation' do
+    timer_preset_phase.position = nil
+    timer_preset_phase.save!
+    expect(timer_preset_phase.position).to be_present
   end
 end

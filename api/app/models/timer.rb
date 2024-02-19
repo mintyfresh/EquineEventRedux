@@ -31,6 +31,8 @@ class Timer < ApplicationRecord
   belongs_to :event
   belongs_to :preset, class_name: 'TimerPreset'
 
+  strips_whitespace_from :label
+
   has_many :phases, -> { ordered }, class_name: 'TimerPhase', dependent: :destroy, inverse_of: :timer
 
   before_create do

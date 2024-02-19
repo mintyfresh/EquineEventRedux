@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: timer_phases
@@ -28,7 +30,24 @@
 #  fk_rails_...  (timer_id => timers.id)
 #
 require 'rails_helper'
+require_relative 'concerns/timer_phaseable'
 
-RSpec.describe TimerPhase, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+RSpec.describe TimerPhase do
+  subject(:timer_phase) { build(:timer_phase) }
+
+  it 'has a valid factory' do
+    expect(timer_phase).to be_valid
+  end
+
+  it_behaves_like TimerPhaseable
+
+  it 'is invalid without a timer' do
+    timer_phase.timer = nil
+    expect(timer_phase).to be_invalid
+  end
+
+  it 'is invalid without a preset phase' do
+    timer_phase.preset_phase = nil
+    expect(timer_phase).to be_invalid
+  end
 end
