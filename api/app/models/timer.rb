@@ -31,8 +31,11 @@ class Timer < ApplicationRecord
   belongs_to :event
   belongs_to :preset, class_name: 'TimerPreset'
 
+  has_many :phases, -> { ordered }, class_name: 'TimerPhase', dependent: :destroy, inverse_of: :timer
+
   before_create do
     self.expires_at ||= (paused_at || Time.current) + preset.total_duration
+    self.phases = preset.phases.map { |phase| TimerPhase.build_from_preset_phase(phase) } if phases.none?
   end
 
   # @!method self.active
@@ -65,28 +68,12 @@ class Timer < ApplicationRecord
     where(arel_table[:expires_at].gt(bind_param('expires_at', Time.current)))
   }
 
-  # The preset phase that was active before the current phase, if any.
-  #
-  # @param at [Time] the time at which to calculate the phase
-  # @return [TimerPresetPhase, nil]
-  def previous_phase(at = Time.current)
-    preset.phase_before(current_phase(at))
-  end
-
   # The currently active phase, if any.
   #
   # @param at [Time] the time at which to calculate the phase
   # @return [TimerPresetPhase, nil]
   def current_phase(at = Time.current)
-    preset.phase_by_time_remaining(time_remaining(at))
-  end
-
-  # The next phase that will be active, if any.
-  #
-  # @param at [Time] the time at which to calculate the phase
-  # @return [TimerPresetPhase, nil]
-  def next_phase(at = Time.current)
-    preset.phase_after(current_phase(at))
+    phases.find { |phase| phase.interval.cover?(time_elapsed(at)) }
   end
 
   # Creates a duplicate of the timer with an offset added to the expiration time.
@@ -96,6 +83,7 @@ class Timer < ApplicationRecord
   def dup_with_offset(offset)
     dup.tap do |timer|
       timer.expires_at += offset
+      timer.phases = phases.map(&:dup)
     end
   end
 
@@ -193,6 +181,28 @@ class Timer < ApplicationRecord
     self.paused_at  = paused ? time : nil
 
     save!
+  end
+
+  # The total duration of the timer.
+  #
+  # @return [ActiveSupport::Duration]
+  def total_duration
+    phases.sum(0.seconds, &:duration)
+  end
+
+  # The total duration of the timer in seconds.
+  #
+  # @return [Integer]
+  def total_duration_in_seconds
+    total_duration.seconds.to_i
+  end
+
+  # The amount of time that has elapsed since the timer started.
+  #
+  # @param at [Time] the time at which to calculate the time elapsed
+  # @return [Float]
+  def time_elapsed(at = Time.current)
+    total_duration_in_seconds - time_remaining(at)
   end
 
   # The amount of time remaining on the timer.

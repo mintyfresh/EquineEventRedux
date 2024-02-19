@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Types
-  class TimerPresetPhaseType < Types::BaseObject
+  class TimerPhaseType < Types::BaseObject
     implements Types::TimerPhaseableType
   end
 end

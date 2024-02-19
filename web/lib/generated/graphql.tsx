@@ -685,11 +685,18 @@ export type Timer = {
   isPaused: Scalars['Boolean'];
   label?: Maybe<Scalars['String']>;
   pausedAt?: Maybe<Scalars['ISO8601DateTime']>;
+  phases: Array<TimerPhase>;
   preset: TimerPreset;
+  /** The amount of time that has elapsed since the timer started, in seconds */
+  timeElapsed: Scalars['Float'];
   /** The amount of time remaining in the current phase, in seconds */
   timeRemaining: Scalars['Float'];
   /** The amount of time remaining in the current phase, in seconds */
   timeRemainingInPhase: Scalars['Float'];
+  /** The total duration of the timer */
+  totalDuration: Scalars['ISO8601Duration'];
+  /** The total duration of the timer, in seconds */
+  totalDurationInSeconds: Scalars['Int'];
 };
 
 export type TimerCloneWithOffsetInput = {
@@ -756,6 +763,22 @@ export type TimerPausePayload = {
   errors?: Maybe<Array<Error>>;
   result?: Maybe<Scalars['Boolean']>;
   timer?: Maybe<Timer>;
+};
+
+export type TimerPhase = {
+  __typename?: 'TimerPhase';
+  audioClip?: Maybe<AudioClip>;
+  duration: Scalars['ISO8601Duration'];
+  durationAmount: Scalars['Int'];
+  durationInSeconds: Scalars['Int'];
+  durationUnit: TimerPhaseDurationUnit;
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  /** The number of seconds from the end of this phase to the end of the timer (after this phase) */
+  offsetFromEnd: Scalars['Int'];
+  /** The number of seconds from the start of the timer to the start of this phase (before this phase) */
+  offsetFromStart: Scalars['Int'];
+  position: Scalars['Int'];
 };
 
 export enum TimerPhaseDurationUnit {
@@ -1013,7 +1036,7 @@ export type SlipRoundFragment = { __typename?: 'Round', id: string, number: numb
 
 export type SlipMatchFragment = { __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, table: number, player1: { __typename?: 'Player', id: string, name: string, score: number }, player2?: { __typename?: 'Player', id: string, name: string, score: number } | null };
 
-export type TimerListItemFragment = { __typename?: 'Timer', id: string, label?: string | null, instant: any, isExpired: boolean, expiresAt: any, isPaused: boolean, pausedAt?: any | null, preset: { __typename?: 'TimerPreset', id: string, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPresetPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } };
+export type TimerListItemFragment = { __typename?: 'Timer', id: string, label?: string | null, instant: any, isExpired: boolean, expiresAt: any, isPaused: boolean, pausedAt?: any | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> };
 
 export type TimerPresetSelectFragment = { __typename?: 'TimerPreset', id: string, name: string, phasesCount: number, totalDurationInSeconds: number };
 
@@ -1065,21 +1088,21 @@ export type EventSlipsQueryVariables = Exact<{
 
 export type EventSlipsQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, slug: string, deleted: boolean, rounds: Array<{ __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, table: number, player1: { __typename?: 'Player', id: string, name: string, score: number }, player2?: { __typename?: 'Player', id: string, name: string, score: number } | null }> }> } };
 
-export type TimerFragment = { __typename?: 'Timer', id: string, label?: string | null, instant: any, isExpired: boolean, expiresAt: any, isPaused: boolean, pausedAt?: any | null, preset: { __typename?: 'TimerPreset', id: string, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPresetPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } };
+export type TimerFragment = { __typename?: 'Timer', id: string, label?: string | null, instant: any, isExpired: boolean, expiresAt: any, isPaused: boolean, pausedAt?: any | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> };
 
 export type EventTimersQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type EventTimersQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, slug: string, deleted: boolean, timers: Array<{ __typename?: 'Timer', id: string, label?: string | null, instant: any, isExpired: boolean, expiresAt: any, isPaused: boolean, pausedAt?: any | null, preset: { __typename?: 'TimerPreset', id: string, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPresetPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } }> }, timerPresets: { __typename?: 'TimerPresetConnection', nodes: Array<{ __typename?: 'TimerPreset', id: string, name: string, phasesCount: number, totalDurationInSeconds: number }> } };
+export type EventTimersQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, slug: string, deleted: boolean, timers: Array<{ __typename?: 'Timer', id: string, label?: string | null, instant: any, isExpired: boolean, expiresAt: any, isPaused: boolean, pausedAt?: any | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> }> }, timerPresets: { __typename?: 'TimerPresetConnection', nodes: Array<{ __typename?: 'TimerPreset', id: string, name: string, phasesCount: number, totalDurationInSeconds: number }> } };
 
 export type TimerEventSubscriptionVariables = Exact<{
   eventId: Scalars['ID'];
 }>;
 
 
-export type TimerEventSubscription = { __typename?: 'Subscription', timerEvent: { __typename?: 'TimerEventPayload', eventType?: TimerEventType | null, timer?: { __typename?: 'Timer', id: string, label?: string | null, instant: any, isExpired: boolean, expiresAt: any, isPaused: boolean, pausedAt?: any | null, preset: { __typename?: 'TimerPreset', id: string, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPresetPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } } | null } };
+export type TimerEventSubscription = { __typename?: 'Subscription', timerEvent: { __typename?: 'TimerEventPayload', eventType?: TimerEventType | null, timer?: { __typename?: 'Timer', id: string, label?: string | null, instant: any, isExpired: boolean, expiresAt: any, isPaused: boolean, pausedAt?: any | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null } };
 
 export type TimerDeletedSubscriptionVariables = Exact<{
   eventId: Scalars['ID'];
@@ -1094,7 +1117,7 @@ export type CreateTimerMutationVariables = Exact<{
 }>;
 
 
-export type CreateTimerMutation = { __typename?: 'Mutation', timerCreate?: { __typename?: 'TimerCreatePayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, instant: any, isExpired: boolean, expiresAt: any, isPaused: boolean, pausedAt?: any | null, preset: { __typename?: 'TimerPreset', id: string, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPresetPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } } | null } | null };
+export type CreateTimerMutation = { __typename?: 'Mutation', timerCreate?: { __typename?: 'TimerCreatePayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, instant: any, isExpired: boolean, expiresAt: any, isPaused: boolean, pausedAt?: any | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null } | null };
 
 export type UpdateTimerMutationVariables = Exact<{
   id: Scalars['ID'];
@@ -1102,7 +1125,7 @@ export type UpdateTimerMutationVariables = Exact<{
 }>;
 
 
-export type UpdateTimerMutation = { __typename?: 'Mutation', timerUpdate?: { __typename?: 'TimerUpdatePayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, instant: any, isExpired: boolean, expiresAt: any, isPaused: boolean, pausedAt?: any | null, preset: { __typename?: 'TimerPreset', id: string, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPresetPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } } | null } | null };
+export type UpdateTimerMutation = { __typename?: 'Mutation', timerUpdate?: { __typename?: 'TimerUpdatePayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, instant: any, isExpired: boolean, expiresAt: any, isPaused: boolean, pausedAt?: any | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null } | null };
 
 export type DeleteTimerMutationVariables = Exact<{
   id: Scalars['ID'];
@@ -1116,21 +1139,21 @@ export type PauseTimerMutationVariables = Exact<{
 }>;
 
 
-export type PauseTimerMutation = { __typename?: 'Mutation', timerPause?: { __typename?: 'TimerPausePayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, instant: any, isExpired: boolean, expiresAt: any, isPaused: boolean, pausedAt?: any | null, preset: { __typename?: 'TimerPreset', id: string, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPresetPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } } | null } | null };
+export type PauseTimerMutation = { __typename?: 'Mutation', timerPause?: { __typename?: 'TimerPausePayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, instant: any, isExpired: boolean, expiresAt: any, isPaused: boolean, pausedAt?: any | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null } | null };
 
 export type UnpauseTimerMutationVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type UnpauseTimerMutation = { __typename?: 'Mutation', timerUnpause?: { __typename?: 'TimerUnpausePayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, instant: any, isExpired: boolean, expiresAt: any, isPaused: boolean, pausedAt?: any | null, preset: { __typename?: 'TimerPreset', id: string, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPresetPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } } | null } | null };
+export type UnpauseTimerMutation = { __typename?: 'Mutation', timerUnpause?: { __typename?: 'TimerUnpausePayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, instant: any, isExpired: boolean, expiresAt: any, isPaused: boolean, pausedAt?: any | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null } | null };
 
 export type SkipTimerToNextPhaseMutationVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type SkipTimerToNextPhaseMutation = { __typename?: 'Mutation', timerSkipToNextPhase?: { __typename?: 'TimerSkipToNextPhasePayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, instant: any, isExpired: boolean, expiresAt: any, isPaused: boolean, pausedAt?: any | null, preset: { __typename?: 'TimerPreset', id: string, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPresetPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } } | null } | null };
+export type SkipTimerToNextPhaseMutation = { __typename?: 'Mutation', timerSkipToNextPhase?: { __typename?: 'TimerSkipToNextPhasePayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, instant: any, isExpired: boolean, expiresAt: any, isPaused: boolean, pausedAt?: any | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null } | null };
 
 export type CloneTimerWithOffsetMutationVariables = Exact<{
   id: Scalars['ID'];
@@ -1138,14 +1161,14 @@ export type CloneTimerWithOffsetMutationVariables = Exact<{
 }>;
 
 
-export type CloneTimerWithOffsetMutation = { __typename?: 'Mutation', timerCloneWithOffset?: { __typename?: 'TimerCloneWithOffsetPayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, instant: any, isExpired: boolean, expiresAt: any, isPaused: boolean, pausedAt?: any | null, preset: { __typename?: 'TimerPreset', id: string, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPresetPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } } | null } | null };
+export type CloneTimerWithOffsetMutation = { __typename?: 'Mutation', timerCloneWithOffset?: { __typename?: 'TimerCloneWithOffsetPayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, instant: any, isExpired: boolean, expiresAt: any, isPaused: boolean, pausedAt?: any | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null } | null };
 
 export type ResetTimerMutationVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type ResetTimerMutation = { __typename?: 'Mutation', timerReset?: { __typename?: 'TimerResetPayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, instant: any, isExpired: boolean, expiresAt: any, isPaused: boolean, pausedAt?: any | null, preset: { __typename?: 'TimerPreset', id: string, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPresetPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } } | null } | null };
+export type ResetTimerMutation = { __typename?: 'Mutation', timerReset?: { __typename?: 'TimerResetPayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, instant: any, isExpired: boolean, expiresAt: any, isPaused: boolean, pausedAt?: any | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null } | null };
 
 export type EventsIndexQueryVariables = Exact<{
   deleted?: InputMaybe<DeletedFilter>;
@@ -1420,20 +1443,17 @@ export const TimerListItemFragmentDoc = gql`
   expiresAt
   isPaused
   pausedAt
-  preset {
+  totalDurationInSeconds
+  phases {
     id
-    totalDurationInSeconds
-    phases {
+    name
+    position
+    durationInSeconds
+    offsetFromStart
+    offsetFromEnd
+    audioClip {
       id
-      name
-      position
-      durationInSeconds
-      offsetFromStart
-      offsetFromEnd
-      audioClip {
-        id
-        fileUrl
-      }
+      fileUrl
     }
   }
 }

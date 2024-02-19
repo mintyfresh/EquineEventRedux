@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_18_184154) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_19_062502) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pgcrypto"
@@ -110,6 +110,24 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_18_184154) do
     t.index ["event_id"], name: "index_rounds_on_event_id"
   end
 
+  create_table "timer_phases", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "timer_id", null: false
+    t.uuid "preset_phase_id", null: false
+    t.uuid "audio_clip_id"
+    t.string "name", null: false
+    t.integer "position", null: false
+    t.integer "duration_amount", null: false
+    t.string "duration_unit", null: false
+    t.integer "offset_from_start", null: false
+    t.integer "offset_from_end", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["audio_clip_id"], name: "index_timer_phases_on_audio_clip_id"
+    t.index ["preset_phase_id"], name: "index_timer_phases_on_preset_phase_id"
+    t.index ["timer_id"], name: "index_timer_phases_on_timer_id"
+    t.check_constraint "duration_amount > 0"
+  end
+
   create_table "timer_preset_phases", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "timer_preset_id", null: false
     t.uuid "audio_clip_id"
@@ -156,6 +174,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_18_184154) do
   add_foreign_key "matches", "rounds"
   add_foreign_key "players", "events"
   add_foreign_key "rounds", "events"
+  add_foreign_key "timer_phases", "audio_clips"
+  add_foreign_key "timer_phases", "timer_preset_phases", column: "preset_phase_id"
+  add_foreign_key "timer_phases", "timers"
   add_foreign_key "timer_preset_phases", "audio_clips"
   add_foreign_key "timer_preset_phases", "timer_presets"
   add_foreign_key "timers", "events"

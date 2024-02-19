@@ -9,8 +9,17 @@ module Types
     field :paused_at, GraphQL::Types::ISO8601DateTime, null: true
     field :is_paused, Boolean, null: false, method: :paused?
 
+    field :total_duration, Types::ISO8601DurationType, null: false do
+      description 'The total duration of the timer'
+    end
+    field :total_duration_in_seconds, Integer, null: false do
+      description 'The total duration of the timer, in seconds'
+    end
     field :instant, GraphQL::Types::ISO8601DateTime, null: false do
       description 'The local current time when the query was executed, to which all other times are relative'
+    end
+    field :time_elapsed, Float, null: false do
+      description 'The amount of time that has elapsed since the timer started, in seconds'
     end
     field :time_remaining, Float, null: false do
       description 'The amount of time remaining in the current phase, in seconds'
@@ -20,6 +29,7 @@ module Types
     end
 
     field :preset, Types::TimerPresetType, null: false
+    field :phases, [Types::TimerPhaseType], null: false
 
     # @return [Time]
     def instant
@@ -44,6 +54,11 @@ module Types
     # @return [::TimerPreset]
     def preset
       dataloader.with(Sources::Record, ::TimerPreset).load(object.preset_id)
+    end
+
+    # @return [Array<::TimerPhase>]
+    def phases
+      dataloader.with(Sources::RecordList, ::TimerPhase, :timer_id).load(object.id)
     end
   end
 end

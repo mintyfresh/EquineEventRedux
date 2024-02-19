@@ -20,7 +20,8 @@ class AudioClip < ApplicationRecord
   # @type [Integer]
   NAME_MAX_LENGTH = 50
 
-  has_many :phases, class_name: 'TimerPresetPhase', dependent: :nullify, inverse_of: :audio_clip
+  has_many :timer_preset_phases, dependent: :nullify, inverse_of: :audio_clip
+  has_many :timer_phases, dependent: :nullify, inverse_of: :audio_clip
 
   has_one_attached :file
 

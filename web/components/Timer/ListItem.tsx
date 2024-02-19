@@ -12,26 +12,23 @@ export const TIMER_LIST_ITEM_FRAGMENT = gql`
     expiresAt
     isPaused
     pausedAt
-    preset {
+    totalDurationInSeconds
+    phases {
       id
-      totalDurationInSeconds
-      phases {
+      name
+      position
+      durationInSeconds
+      offsetFromStart
+      offsetFromEnd
+      audioClip {
         id
-        name
-        position
-        durationInSeconds
-        offsetFromStart
-        offsetFromEnd
-        audioClip {
-          id
-          fileUrl
-        }
+        fileUrl
       }
     }
   }
 `
 
-type TimerPhaseList = TimerListItemFragment['preset']['phases']
+type TimerPhaseList = TimerListItemFragment['phases']
 type TimerPhase = TimerPhaseList[0]
 
 const MILLIS_PER_SECOND  = 1000
@@ -92,8 +89,8 @@ const TimerListItem: React.FC<TimerListItemProps> = ({ timer, readOnly, onLabelU
   useEffect(() => {
     const interval = setInterval(() => {
       const timeRemaining = calculateTimeRemaining(expiresAt, pausedAt, latency)
-      const timeElapsed = timer.preset.totalDurationInSeconds - timeRemaining
-      const currentPhase = calculateCurrentPhase(timer.preset?.phases ?? [], timeElapsed)
+      const timeElapsed = timer.totalDurationInSeconds - timeRemaining
+      const currentPhase = calculateCurrentPhase(timer.phases, timeElapsed)
       const timeRemainingInPhase = calculateTimeRemainingInPhase(timeRemaining, currentPhase)
 
       setHours(Math.floor(timeRemainingInPhase / SECONDS_PER_HOUR))
@@ -112,7 +109,7 @@ const TimerListItem: React.FC<TimerListItemProps> = ({ timer, readOnly, onLabelU
     }, UPDATE_INTERVAL)
 
     return () => clearInterval(interval)
-  }, [latency, expiresAt, pausedAt, timer.preset])
+  }, [latency, expiresAt, pausedAt, timer.totalDurationInSeconds, timer.phases])
 
   useEffect(() => {
     // Play the queued audio clip.
