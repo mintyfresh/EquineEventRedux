@@ -8,8 +8,8 @@ namespace :timers do
       Timer.active.phase_expired.find_each(batch_size: 10) do |timer|
         timer.move_to_next_phase!
 
-        TimerSchema.subscriptions.trigger(
-          :timer, { event_id: timer.event_id }, { event_type: TimerEvent::PHASE_CHANGE, timer: }
+        EquineEventApiSchema.subscriptions.trigger(
+          :timer_event, { event_id: timer.event_id }, { event_type: TimerEvent::PHASE_CHANGE, timer: }
         )
 
         updated += 1

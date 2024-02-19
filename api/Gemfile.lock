@@ -122,7 +122,7 @@ GEM
       activesupport (>= 6.1)
     graph_matching (0.2.1)
       rgl (~> 0.5.0)
-    graphql (2.0.11)
+    graphql (2.2.9)
     graphql-rails_logger (1.2.3)
       actionpack (> 5.0)
       activesupport (> 5.0)

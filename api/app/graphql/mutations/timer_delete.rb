@@ -9,8 +9,8 @@ module Mutations
         timer = record
       end
 
-      TimerSchema.subscriptions.trigger(
-        :timer, { event_id: timer.event_id }, { event_type: TimerEvent::DELETE, timer: }
+      EquineEventApiSchema.subscriptions.trigger(
+        :timer_event, { event_id: timer.event_id }, { event_type: TimerEvent::DELETE, timer: }
       )
 
       result

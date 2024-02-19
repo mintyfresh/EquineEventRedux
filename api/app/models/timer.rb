@@ -181,9 +181,9 @@ class Timer < ApplicationRecord
   # @return [Float]
   def time_remaining
     if paused?
-      phase_expires_at - paused_at
+      (phase_expires_at - paused_at).clamp(0, Float::INFINITY)
     elsif current_phase
-      phase_expires_at - Time.current
+      (phase_expires_at - Time.current).clamp(0, Float::INFINITY)
     else
       0.0
     end

@@ -19,8 +19,8 @@ module Mutations
       timers = event.timers.paused
 
       timers.each do |timer|
-        timer.unpause! && TimerSchema.subscriptions.trigger(
-          :timer, { event_id: event.id }, { event_type: TimerEvent::UNPAUSE, timer: }
+        timer.unpause! && EquineEventApiSchema.subscriptions.trigger(
+          :timer_event, { event_id: event.id }, { event_type: TimerEvent::UNPAUSE, timer: }
         )
       end
 

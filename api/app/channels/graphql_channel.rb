@@ -28,7 +28,10 @@ private
     query          = data['query']
     variables      = prepare_variables(data['variables'])
     operation_name = data['operationName']
-    context        = { channel: self }
+    context        = {
+      channel: self,
+      host:    ActionDispatch::Request.new(connection.env).host_with_port
+    }
 
     EquineEventApiSchema.execute(
       query,

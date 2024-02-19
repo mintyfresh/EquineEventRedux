@@ -5,8 +5,8 @@ module Mutations
     def resolve(**)
       result = super(**)
 
-      TimerSchema.subscriptions.trigger(
-        :timer, { event_id: timer.event_id }, { event_type: TimerEvent::UPDATE, timer: result[:timer] }
+      EquineEventApiSchema.subscriptions.trigger(
+        :timer_event, { event_id: timer.event_id }, { event_type: TimerEvent::UPDATE, timer: result[:timer] }
       )
 
       result

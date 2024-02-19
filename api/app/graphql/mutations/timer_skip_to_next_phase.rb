@@ -12,8 +12,8 @@ module Mutations
       timer  = ::Timer.find(id)
       result = timer.skip_to_next_phase!
 
-      TimerSchema.subscriptions.trigger(
-        :timer, { event_id: event.id }, { event_type: TimerEvent::PHASE_CHANGE, timer: }
+      EquineEventApiSchema.subscriptions.trigger(
+        :timer_event, { event_id: event.id }, { event_type: TimerEvent::PHASE_CHANGE, timer: }
       )
 
       { result:, timer: }

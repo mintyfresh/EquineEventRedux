@@ -1,17 +1,43 @@
-import { ApolloClient, InMemoryCache, NormalizedCacheObject } from '@apollo/client'
+import { ApolloClient, InMemoryCache, NormalizedCacheObject, createHttpLink, split } from '@apollo/client'
+import { getMainDefinition } from '@apollo/client/utilities'
+import ActionCableLink from "graphql-ruby-client/subscriptions/ActionCableLink"
 import { useMemo } from 'react'
 import result from '../generated/graphql'
 
 const isSSR = typeof window === 'undefined'
 let apolloClient: ApolloClient<NormalizedCacheObject> | null = null
 
-export const createApolloClient = () => (
-  new ApolloClient({
+if (!isSSR) {
+  window.ActionCable = require('@rails/actioncable')
+}
+
+export const createApolloClient = () => {
+  const httpUri = isSSR ? process.env.API_URL : '/api/graphql'
+  const httpLink = createHttpLink({ uri: httpUri })
+
+  const link = split(
+    ({ query }) => {
+      const definition = getMainDefinition(query)
+
+      return (
+        definition.kind === 'OperationDefinition' &&
+        definition.operation === 'subscription'
+      )
+    },
+    isSSR
+      ? () => null // do not process subscriptions on the server
+      : new ActionCableLink({
+        cable: window.ActionCable.createConsumer(process.env.NEXT_PUBLIC_CABLE_URL)
+      }),
+    httpLink
+  )
+
+  return new ApolloClient({
     ssrMode: isSSR,
-    uri: isSSR ? process.env.API_URL : '/api/graphql',
+    link,
     cache: new InMemoryCache({ possibleTypes: result.possibleTypes })
   })
-)
+}
 
 export const initializeApolloClient = (initialState: any = null) => {
   const _client = apolloClient ?? createApolloClient()

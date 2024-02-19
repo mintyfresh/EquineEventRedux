@@ -2,6 +2,6 @@
 
 module Types
   class SubscriptionType < BaseObject
-    field :timer, subscription: Subscriptions::Timer
+    field :timer_event, subscription: Subscriptions::TimerEvent
   end
 end
