@@ -5,7 +5,7 @@ import EventLayout, { EVENT_LAYOUT_FRAGMENT } from '../../../components/EventLay
 import TimerInlineCreateForm from '../../../components/Timer/InlineCreateForm'
 import TimerListItem, { TIMER_LIST_ITEM_FRAGMENT } from '../../../components/Timer/ListItem'
 import { TIMER_PRESET_SELECT_FRAGMENT } from '../../../components/TimerPreset/Select'
-import { EventTimersQuery, EventTimersQueryVariables, TimerCreateInput, TimerEventType, TimerEventSubscription, TimerFragment, useCreateTimerMutation, useEventTimersQuery, useTimerEventSubscription, usePauseTimerMutation, useUnpauseTimerMutation } from '../../../lib/generated/graphql'
+import { EventTimersQuery, EventTimersQueryVariables, TimerCreateInput, TimerEventType, TimerEventSubscription, TimerFragment, useCreateTimerMutation, useEventTimersQuery, useTimerEventSubscription, usePauseTimerMutation, useUnpauseTimerMutation, useUpdateTimerMutation, useDeleteTimerMutation, useTimerDeletedSubscription, useResetTimerMutation } from '../../../lib/generated/graphql'
 import { initializeApolloClient } from '../../../lib/graphql/client'
 import { NextPageWithLayout } from '../../../lib/types/next-page'
 
@@ -50,11 +50,39 @@ gql`
 `
 
 gql`
+  subscription TimerDeleted($eventId: ID!) {
+    timerDeleted(eventId: $eventId) {
+      timerId
+    }
+  }
+`
+
+gql`
   mutation CreateTimer($eventId: ID!, $input: TimerCreateInput!) {
     timerCreate(eventId: $eventId, input: $input) {
       timer {
         ...Timer
       }
+    }
+  }
+  ${TIMER_FRAGMENT}
+`
+
+gql`
+  mutation UpdateTimer($id: ID!, $input: TimerUpdateInput!) {
+    timerUpdate(id: $id, input: $input) {
+      timer {
+        ...Timer
+      }
+    }
+  }
+  ${TIMER_FRAGMENT}
+`
+
+gql`
+  mutation DeleteTimer($id: ID!) {
+    timerDelete(id: $id) {
+      success
     }
   }
   ${TIMER_FRAGMENT}
@@ -79,6 +107,18 @@ gql`
       }
     }
   }
+  ${TIMER_FRAGMENT}
+`
+
+gql`
+  mutation ResetTimer($id: ID!) {
+    timerReset(id: $id) {
+      timer {
+        ...Timer
+      }
+    }
+  }
+  ${TIMER_FRAGMENT}
 `
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
@@ -118,13 +158,6 @@ const mergeTimers = (data: EventTimersQuery, event: TimerEventSubscription['time
         event.timer
       ]
     }
-    case TimerEventType.Delete: {
-      const timers = data.event!.timers ?? []
-
-      return timers.filter((timer) =>
-        timer.id !== event.timer!.id
-      )
-    }
     default: {
       const timers = data.event!.timers ?? []
 
@@ -142,17 +175,36 @@ const EventTimersPage: NextPageWithLayout<{ id: string } & EventTimersQuery> = (
     variables: { id }
   })
 
-  const {} = useTimerEventSubscription({
+  useTimerEventSubscription({
     variables: { eventId },
     onData: ({ client, data: { data: subscription } }) => {
-      subscription?.timerEvent && client.writeQuery<EventTimersQuery, EventTimersQueryVariables>({
+      data && subscription?.timerEvent && client.writeQuery<EventTimersQuery, EventTimersQueryVariables>({
         query: EVENT_TIMERS_QUERY,
         variables: { id },
         data: {
-          ...data!,
+          ...data,
           event: {
-            ...data!.event,
-            timers: mergeTimers(data!, subscription.timerEvent)
+            ...data.event,
+            timers: mergeTimers(data, subscription.timerEvent)
+          }
+        }
+      })
+    }
+  })
+
+  useTimerDeletedSubscription({
+    variables: { eventId },
+    onData: ({ client, data: { data: subscription } }) => {
+      data && subscription?.timerDeleted && client.writeQuery<EventTimersQuery, EventTimersQueryVariables>({
+        query: EVENT_TIMERS_QUERY,
+        variables: { id },
+        data: {
+          ...data,
+          event: {
+            ...data.event,
+            timers: (data.event?.timers ?? []).filter((timer) =>
+              timer.id !== subscription.timerDeleted.timerId
+            )
           }
         }
       })
@@ -165,8 +217,11 @@ const EventTimersPage: NextPageWithLayout<{ id: string } & EventTimersQuery> = (
     variables: { eventId, input: timerCreateInput }
   })
 
+  const [updateTimer, {}] = useUpdateTimerMutation()
+  const [deleteTimer, {}] = useDeleteTimerMutation()
   const [pauseTimer, {}] = usePauseTimerMutation()
   const [unpauseTimer, {}] = useUnpauseTimerMutation()
+  const [resetTimer, {}] = useResetTimerMutation()
 
   if (!data?.event) {
     return null
@@ -187,8 +242,14 @@ const EventTimersPage: NextPageWithLayout<{ id: string } & EventTimersQuery> = (
           <div className="pb-5" key={timer.id}>
             <TimerListItem
               timer={timer}
+              onLabelUpdate={({ id }, label) => updateTimer({ variables: { id, input: { label } } })}
               onPause={({ id }) => pauseTimer({ variables: { id } })}
               onUnpause={({ id }) => unpauseTimer({ variables: { id } })}
+              onDelete={({ id }) => deleteTimer({ variables: { id } })}
+              onReset={({ id }) => (
+                confirm('Are you sure you want to reset this timer?') &&
+                  resetTimer({ variables: { id } })
+              )}
             />
           </div>
         ))}
