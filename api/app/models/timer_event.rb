@@ -3,7 +3,6 @@
 module TimerEvent
   CREATE = :create
   UPDATE = :update
-  DELETE = :delete
   PAUSE = :pause
   UNPAUSE = :unpause
   SKIP_TO_NEXT_PHASE = :skip_to_next_phase

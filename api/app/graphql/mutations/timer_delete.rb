@@ -2,15 +2,15 @@
 
 module Mutations
   class TimerDelete < RecordDelete['Timer']
-    def resolve(**)
-      timer = nil
+    def resolve(id:, **)
+      event_id = nil
 
-      result = super(**) do |record|
-        timer = record
+      result = super(id:, **) do |timer|
+        event_id = timer.event_id
       end
 
       EquineEventApiSchema.subscriptions.trigger(
-        :timer_event, { event_id: timer.event_id }, { event_type: TimerEvent::DELETE, timer: }
+        :timer_deleted, { event_id: }, { timer_id: id }
       )
 
       result

@@ -102,16 +102,18 @@ class Timer < ApplicationRecord
   # Determines if the timer is active.
   # (i.e. not paused and not expired.)
   #
+  # @param at [Time] the time at which to check for activiteness
   # @return [Boolean]
-  def active?
-    !paused? && !expired?
+  def active?(at = Time.current)
+    !paused? && !expired?(at)
   end
 
   # Determines if the timer has expired.
   #
+  # @param at [Time] the time at which to check for expiration
   # @return [Boolean]
-  def expired?
-    expires_at <= Time.current
+  def expired?(at = Time.current)
+    expires_at <= at
   end
 
   # Checks if the timer is paused.

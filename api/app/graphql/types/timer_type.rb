@@ -5,10 +5,13 @@ module Types
     field :id, ID, null: false
     field :label, String, null: true
     field :expires_at, GraphQL::Types::ISO8601DateTime, null: false
-    field :is_expired, Boolean, null: false, method: :expired?
+    field :is_expired, Boolean, null: false, resolver_method: :expired?
     field :paused_at, GraphQL::Types::ISO8601DateTime, null: true
     field :is_paused, Boolean, null: false, method: :paused?
 
+    field :instant, GraphQL::Types::ISO8601DateTime, null: false do
+      description 'The local current time when the query was executed, to which all other times are relative'
+    end
     field :time_remaining, Float, null: false do
       description 'The amount of time remaining in the current phase, in seconds'
     end
@@ -17,9 +20,26 @@ module Types
     end
 
     field :preset, Types::TimerPresetType, null: false
-    field :current_phase, Types::TimerPresetPhaseType, null: true
-    field :previous_phase, Types::TimerPresetPhaseType, null: true
-    field :next_phase, Types::TimerPresetPhaseType, null: true
+
+    # @return [Time]
+    def instant
+      @instant ||= Time.current
+    end
+
+    # @return [Boolean]
+    def expired?
+      object.expired?(instant)
+    end
+
+    # @return [Float]
+    def time_remaining
+      object.time_remaining(instant)
+    end
+
+    # @return [Float]
+    def time_remaining_in_phase
+      object.time_remaining_in_phase(instant)
+    end
 
     # @return [::TimerPreset]
     def preset
