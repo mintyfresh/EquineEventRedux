@@ -5,7 +5,7 @@ import EventLayout, { EVENT_LAYOUT_FRAGMENT } from '../../../components/EventLay
 import TimerInlineCreateForm from '../../../components/Timer/InlineCreateForm'
 import TimerListItem, { TIMER_LIST_ITEM_FRAGMENT } from '../../../components/Timer/ListItem'
 import { TIMER_PRESET_SELECT_FRAGMENT } from '../../../components/TimerPreset/Select'
-import { EventTimersQuery, EventTimersQueryVariables, TimerCreateInput, TimerEventType, TimerEventSubscription, TimerFragment, useCreateTimerMutation, useEventTimersQuery, useTimerEventSubscription, usePauseTimerMutation, useUnpauseTimerMutation, useUpdateTimerMutation, useDeleteTimerMutation, useTimerDeletedSubscription, useResetTimerMutation } from '../../../lib/generated/graphql'
+import { EventTimersQuery, EventTimersQueryVariables, TimerCreateInput, TimerEventType, TimerEventSubscription, TimerFragment, useCreateTimerMutation, useEventTimersQuery, useTimerEventSubscription, usePauseTimerMutation, useUnpauseTimerMutation, useUpdateTimerMutation, useDeleteTimerMutation, useTimerDeletedSubscription, useResetTimerMutation, useSkipTimerToNextPhaseMutation } from '../../../lib/generated/graphql'
 import { initializeApolloClient } from '../../../lib/graphql/client'
 import { NextPageWithLayout } from '../../../lib/types/next-page'
 
@@ -102,6 +102,17 @@ gql`
 gql`
   mutation UnpauseTimer($id: ID!) {
     timerUnpause(id: $id) {
+      timer {
+        ...Timer
+      }
+    }
+  }
+  ${TIMER_FRAGMENT}
+`
+
+gql`
+  mutation SkipTimerToNextPhase($id: ID!) {
+    timerSkipToNextPhase(id: $id) {
       timer {
         ...Timer
       }
@@ -221,6 +232,7 @@ const EventTimersPage: NextPageWithLayout<{ id: string } & EventTimersQuery> = (
   const [deleteTimer, {}] = useDeleteTimerMutation()
   const [pauseTimer, {}] = usePauseTimerMutation()
   const [unpauseTimer, {}] = useUnpauseTimerMutation()
+  const [skipToNextPhase, {}] = useSkipTimerToNextPhaseMutation()
   const [resetTimer, {}] = useResetTimerMutation()
 
   if (!data?.event) {
@@ -250,6 +262,7 @@ const EventTimersPage: NextPageWithLayout<{ id: string } & EventTimersQuery> = (
                 confirm('Are you sure you want to reset this timer?') &&
                   resetTimer({ variables: { id } })
               )}
+              onSkipToNextPhase={({ id }) => skipToNextPhase({ variables: { id } })}
             />
           </div>
         ))}

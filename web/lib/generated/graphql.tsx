@@ -1119,6 +1119,13 @@ export type UnpauseTimerMutationVariables = Exact<{
 
 export type UnpauseTimerMutation = { __typename?: 'Mutation', timerUnpause?: { __typename?: 'TimerUnpausePayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, instant: any, isExpired: boolean, expiresAt: any, isPaused: boolean, pausedAt?: any | null, preset: { __typename?: 'TimerPreset', id: string, phases: Array<{ __typename?: 'TimerPresetPhase', id: string, name: string, position: number, durationInSeconds: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } } | null } | null };
 
+export type SkipTimerToNextPhaseMutationVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type SkipTimerToNextPhaseMutation = { __typename?: 'Mutation', timerSkipToNextPhase?: { __typename?: 'TimerSkipToNextPhasePayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, instant: any, isExpired: boolean, expiresAt: any, isPaused: boolean, pausedAt?: any | null, preset: { __typename?: 'TimerPreset', id: string, phases: Array<{ __typename?: 'TimerPresetPhase', id: string, name: string, position: number, durationInSeconds: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } } | null } | null };
+
 export type ResetTimerMutationVariables = Exact<{
   id: Scalars['ID'];
 }>;
@@ -2667,6 +2674,41 @@ export function useUnpauseTimerMutation(baseOptions?: Apollo.MutationHookOptions
 export type UnpauseTimerMutationHookResult = ReturnType<typeof useUnpauseTimerMutation>;
 export type UnpauseTimerMutationResult = Apollo.MutationResult<UnpauseTimerMutation>;
 export type UnpauseTimerMutationOptions = Apollo.BaseMutationOptions<UnpauseTimerMutation, UnpauseTimerMutationVariables>;
+export const SkipTimerToNextPhaseDocument = gql`
+    mutation SkipTimerToNextPhase($id: ID!) {
+  timerSkipToNextPhase(id: $id) {
+    timer {
+      ...Timer
+    }
+  }
+}
+    ${TimerFragmentDoc}`;
+export type SkipTimerToNextPhaseMutationFn = Apollo.MutationFunction<SkipTimerToNextPhaseMutation, SkipTimerToNextPhaseMutationVariables>;
+
+/**
+ * __useSkipTimerToNextPhaseMutation__
+ *
+ * To run a mutation, you first call `useSkipTimerToNextPhaseMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSkipTimerToNextPhaseMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [skipTimerToNextPhaseMutation, { data, loading, error }] = useSkipTimerToNextPhaseMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useSkipTimerToNextPhaseMutation(baseOptions?: Apollo.MutationHookOptions<SkipTimerToNextPhaseMutation, SkipTimerToNextPhaseMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SkipTimerToNextPhaseMutation, SkipTimerToNextPhaseMutationVariables>(SkipTimerToNextPhaseDocument, options);
+      }
+export type SkipTimerToNextPhaseMutationHookResult = ReturnType<typeof useSkipTimerToNextPhaseMutation>;
+export type SkipTimerToNextPhaseMutationResult = Apollo.MutationResult<SkipTimerToNextPhaseMutation>;
+export type SkipTimerToNextPhaseMutationOptions = Apollo.BaseMutationOptions<SkipTimerToNextPhaseMutation, SkipTimerToNextPhaseMutationVariables>;
 export const ResetTimerDocument = gql`
     mutation ResetTimer($id: ID!) {
   timerReset(id: $id) {
