@@ -9,6 +9,8 @@ class CreateTimerPresetPhases < ActiveRecord::Migration[7.1]
       t.integer    :position, null: false
       t.integer    :duration_amount, null: false
       t.string     :duration_unit, null: false
+      t.integer    :offset_from_start, null: false
+      t.integer    :offset_from_end, null: false
       t.timestamps
 
       t.index %i[timer_preset_id name], unique: true

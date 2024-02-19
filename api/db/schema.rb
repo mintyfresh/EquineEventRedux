@@ -117,6 +117,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_18_184154) do
     t.integer "position", null: false
     t.integer "duration_amount", null: false
     t.string "duration_unit", null: false
+    t.integer "offset_from_start", null: false
+    t.integer "offset_from_end", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["audio_clip_id"], name: "index_timer_preset_phases_on_audio_clip_id"

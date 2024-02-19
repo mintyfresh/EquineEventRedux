@@ -12,6 +12,7 @@ module Mutations
       old_timer = ::Timer.find(id)
 
       new_timer = old_timer.dup_with_offset(input.offset_in_seconds)
+      new_timer.paused = input.paused
       new_timer.save!
 
       EquineEventApiSchema.subscriptions.trigger(

@@ -2,15 +2,17 @@
 #
 # Table name: timer_preset_phases
 #
-#  id              :uuid             not null, primary key
-#  timer_preset_id :uuid             not null
-#  audio_clip_id   :uuid
-#  name            :string           not null
-#  position        :integer          not null
-#  duration_amount :integer          not null
-#  duration_unit   :string           not null
-#  created_at      :datetime         not null
-#  updated_at      :datetime         not null
+#  id                :uuid             not null, primary key
+#  timer_preset_id   :uuid             not null
+#  audio_clip_id     :uuid
+#  name              :string           not null
+#  position          :integer          not null
+#  duration_amount   :integer          not null
+#  duration_unit     :string           not null
+#  offset_from_start :integer          not null
+#  offset_from_end   :integer          not null
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
 #
 # Indexes
 #

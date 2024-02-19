@@ -32,7 +32,7 @@ class Timer < ApplicationRecord
   belongs_to :preset, class_name: 'TimerPreset'
 
   before_create do
-    self.expires_at = (paused_at || Time.current) + preset.total_duration
+    self.expires_at ||= (paused_at || Time.current) + preset.total_duration
   end
 
   # @!method self.active
@@ -123,14 +123,39 @@ class Timer < ApplicationRecord
     paused_at.present?
   end
 
+  # Whether the timer can be paused.
+  #
+  # @param at [Time] the time at which to check for pausability
+  # @return [Boolean]
+  def pausable?(at = Time.current)
+    !expired?(at) && !paused?
+  end
+
+  # Whether the timer can be unpaused.
+  #
+  # @return [Boolean]
+  def unpausable?
+    paused?
+  end
+
+  # Pauses or unpauses the timer.
+  #
+  # @param value [Boolean]
+  # @return [void]
+  def paused=(value)
+    if ActiveRecord::Type.lookup(:boolean).cast(value)
+      self.paused_at = Time.current if pausable?
+    elsif unpausable?
+      self.paused_at = nil
+    end
+  end
+
   # Pauses the timer.
   # If the timer is already paused or expired, nothing happens.
   #
   # @return [Boolean]
   def pause!
-    return false if expired? || paused?
-
-    update!(paused_at: Time.current)
+    pausable? && update!(paused_at: Time.current)
   end
 
   # Unpauses the timer.
@@ -138,7 +163,7 @@ class Timer < ApplicationRecord
   #
   # @return [Boolean]
   def unpause!
-    return false unless paused?
+    return false unless unpausable?
 
     # Adjust the expiry by the amount of time the timer was paused.
     self.expires_at += Time.current - paused_at
@@ -184,7 +209,7 @@ class Timer < ApplicationRecord
   # @return [Float]
   def time_remaining_in_phase(at = Time.current)
     if (phase = current_phase(at))
-      time_remaining(at) - preset.time_remaining_after_phase(phase).to_f
+      time_remaining(at) - phase.offset_from_end
     else
       0.0
     end

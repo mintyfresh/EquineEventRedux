@@ -51,6 +51,19 @@ class TimerPreset < ApplicationRecord
     end
   end
 
+  before_save if: :phases_changed? do
+    offset = 0
+    total_duration = total_duration_in_seconds
+
+    phases.sort_by { |phase| [phase.position, phase.created_at || Float::INFINITY] }.each do |phase|
+      next if phase.marked_for_destruction?
+
+      phase.offset_from_start = offset
+      offset += phase.duration_in_seconds
+      phase.offset_from_end = total_duration - offset
+    end
+  end
+
   # @!method self.system
   #   Returns system-defined timer presets.
   #   @return [Class<TimerPreset>]
@@ -70,21 +83,20 @@ class TimerPreset < ApplicationRecord
     (phases.reject(&:marked_for_destruction?).filter_map(&:position).max || 0) + 1
   end
 
+  # Returns the phase that corresponds to the given time-elapsed.
+  #
+  # @param time_elapsed [ActiveSupport::Duration, Numeric]
+  # @return [TimerPresetPhase, nil]
+  def phase_by_time_elapsed(time_elapsed)
+    phases.find { |phase| !phase.marked_for_destruction? && phase.interval.cover?(time_elapsed) }
+  end
+
   # Returns the phase that corresponds to the given time-remaining.
   #
   # @param time_remaining [ActiveSupport::Duration, Numeric]
   # @return [TimerPresetPhase, nil]
   def phase_by_time_remaining(time_remaining)
-    cummulative_duration = 0
-
-    phases.reverse_each do |phase|
-      next if phase.marked_for_destruction?
-      return phase if cummulative_duration + phase.duration_in_seconds >= time_remaining
-
-      cummulative_duration += phase.duration_in_seconds
-    end
-
-    nil
+    phase_by_time_elapsed(total_duration_in_seconds - time_remaining)
   end
 
   # Returns the phase after the given phase.
@@ -93,7 +105,7 @@ class TimerPreset < ApplicationRecord
   # @param phase [TimerPresetPhase]
   # @return [TimerPresetPhase, nil]
   def phase_after(phase)
-    phases.select { |p| p.position > phase.position && !p.marked_for_destruction? }.min_by(&:position)
+    phases.select { |p| !p.marked_for_destruction? && p.position > phase.position }.min_by(&:position)
   end
 
   # Returns the phase before the given phase.
@@ -102,7 +114,7 @@ class TimerPreset < ApplicationRecord
   # @param phase [TimerPresetPhase]
   # @return [TimerPresetPhase, nil]
   def phase_before(phase)
-    phases.select { |p| p.position < phase.position && !p.marked_for_destruction? }.max_by(&:position)
+    phases.select { |p| !p.marked_for_destruction? && p.position < phase.position }.max_by(&:position)
   end
 
   # Calculates the total duration of all the phases.

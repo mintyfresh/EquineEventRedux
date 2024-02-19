@@ -14,11 +14,14 @@ export const TIMER_LIST_ITEM_FRAGMENT = gql`
     pausedAt
     preset {
       id
+      totalDurationInSeconds
       phases {
         id
         name
         position
         durationInSeconds
+        offsetFromStart
+        offsetFromEnd
         audioClip {
           id
           fileUrl
@@ -42,29 +45,21 @@ const calculateTimeRemaining = (expiresAt: Date, pausedAt: Date | null, latency:
   return Math.max(0, (expiresAt.getTime() - now) / MILLIS_PER_SECOND)
 }
 
-const calculateCurrentPhase = (phases: TimerPhaseList, timeRemaining: number) => {
-  if (timeRemaining <= 0) {
-    return null
-  }
+const calculateCurrentPhase = (phases: TimerPhaseList, timeElapsed: number) => {
+  return phases.find((phase) => {
+    const phaseStart = phase.offsetFromStart
+    const phaseEnd   = phaseStart + phase.durationInSeconds
 
-  let cumulativeDuration = 0
-
-  return phases.toReversed().find((phase) => {
-    cumulativeDuration += phase.durationInSeconds
-
-    return cumulativeDuration > timeRemaining
+    return phaseStart <= timeElapsed && timeElapsed < phaseEnd
   }) ?? null
 }
 
-const calculateTimeRemainingInPhase = (phases: TimerPhaseList, timeRemaining: number, currentPhase: TimerPhase | null) => {
+const calculateTimeRemainingInPhase = (timeRemaining: number, currentPhase: TimerPhase | null) => {
   if (!currentPhase) {
     return 0
   }
 
-  const followingPhases = phases.filter((phase) => phase.position > currentPhase.position)
-  const totalTimeInFollowingPhases = followingPhases.reduce((total, phase) => total + phase.durationInSeconds, 0)
-
-  return Math.max(0, timeRemaining - totalTimeInFollowingPhases)
+  return Math.max(0, timeRemaining - currentPhase.offsetFromEnd)
 }
 
 export interface TimerListItemProps extends TimerListItemControlsProps {
@@ -97,8 +92,9 @@ const TimerListItem: React.FC<TimerListItemProps> = ({ timer, readOnly, onLabelU
   useEffect(() => {
     const interval = setInterval(() => {
       const timeRemaining = calculateTimeRemaining(expiresAt, pausedAt, latency)
-      const currentPhase = calculateCurrentPhase(timer.preset?.phases ?? [], timeRemaining)
-      const timeRemainingInPhase = calculateTimeRemainingInPhase(timer.preset?.phases ?? [], timeRemaining, currentPhase)
+      const timeElapsed = timer.preset.totalDurationInSeconds - timeRemaining
+      const currentPhase = calculateCurrentPhase(timer.preset?.phases ?? [], timeElapsed)
+      const timeRemainingInPhase = calculateTimeRemainingInPhase(timeRemaining, currentPhase)
 
       setHours(Math.floor(timeRemainingInPhase / SECONDS_PER_HOUR))
       setMinutes(Math.floor((timeRemainingInPhase % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE))
@@ -116,13 +112,18 @@ const TimerListItem: React.FC<TimerListItemProps> = ({ timer, readOnly, onLabelU
     }, UPDATE_INTERVAL)
 
     return () => clearInterval(interval)
-  }, [latency, expiresAt, pausedAt, timer.preset.phases])
+  }, [latency, expiresAt, pausedAt, timer.preset])
 
   useEffect(() => {
     // Play the queued audio clip.
     if (audioClip) {
-      new Audio(audioClip).play()
-      setAudioClip(null)
+      try {
+        new Audio(audioClip).play()
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setAudioClip(null)
+      }
     }
   }, [audioClip])
 

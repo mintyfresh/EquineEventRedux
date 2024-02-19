@@ -5,7 +5,7 @@ import EventLayout, { EVENT_LAYOUT_FRAGMENT } from '../../../components/EventLay
 import TimerInlineCreateForm from '../../../components/Timer/InlineCreateForm'
 import TimerListItem, { TIMER_LIST_ITEM_FRAGMENT } from '../../../components/Timer/ListItem'
 import { TIMER_PRESET_SELECT_FRAGMENT } from '../../../components/TimerPreset/Select'
-import { EventTimersQuery, EventTimersQueryVariables, TimerCreateInput, TimerEventType, TimerEventSubscription, TimerFragment, useCreateTimerMutation, useEventTimersQuery, useTimerEventSubscription, usePauseTimerMutation, useUnpauseTimerMutation, useUpdateTimerMutation, useDeleteTimerMutation, useTimerDeletedSubscription, useResetTimerMutation, useSkipTimerToNextPhaseMutation } from '../../../lib/generated/graphql'
+import { EventTimersQuery, EventTimersQueryVariables, TimerCreateInput, TimerEventSubscription, TimerEventType, TimerFragment, useCloneTimerWithOffsetMutation, useCreateTimerMutation, useDeleteTimerMutation, useEventTimersQuery, usePauseTimerMutation, useResetTimerMutation, useSkipTimerToNextPhaseMutation, useTimerDeletedSubscription, useTimerEventSubscription, useUnpauseTimerMutation, useUpdateTimerMutation } from '../../../lib/generated/graphql'
 import { initializeApolloClient } from '../../../lib/graphql/client'
 import { NextPageWithLayout } from '../../../lib/types/next-page'
 
@@ -113,6 +113,17 @@ gql`
 gql`
   mutation SkipTimerToNextPhase($id: ID!) {
     timerSkipToNextPhase(id: $id) {
+      timer {
+        ...Timer
+      }
+    }
+  }
+  ${TIMER_FRAGMENT}
+`
+
+gql`
+  mutation CloneTimerWithOffset($id: ID!, $input: TimerCloneWithOffsetInput!) {
+    timerCloneWithOffset(id: $id, input: $input) {
       timer {
         ...Timer
       }
@@ -233,6 +244,7 @@ const EventTimersPage: NextPageWithLayout<{ id: string } & EventTimersQuery> = (
   const [pauseTimer, {}] = usePauseTimerMutation()
   const [unpauseTimer, {}] = useUnpauseTimerMutation()
   const [skipToNextPhase, {}] = useSkipTimerToNextPhaseMutation()
+  const [cloneWithOffset, {}] = useCloneTimerWithOffsetMutation()
   const [resetTimer, {}] = useResetTimerMutation()
 
   if (!data?.event) {
@@ -257,12 +269,16 @@ const EventTimersPage: NextPageWithLayout<{ id: string } & EventTimersQuery> = (
               onLabelUpdate={({ id }, label) => updateTimer({ variables: { id, input: { label } } })}
               onPause={({ id }) => pauseTimer({ variables: { id } })}
               onUnpause={({ id }) => unpauseTimer({ variables: { id } })}
-              onDelete={({ id }) => deleteTimer({ variables: { id } })}
+              onDelete={({ id }) => (
+                confirm('Are you sure you want to delete this timer?') &&
+                  deleteTimer({ variables: { id } })
+              )}
               onReset={({ id }) => (
                 confirm('Are you sure you want to reset this timer?') &&
                   resetTimer({ variables: { id } })
               )}
               onSkipToNextPhase={({ id }) => skipToNextPhase({ variables: { id } })}
+              onClone={({ id }, input) => cloneWithOffset({ variables: { id, input } })}
             />
           </div>
         ))}
