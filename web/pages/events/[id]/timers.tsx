@@ -5,7 +5,7 @@ import EventLayout, { EVENT_LAYOUT_FRAGMENT } from '../../../components/EventLay
 import TimerInlineCreateForm from '../../../components/Timer/InlineCreateForm'
 import TimerListItem, { TIMER_LIST_ITEM_FRAGMENT } from '../../../components/Timer/ListItem'
 import { TIMER_PRESET_SELECT_FRAGMENT } from '../../../components/TimerPreset/Select'
-import { EventTimersQuery, EventTimersQueryVariables, TimerCreateInput, TimerEventType, TimerEventSubscription, TimerFragment, useCreateTimerMutation, useEventTimersQuery, useTimerEventSubscription } from '../../../lib/generated/graphql'
+import { EventTimersQuery, EventTimersQueryVariables, TimerCreateInput, TimerEventType, TimerEventSubscription, TimerFragment, useCreateTimerMutation, useEventTimersQuery, useTimerEventSubscription, usePauseTimerMutation, useUnpauseTimerMutation } from '../../../lib/generated/graphql'
 import { initializeApolloClient } from '../../../lib/graphql/client'
 import { NextPageWithLayout } from '../../../lib/types/next-page'
 
@@ -58,6 +58,27 @@ gql`
     }
   }
   ${TIMER_FRAGMENT}
+`
+
+gql`
+  mutation PauseTimer($id: ID!) {
+    timerPause(id: $id) {
+      timer {
+        ...Timer
+      }
+    }
+  }
+  ${TIMER_FRAGMENT}
+`
+
+gql`
+  mutation UnpauseTimer($id: ID!) {
+    timerUnpause(id: $id) {
+      timer {
+        ...Timer
+      }
+    }
+  }
 `
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
@@ -144,6 +165,9 @@ const EventTimersPage: NextPageWithLayout<{ id: string } & EventTimersQuery> = (
     variables: { eventId, input: timerCreateInput }
   })
 
+  const [pauseTimer, {}] = usePauseTimerMutation()
+  const [unpauseTimer, {}] = useUnpauseTimerMutation()
+
   if (!data?.event) {
     return null
   }
@@ -161,7 +185,11 @@ const EventTimersPage: NextPageWithLayout<{ id: string } & EventTimersQuery> = (
       <div>
         {data.event.timers.map((timer) => (
           <div className="pb-5" key={timer.id}>
-            <TimerListItem timer={timer} />
+            <TimerListItem
+              timer={timer}
+              onPause={({ id }) => pauseTimer({ variables: { id } })}
+              onUnpause={({ id }) => unpauseTimer({ variables: { id } })}
+            />
           </div>
         ))}
       </div>

@@ -7,29 +7,60 @@ export const TIMER_LIST_ITEM_FRAGMENT = gql`
   fragment TimerListItem on Timer {
     id
     label
+    isExpired
+    expiresAt
     isPaused
-    isEnded
-    timeRemaining
-    currentPhase {
+    pausedAt
+    preset {
       id
-      name
-      durationInSeconds
-      audioClip {
+      phases {
         id
-        fileUrl
-      }
-    }
-    previousPhase {
-      id
-      name
-      durationInSeconds
-      audioClip {
-        id
-        fileUrl
+        name
+        position
+        durationInSeconds
+        audioClip {
+          id
+          fileUrl
+        }
       }
     }
   }
 `
+
+type TimerPhaseList = TimerListItemFragment['preset']['phases']
+type TimerPhase = TimerPhaseList[0]
+
+const MILLIS_PER_SECOND  = 1000
+const SECONDS_PER_MINUTE = 60
+const MINUTES_PER_HOUR   = 60
+const SECONDS_PER_HOUR   = SECONDS_PER_MINUTE * MINUTES_PER_HOUR
+
+const calculateTimeRemaining = (expiresAt: Date, pausedAt: Date | null) => {
+  const now = (pausedAt ?? new Date()).getTime()
+
+  return Math.max(0, (expiresAt.getTime() - now) / MILLIS_PER_SECOND)
+}
+
+const calculateCurrentPhase = (phases: TimerPhaseList, timeRemaining: number) => {
+  let cumulativeDuration = 0
+
+  return phases.toReversed().find((phase) => {
+    cumulativeDuration += phase.durationInSeconds
+
+    return cumulativeDuration > timeRemaining
+  })
+}
+
+const calculateTimeRemainingInPhase = (phases: TimerPhaseList, timeRemaining: number, currentPhase: TimerPhase | undefined) => {
+  if (!currentPhase) {
+    return 0
+  }
+
+  const followingPhases = phases.filter((phase) => phase.position > currentPhase.position)
+  const totalTimeInFollowingPhases = followingPhases.reduce((total, phase) => total + phase.durationInSeconds, 0)
+
+  return Math.max(0, timeRemaining - totalTimeInFollowingPhases)
+}
 
 export interface TimerListItemProps extends TimerListItemControlsProps {
   timer: TimerListItemFragment
@@ -37,38 +68,43 @@ export interface TimerListItemProps extends TimerListItemControlsProps {
   onLabelUpdate?: (label: string) => void
 }
 
-const UPDATE_INTERVAL = 10
-
-const MILLIS_PER_SECOND  = 1000
-const SECONDS_PER_MINUTE = 60
-const MINUTES_PER_HOUR   = 60
-const SECONDS_PER_HOUR   = SECONDS_PER_MINUTE * MINUTES_PER_HOUR
+const UPDATE_INTERVAL = 100
 
 const TimerListItem: React.FC<TimerListItemProps> = ({ timer, readOnly, onLabelUpdate, onPause, onUnpause, onReset, onSkipToNextPhase, onClone, onDelete }) => {
+  const [currentPhase, setCurrentPhase] = useState<TimerPhase | undefined>()
   const [hours, setHours] = useState(0)
   const [minutes, setMinutes] = useState(0)
   const [seconds, setSeconds] = useState(0)
 
+  // A date representing the time at which the timer will expire.
   const expiresAt = useMemo(() => (
-    new Date(Date.now() + (timer.timeRemaining * MILLIS_PER_SECOND))
-  ), [timer.id, timer.timeRemaining])
+    new Date(timer.expiresAt)
+  ), [timer.expiresAt])
+
+  // A date representing the time at which the timer was paused, or null if the timer is not paused.
+  const pausedAt = useMemo(() => (
+    timer.pausedAt ? new Date(timer.pausedAt) : null
+  ), [timer.pausedAt])
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const timeRemaining = Math.max(0, Math.floor((expiresAt.getTime() - Date.now()) / MILLIS_PER_SECOND))
+      const timeRemaining = calculateTimeRemaining(expiresAt, pausedAt)
+      const currentPhase = calculateCurrentPhase(timer.preset?.phases ?? [], timeRemaining)
+      const timeRemainingInPhase = calculateTimeRemainingInPhase(timer.preset?.phases ?? [], timeRemaining, currentPhase)
 
-      setHours(Math.floor(timeRemaining / SECONDS_PER_HOUR))
-      setMinutes(Math.floor((timeRemaining % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE))
-      setSeconds(timeRemaining % SECONDS_PER_MINUTE)
+      setHours(Math.floor(timeRemainingInPhase / SECONDS_PER_HOUR))
+      setMinutes(Math.floor((timeRemainingInPhase % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE))
+      setSeconds(Math.floor(timeRemainingInPhase % SECONDS_PER_MINUTE))
+      setCurrentPhase(currentPhase)
     }, UPDATE_INTERVAL)
 
     return () => clearInterval(interval)
-  }, [expiresAt])
+  }, [expiresAt, pausedAt, timer.preset.phases])
 
   return (
     <div className="text-center mb-5">
       <h3 className="mb-0 pb-0" style={{ 'fontSize': '70px', 'fontWeight': 'lighter' }}>
-        {timer.currentPhase?.name || timer.previousPhase?.name || 'No Label'}
+        {currentPhase?.name || 'No Label'}
       </h3>
       <div className="mb-3" style={{ 'fontSize': '200px', 'fontWeight': 'lighter', 'lineHeight': '12rem' }}>
         {hours > 0 && (

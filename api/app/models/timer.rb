@@ -4,30 +4,24 @@
 #
 # Table name: timers
 #
-#  id                :uuid             not null, primary key
-#  event_id          :uuid             not null
-#  preset_id         :uuid             not null
-#  current_phase_id  :uuid
-#  previous_phase_id :uuid
-#  label             :string
-#  phase_expires_at  :datetime
-#  paused_at         :datetime
-#  created_at        :datetime         not null
-#  updated_at        :datetime         not null
+#  id         :uuid             not null, primary key
+#  event_id   :uuid             not null
+#  preset_id  :uuid             not null
+#  label      :string
+#  expires_at :datetime
+#  paused_at  :datetime
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
 #
 # Indexes
 #
-#  index_timers_on_current_phase_id   (current_phase_id)
-#  index_timers_on_event_id           (event_id)
-#  index_timers_on_preset_id          (preset_id)
-#  index_timers_on_previous_phase_id  (previous_phase_id)
+#  index_timers_on_event_id   (event_id)
+#  index_timers_on_preset_id  (preset_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (current_phase_id => timer_preset_phases.id)
 #  fk_rails_...  (event_id => events.id)
 #  fk_rails_...  (preset_id => timer_presets.id)
-#  fk_rails_...  (previous_phase_id => timer_preset_phases.id)
 #
 class Timer < ApplicationRecord
   include Moonfire::Model
@@ -36,57 +30,88 @@ class Timer < ApplicationRecord
 
   belongs_to :event
   belongs_to :preset, class_name: 'TimerPreset'
-  belongs_to :current_phase, class_name: 'TimerPresetPhase', optional: true
-  belongs_to :previous_phase, class_name: 'TimerPresetPhase', optional: true
 
   before_create do
-    self.current_phase ||= preset.phases.first!
-    self.phase_expires_at = Time.current + current_phase.duration
+    self.expires_at = (paused_at || Time.current) + preset.total_duration
   end
 
   # @!method self.active
   #   Returns active timers.
-  #   (i.e. timers that are not paused and have not ended.)
+  #   (i.e. timers that are not paused and have not expired.)
   #   @return [Class<Timer>]
-  scope :active, -> { where.not(current_phase: nil).where(paused_at: nil) }
+  scope :active, -> { not_paused.not_expired }
 
   # @!method self.paused
   #   Returns paused timers.
   #   @return [Class<Timer>]
   scope :paused, -> { where.not(paused_at: nil) }
 
-  # @!method self.phase_expired
-  #   Returns timers with expired phases.
+  # @!method self.not_paused
+  #   Returns timers that are not paused.
   #   @return [Class<Timer>]
-  scope :phase_expired, lambda {
-    where(paused_at: nil) # paused timers should not expire
-      .where(arel_table[:phase_expires_at].lteq(bind_param('phase_expires_at', Time.current)))
+  scope :not_paused, -> { where(paused_at: nil) }
+
+  # @!method self.expired
+  #   Returns timers that have expired.
+  #   @return [Class<Timer>]
+  scope :expired, lambda {
+    where(arel_table[:expires_at].lteq(bind_param('expires_at', Time.current)))
   }
 
-  # Creates a duplicate of the timer with an offset added to the phase expiration time.
+  # @!method self.not_expired
+  #   Returns timers that have not expired.
+  #   @return [Class<Timer>]
+  scope :not_expired, lambda {
+    where(arel_table[:expires_at].gt(bind_param('expires_at', Time.current)))
+  }
+
+  # The preset phase that was active before the current phase, if any.
+  #
+  # @param at [Time] the time at which to calculate the phase
+  # @return [TimerPresetPhase, nil]
+  def previous_phase(at = Time.current)
+    preset.phase_before(current_phase(at))
+  end
+
+  # The currently active phase, if any.
+  #
+  # @param at [Time] the time at which to calculate the phase
+  # @return [TimerPresetPhase, nil]
+  def current_phase(at = Time.current)
+    preset.phase_by_time_remaining(time_remaining(at))
+  end
+
+  # The next phase that will be active, if any.
+  #
+  # @param at [Time] the time at which to calculate the phase
+  # @return [TimerPresetPhase, nil]
+  def next_phase(at = Time.current)
+    preset.phase_after(current_phase(at))
+  end
+
+  # Creates a duplicate of the timer with an offset added to the expiration time.
   #
   # @param offset [ActiveSupport::Duration]
   # @return [Timer]
   def dup_with_offset(offset)
     dup.tap do |timer|
-      timer.phase_expires_at += offset
+      timer.expires_at += offset
     end
   end
 
   # Determines if the timer is active.
-  # (i.e. not paused and not ended.)
+  # (i.e. not paused and not expired.)
   #
   # @return [Boolean]
   def active?
-    !ended? && !paused?
+    !paused? && !expired?
   end
 
-  # Determines if the timer has completely expired.
-  # (i.e. all phases have expired and there are no more phases to move to.)
+  # Determines if the timer has expired.
   #
   # @return [Boolean]
-  def ended?
-    persisted? && current_phase.nil?
+  def expired?
+    expires_at <= Time.current
   end
 
   # Checks if the timer is paused.
@@ -97,13 +122,11 @@ class Timer < ApplicationRecord
   end
 
   # Pauses the timer.
-  # If the timer is already paused, nothing happens.
-  #
-  # Returns false if the timer has ended.
+  # If the timer is already paused or expired, nothing happens.
   #
   # @return [Boolean]
   def pause!
-    return false if ended? || paused?
+    return false if expired? || paused?
 
     update!(paused_at: Time.current)
   end
@@ -115,52 +138,23 @@ class Timer < ApplicationRecord
   def unpause!
     return false unless paused?
 
-    self.phase_expires_at += Time.current - paused_at
-    self.paused_at = nil
+    # Adjust the expiry by the amount of time the timer was paused.
+    self.expires_at += Time.current - paused_at
+    self.paused_at   = nil
 
     save!
   end
 
-  # Determines if the timer phase has expired.
-  #
-  # @return [Boolean]
-  def phase_expired?
-    current_phase.present? && time_remaining <= 0.0
-  end
-
-  # Advances the timer to the next phase if the current phase has expired.
-  # If the timer is ended or paused, nothing happens.
-  #
-  # The phase must be expired in order to move to the next phase,
-  # otherwise an error is raised.
-  #
-  # @return [Boolean]
-  def move_to_next_phase!
-    return false if paused? || ended?
-
-    phase_expired? or
-      raise 'Cannot move to next phase unless the current phase has expired.'
-
-    advance_to_next_phase
-    return save! if current_phase.nil?
-
-    self.phase_expires_at += current_phase.duration
-
-    # recurse in case we have multiple expired phases
-    phase_expired? ? move_to_next_phase! : save!
-  end
-
   # Jump to the next phase without waiting for the current phase to expire.
-  # If the timer is ended or paused, nothing happens.
+  # If the timer is expired or paused, nothing happens.
   #
   # @return [Boolean]
   def skip_to_next_phase!
-    return false if paused? || ended?
+    return false if paused? || expired?
 
-    advance_to_next_phase
-    return save! if current_phase.nil?
+    self.expires_at -= time_remaining_in_phase
 
-    update!(phase_expires_at: Time.current + current_phase.duration)
+    save!
   end
 
   # Resets the timer to its initial state.
@@ -168,22 +162,27 @@ class Timer < ApplicationRecord
   # @param paused [Boolean] whether the timer should be paused after resetting
   # @return [Boolean]
   def reset!(paused: false)
-    self.current_phase    = preset.phases.first!
-    self.previous_phase   = nil
-    self.phase_expires_at = (time = Time.current) + current_phase.duration
-    self.paused_at        = paused ? time : nil
+    self.expires_at = (time = Time.current) + preset.total_duration
+    self.paused_at  = paused ? time : nil
 
     save!
   end
 
+  # The amount of time remaining on the timer.
+  #
+  # @param at [Time] the time at which to calculate the remaining time
+  # @return [Float]
+  def time_remaining(at = Time.current)
+    (expires_at - (paused_at || at)).clamp(0, Float::INFINITY)
+  end
+
   # The amount of time remaining in the current phase.
   #
+  # @param at [Time] the time at which to calculate the remaining time
   # @return [Float]
-  def time_remaining
-    if paused?
-      (phase_expires_at - paused_at).clamp(0, Float::INFINITY)
-    elsif current_phase
-      (phase_expires_at - Time.current).clamp(0, Float::INFINITY)
+  def time_remaining_in_phase(at = Time.current)
+    if (phase = current_phase(at))
+      time_remaining(at) - preset.time_remaining_after_phase(phase).to_f
     else
       0.0
     end

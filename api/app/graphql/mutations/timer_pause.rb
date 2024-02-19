@@ -13,7 +13,7 @@ module Mutations
       result = timer.pause!
 
       EquineEventApiSchema.subscriptions.trigger(
-        :timer_event, { event_id: event.id }, { event_type: TimerEvent::PAUSE, timer: }
+        :timer_event, { event_id: timer.event_id }, { event_type: TimerEvent::PAUSE, timer: }
       )
 
       { result:, timer: }

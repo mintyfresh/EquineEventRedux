@@ -70,13 +70,39 @@ class TimerPreset < ApplicationRecord
     (phases.reject(&:marked_for_destruction?).filter_map(&:position).max || 0) + 1
   end
 
+  # Returns the phase that corresponds to the given time-remaining.
+  #
+  # @param time_remaining [ActiveSupport::Duration, Numeric]
+  # @return [TimerPresetPhase, nil]
+  def phase_by_time_remaining(time_remaining)
+    cummulative_duration = 0
+
+    phases.reverse_each do |phase|
+      next if phase.marked_for_destruction?
+      return phase if cummulative_duration + phase.duration_in_seconds >= time_remaining
+
+      cummulative_duration += phase.duration_in_seconds
+    end
+
+    nil
+  end
+
   # Returns the phase after the given phase.
   # If the given phase is the last phase, then `nil` is returned.
   #
   # @param phase [TimerPresetPhase]
   # @return [TimerPresetPhase, nil]
   def phase_after(phase)
-    phases.after(phase).first
+    phases.select { |p| p.position > phase.position && !p.marked_for_destruction? }.min_by(&:position)
+  end
+
+  # Returns the phase before the given phase.
+  # If the given phase is the first phase, then `nil` is returned.
+  #
+  # @param phase [TimerPresetPhase]
+  # @return [TimerPresetPhase, nil]
+  def phase_before(phase)
+    phases.select { |p| p.position < phase.position && !p.marked_for_destruction? }.max_by(&:position)
   end
 
   # Calculates the total duration of all the phases.
@@ -91,6 +117,15 @@ class TimerPreset < ApplicationRecord
   # @return [Integer]
   def total_duration_in_seconds
     phases.reject(&:marked_for_destruction?).filter_map(&:duration_in_seconds).sum
+  end
+
+  # Calculates the time remaining after the given phase.
+  # Returns `0.seconds` if the phase is the last phase.
+  #
+  # @param phase [TimerPresetPhase]
+  # @return [ActiveSupport::Duration]
+  def time_remaining_after_phase(phase)
+    phases.select { |p| p.position > phase.position && !p.marked_for_destruction? }.sum(0.seconds, &:duration)
   end
 
   # Determines if any of the phases have changed.

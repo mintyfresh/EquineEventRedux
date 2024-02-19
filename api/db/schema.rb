@@ -138,17 +138,13 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_18_184154) do
   create_table "timers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "event_id", null: false
     t.uuid "preset_id", null: false
-    t.uuid "current_phase_id"
-    t.uuid "previous_phase_id"
     t.string "label"
-    t.datetime "phase_expires_at", precision: nil
+    t.datetime "expires_at", precision: nil
     t.datetime "paused_at", precision: nil
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["current_phase_id"], name: "index_timers_on_current_phase_id"
     t.index ["event_id"], name: "index_timers_on_event_id"
     t.index ["preset_id"], name: "index_timers_on_preset_id"
-    t.index ["previous_phase_id"], name: "index_timers_on_previous_phase_id"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
@@ -161,8 +157,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_18_184154) do
   add_foreign_key "timer_preset_phases", "audio_clips"
   add_foreign_key "timer_preset_phases", "timer_presets"
   add_foreign_key "timers", "events"
-  add_foreign_key "timers", "timer_preset_phases", column: "current_phase_id"
-  add_foreign_key "timers", "timer_preset_phases", column: "previous_phase_id"
   add_foreign_key "timers", "timer_presets", column: "preset_id"
 
   create_view "player_matches", sql_definition: <<-SQL

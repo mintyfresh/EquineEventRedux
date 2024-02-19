@@ -672,16 +672,19 @@ export type SubscriptionTimerEventArgs = {
 export type Timer = {
   __typename?: 'Timer';
   currentPhase?: Maybe<TimerPresetPhase>;
+  expiresAt: Scalars['ISO8601DateTime'];
   id: Scalars['ID'];
-  isEnded: Scalars['Boolean'];
+  isExpired: Scalars['Boolean'];
   isPaused: Scalars['Boolean'];
-  isPhaseExpired: Scalars['Boolean'];
   label?: Maybe<Scalars['String']>;
+  nextPhase?: Maybe<TimerPresetPhase>;
   pausedAt?: Maybe<Scalars['ISO8601DateTime']>;
   preset: TimerPreset;
   previousPhase?: Maybe<TimerPresetPhase>;
   /** The amount of time remaining in the current phase, in seconds */
   timeRemaining: Scalars['Float'];
+  /** The amount of time remaining in the current phase, in seconds */
+  timeRemainingInPhase: Scalars['Float'];
 };
 
 export type TimerCloneWithOffsetInput = {
@@ -728,8 +731,9 @@ export enum TimerEventType {
   Delete = 'DELETE',
   Ended = 'ENDED',
   Pause = 'PAUSE',
-  PhaseChange = 'PHASE_CHANGE',
   Reset = 'RESET',
+  SkipToNextPhase = 'SKIP_TO_NEXT_PHASE',
+  Sync = 'SYNC',
   Unpause = 'UNPAUSE',
   Update = 'UPDATE'
 }
@@ -993,7 +997,7 @@ export type SlipRoundFragment = { __typename?: 'Round', id: string, number: numb
 
 export type SlipMatchFragment = { __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, table: number, player1: { __typename?: 'Player', id: string, name: string, score: number }, player2?: { __typename?: 'Player', id: string, name: string, score: number } | null };
 
-export type TimerListItemFragment = { __typename?: 'Timer', id: string, label?: string | null, isPaused: boolean, isEnded: boolean, timeRemaining: number, currentPhase?: { __typename?: 'TimerPresetPhase', id: string, name: string, durationInSeconds: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null } | null, previousPhase?: { __typename?: 'TimerPresetPhase', id: string, name: string, durationInSeconds: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null } | null };
+export type TimerListItemFragment = { __typename?: 'Timer', id: string, label?: string | null, isExpired: boolean, expiresAt: any, isPaused: boolean, pausedAt?: any | null, preset: { __typename?: 'TimerPreset', id: string, phases: Array<{ __typename?: 'TimerPresetPhase', id: string, name: string, position: number, durationInSeconds: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } };
 
 export type TimerPresetSelectFragment = { __typename?: 'TimerPreset', id: string, name: string, phasesCount: number, totalDurationInSeconds: number };
 
@@ -1045,21 +1049,21 @@ export type EventSlipsQueryVariables = Exact<{
 
 export type EventSlipsQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, slug: string, deleted: boolean, rounds: Array<{ __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, table: number, player1: { __typename?: 'Player', id: string, name: string, score: number }, player2?: { __typename?: 'Player', id: string, name: string, score: number } | null }> }> } };
 
-export type TimerFragment = { __typename?: 'Timer', id: string, label?: string | null, isPaused: boolean, isEnded: boolean, timeRemaining: number, currentPhase?: { __typename?: 'TimerPresetPhase', id: string, name: string, durationInSeconds: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null } | null, previousPhase?: { __typename?: 'TimerPresetPhase', id: string, name: string, durationInSeconds: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null } | null };
+export type TimerFragment = { __typename?: 'Timer', id: string, label?: string | null, isExpired: boolean, expiresAt: any, isPaused: boolean, pausedAt?: any | null, preset: { __typename?: 'TimerPreset', id: string, phases: Array<{ __typename?: 'TimerPresetPhase', id: string, name: string, position: number, durationInSeconds: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } };
 
 export type EventTimersQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type EventTimersQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, slug: string, deleted: boolean, timers: Array<{ __typename?: 'Timer', id: string, label?: string | null, isPaused: boolean, isEnded: boolean, timeRemaining: number, currentPhase?: { __typename?: 'TimerPresetPhase', id: string, name: string, durationInSeconds: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null } | null, previousPhase?: { __typename?: 'TimerPresetPhase', id: string, name: string, durationInSeconds: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null } | null }> }, timerPresets: { __typename?: 'TimerPresetConnection', nodes: Array<{ __typename?: 'TimerPreset', id: string, name: string, phasesCount: number, totalDurationInSeconds: number }> } };
+export type EventTimersQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, slug: string, deleted: boolean, timers: Array<{ __typename?: 'Timer', id: string, label?: string | null, isExpired: boolean, expiresAt: any, isPaused: boolean, pausedAt?: any | null, preset: { __typename?: 'TimerPreset', id: string, phases: Array<{ __typename?: 'TimerPresetPhase', id: string, name: string, position: number, durationInSeconds: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } }> }, timerPresets: { __typename?: 'TimerPresetConnection', nodes: Array<{ __typename?: 'TimerPreset', id: string, name: string, phasesCount: number, totalDurationInSeconds: number }> } };
 
 export type TimerEventSubscriptionVariables = Exact<{
   eventId: Scalars['ID'];
 }>;
 
 
-export type TimerEventSubscription = { __typename?: 'Subscription', timerEvent: { __typename?: 'TimerEventPayload', eventType?: TimerEventType | null, timer?: { __typename?: 'Timer', id: string, label?: string | null, isPaused: boolean, isEnded: boolean, timeRemaining: number, currentPhase?: { __typename?: 'TimerPresetPhase', id: string, name: string, durationInSeconds: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null } | null, previousPhase?: { __typename?: 'TimerPresetPhase', id: string, name: string, durationInSeconds: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null } | null } | null } };
+export type TimerEventSubscription = { __typename?: 'Subscription', timerEvent: { __typename?: 'TimerEventPayload', eventType?: TimerEventType | null, timer?: { __typename?: 'Timer', id: string, label?: string | null, isExpired: boolean, expiresAt: any, isPaused: boolean, pausedAt?: any | null, preset: { __typename?: 'TimerPreset', id: string, phases: Array<{ __typename?: 'TimerPresetPhase', id: string, name: string, position: number, durationInSeconds: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } } | null } };
 
 export type CreateTimerMutationVariables = Exact<{
   eventId: Scalars['ID'];
@@ -1067,7 +1071,21 @@ export type CreateTimerMutationVariables = Exact<{
 }>;
 
 
-export type CreateTimerMutation = { __typename?: 'Mutation', timerCreate?: { __typename?: 'TimerCreatePayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, isPaused: boolean, isEnded: boolean, timeRemaining: number, currentPhase?: { __typename?: 'TimerPresetPhase', id: string, name: string, durationInSeconds: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null } | null, previousPhase?: { __typename?: 'TimerPresetPhase', id: string, name: string, durationInSeconds: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null } | null } | null } | null };
+export type CreateTimerMutation = { __typename?: 'Mutation', timerCreate?: { __typename?: 'TimerCreatePayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, isExpired: boolean, expiresAt: any, isPaused: boolean, pausedAt?: any | null, preset: { __typename?: 'TimerPreset', id: string, phases: Array<{ __typename?: 'TimerPresetPhase', id: string, name: string, position: number, durationInSeconds: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } } | null } | null };
+
+export type PauseTimerMutationVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type PauseTimerMutation = { __typename?: 'Mutation', timerPause?: { __typename?: 'TimerPausePayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, isExpired: boolean, expiresAt: any, isPaused: boolean, pausedAt?: any | null, preset: { __typename?: 'TimerPreset', id: string, phases: Array<{ __typename?: 'TimerPresetPhase', id: string, name: string, position: number, durationInSeconds: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } } | null } | null };
+
+export type UnpauseTimerMutationVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type UnpauseTimerMutation = { __typename?: 'Mutation', timerUnpause?: { __typename?: 'TimerUnpausePayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, isExpired: boolean, expiresAt: any, isPaused: boolean, pausedAt?: any | null, preset: { __typename?: 'TimerPreset', id: string, phases: Array<{ __typename?: 'TimerPresetPhase', id: string, name: string, position: number, durationInSeconds: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } } | null } | null };
 
 export type EventsIndexQueryVariables = Exact<{
   deleted?: InputMaybe<DeletedFilter>;
@@ -1337,25 +1355,21 @@ export const TimerListItemFragmentDoc = gql`
     fragment TimerListItem on Timer {
   id
   label
+  isExpired
+  expiresAt
   isPaused
-  isEnded
-  timeRemaining
-  currentPhase {
+  pausedAt
+  preset {
     id
-    name
-    durationInSeconds
-    audioClip {
+    phases {
       id
-      fileUrl
-    }
-  }
-  previousPhase {
-    id
-    name
-    durationInSeconds
-    audioClip {
-      id
-      fileUrl
+      name
+      position
+      durationInSeconds
+      audioClip {
+        id
+        fileUrl
+      }
     }
   }
 }
@@ -2444,6 +2458,76 @@ export function useCreateTimerMutation(baseOptions?: Apollo.MutationHookOptions<
 export type CreateTimerMutationHookResult = ReturnType<typeof useCreateTimerMutation>;
 export type CreateTimerMutationResult = Apollo.MutationResult<CreateTimerMutation>;
 export type CreateTimerMutationOptions = Apollo.BaseMutationOptions<CreateTimerMutation, CreateTimerMutationVariables>;
+export const PauseTimerDocument = gql`
+    mutation PauseTimer($id: ID!) {
+  timerPause(id: $id) {
+    timer {
+      ...Timer
+    }
+  }
+}
+    ${TimerFragmentDoc}`;
+export type PauseTimerMutationFn = Apollo.MutationFunction<PauseTimerMutation, PauseTimerMutationVariables>;
+
+/**
+ * __usePauseTimerMutation__
+ *
+ * To run a mutation, you first call `usePauseTimerMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `usePauseTimerMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [pauseTimerMutation, { data, loading, error }] = usePauseTimerMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function usePauseTimerMutation(baseOptions?: Apollo.MutationHookOptions<PauseTimerMutation, PauseTimerMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<PauseTimerMutation, PauseTimerMutationVariables>(PauseTimerDocument, options);
+      }
+export type PauseTimerMutationHookResult = ReturnType<typeof usePauseTimerMutation>;
+export type PauseTimerMutationResult = Apollo.MutationResult<PauseTimerMutation>;
+export type PauseTimerMutationOptions = Apollo.BaseMutationOptions<PauseTimerMutation, PauseTimerMutationVariables>;
+export const UnpauseTimerDocument = gql`
+    mutation UnpauseTimer($id: ID!) {
+  timerUnpause(id: $id) {
+    timer {
+      ...Timer
+    }
+  }
+}
+    ${TimerFragmentDoc}`;
+export type UnpauseTimerMutationFn = Apollo.MutationFunction<UnpauseTimerMutation, UnpauseTimerMutationVariables>;
+
+/**
+ * __useUnpauseTimerMutation__
+ *
+ * To run a mutation, you first call `useUnpauseTimerMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUnpauseTimerMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [unpauseTimerMutation, { data, loading, error }] = useUnpauseTimerMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useUnpauseTimerMutation(baseOptions?: Apollo.MutationHookOptions<UnpauseTimerMutation, UnpauseTimerMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UnpauseTimerMutation, UnpauseTimerMutationVariables>(UnpauseTimerDocument, options);
+      }
+export type UnpauseTimerMutationHookResult = ReturnType<typeof useUnpauseTimerMutation>;
+export type UnpauseTimerMutationResult = Apollo.MutationResult<UnpauseTimerMutation>;
+export type UnpauseTimerMutationOptions = Apollo.BaseMutationOptions<UnpauseTimerMutation, UnpauseTimerMutationVariables>;
 export const EventsIndexDocument = gql`
     query EventsIndex($deleted: DeletedFilter) {
   events(deleted: $deleted) {

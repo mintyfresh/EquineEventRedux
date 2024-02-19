@@ -3,7 +3,6 @@ import { TimerListItemFragment } from '../../lib/generated/graphql'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBackwardFast, faPlay, faPause, faFastForward, faCircle, faTrash } from '@fortawesome/free-solid-svg-icons'
 
-
 export interface TimerListItemControlsProps {
   timer: TimerListItemFragment
   onPause?(timer: TimerListItemFragment): void
@@ -30,7 +29,7 @@ const TimerListItemControls: React.FC<TimerListItemControlsProps> = ({ timer, on
       variant="outline-secondary"
       className="mx-1"
       style={{ 'borderWidth': '2px'}}
-      disabled={!timer.isPaused || timer.isEnded}
+      disabled={!timer.isPaused || timer.isExpired}
       onClick={() => onUnpause?.(timer)}
     >
       <FontAwesomeIcon icon={faPlay} color="black" />
@@ -40,7 +39,7 @@ const TimerListItemControls: React.FC<TimerListItemControlsProps> = ({ timer, on
       variant="outline-secondary"
       className="mx-1"
       style={{ 'borderWidth': '2px'}}
-      disabled={timer.isPaused || timer.isEnded}
+      disabled={timer.isPaused || timer.isExpired}
       onClick={() => onPause?.(timer)}
     >
       <FontAwesomeIcon icon={faPause} color="black" />
@@ -50,7 +49,7 @@ const TimerListItemControls: React.FC<TimerListItemControlsProps> = ({ timer, on
       variant="outline-secondary"
       className="mx-1"
       style={{ 'borderWidth': '2px'}}
-      disabled={timer.isEnded}
+      disabled={timer.isExpired}
       onClick={() => onSkipToNextPhase?.(timer)}
     >
       <FontAwesomeIcon icon={faFastForward} color="black" />

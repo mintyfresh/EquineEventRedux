@@ -6,9 +6,10 @@ module TimerEvent
   DELETE = :delete
   PAUSE = :pause
   UNPAUSE = :unpause
-  PHASE_CHANGE = :phase_change
+  SKIP_TO_NEXT_PHASE = :skip_to_next_phase
   ENDED = :ended
   RESET = :reset
+  SYNC = :sync
 
   # @return [Array<Symbol>]
   def self.all
