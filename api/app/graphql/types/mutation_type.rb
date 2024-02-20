@@ -31,5 +31,7 @@ module Types
     field :timer_skip_to_next_phase, mutation: Mutations::TimerSkipToNextPhase
     field :timer_reset, mutation: Mutations::TimerReset
     field :timer_clone_with_offset, mutation: Mutations::TimerCloneWithOffset
+
+    field :timer_preset_create, mutation: Mutations::TimerPresetCreate
   end
 end

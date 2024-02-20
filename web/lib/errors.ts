@@ -13,6 +13,7 @@ export interface Errors {
   any(attribute: string): boolean
 
   get(attribute: string): string[]
+  getBulk(attributes: string[]): string[]
 
   prefix(scope: string): Errors
 }
@@ -23,6 +24,9 @@ class NullErrors implements Errors {
   }
 
   get(attribute: string): string[] {
+    return []
+  }
+  getBulk(attributes: string[]): string[] {
     return []
   }
 
@@ -51,6 +55,9 @@ class ParsedErrors implements Errors {
   get(attribute: string): string[] {
     return this._errors[attribute] || []
   }
+  getBulk(attributes: string[]): string[] {
+    return attributes.flatMap((attribute) => this.get(attribute))
+  }
 
   prefix(prefix: string): Errors {
     return new PrefixedErrors(this, prefix)
@@ -66,6 +73,9 @@ class PrefixedErrors implements Errors {
 
   get(attribute: string): string[] {
     return this._errors.get(`${this._prefix}.${attribute}`)
+  }
+  getBulk(attributes: string[]): string[] {
+    return attributes.flatMap((attribute) => this.get(attribute))
   }
 
   prefix(prefix: string): Errors {

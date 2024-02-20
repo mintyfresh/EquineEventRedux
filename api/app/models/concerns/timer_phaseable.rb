@@ -14,7 +14,7 @@ module TimerPhaseable
     validates :duration_unit, inclusion: { in: DURATION_UNITS }
 
     validate if: -> { duration.present? } do
-      errors.add(:duration, :too_short, count: DURATION_MINIMUM) if duration < DURATION_MINIMUM
+      errors.add(:duration_amount, :too_short, count: DURATION_MINIMUM.inspect) if duration < DURATION_MINIMUM
     end
 
     scope :ordered, -> { order(:position, :id) }

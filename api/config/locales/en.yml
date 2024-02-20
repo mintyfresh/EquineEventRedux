@@ -7,6 +7,10 @@ en:
       round/matches:
         <<: *match
         table: Table number
+      timer_preset/phases:
+        name: Label
+        duration_amount: Duration
+        duration_unit: Unit
     errors:
       models:
         match:
@@ -14,3 +18,7 @@ en:
             player1:
               same_as_player2: cannot also be Player 2
               required: must be selected
+        timer_preset_phase:
+          attributes:
+            duration_amount:
+              too_short: is too short (must be at least %{count})
