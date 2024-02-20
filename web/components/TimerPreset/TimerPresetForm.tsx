@@ -1,4 +1,4 @@
-import { faFlag, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faChevronDown, faChevronUp, faFlag, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
 import { Button, Card, Col, Form, InputGroup, Row } from 'react-bootstrap'
@@ -128,8 +128,12 @@ const TimerPresetFormPhase: React.FC<TimerPresetFormPhaseProps> = ({ index, phas
   )
 }
 
-const calculateInputPhasePositions = function<Input extends TimerPresetInput>(input: Input): Input {
-  return { ...input, phases: (input.phases ?? []).map((phase, index) => ({ ...phase, position: index + 1 })) }
+const calculatePhasePositions = (phases: TimerPresetPhaseInput[]) => {
+  let position = 1
+
+  return phases.map((phase) => (
+    { ...phase, position: phase._destroy ? undefined : position++ }
+  ))
 }
 
 type TimerPresetInput = TimerPresetCreateInput | TimerPresetUpdateInput
@@ -154,14 +158,14 @@ function TimerPresetForm<Input extends TimerPresetInput>({ input, errors, submit
       }
     ]
 
-    onUpdate({ ...input, phases: newPhases })
+    onUpdate({ ...input, phases: calculatePhasePositions(newPhases) })
   }
 
   const updateInputPhase = (index: number, phase: Partial<TimerPresetPhaseInput>) => {
     const newPhases = [...input.phases ?? []]
     newPhases[index] = { ...newPhases[index], ...phase }
 
-    onUpdate({ ...input, phases: newPhases })
+    onUpdate({ ...input, phases: calculatePhasePositions(newPhases) })
   }
 
   const deleteInputPhase = (index: number) => {
@@ -177,7 +181,7 @@ function TimerPresetForm<Input extends TimerPresetInput>({ input, errors, submit
     const newPhases = [...input.phases ?? []]
     newPhases.splice(index, 1)
 
-    onUpdate({ ...input, phases: newPhases })
+    onUpdate({ ...input, phases: calculatePhasePositions(newPhases) })
   }
 
   return (
@@ -185,7 +189,7 @@ function TimerPresetForm<Input extends TimerPresetInput>({ input, errors, submit
       {...props}
       onSubmit={(event) => {
         event.preventDefault()
-        onSubmit(calculateInputPhasePositions(input))
+        onSubmit(input)
       }}
     >
       <Form.Group className="mb-3">
