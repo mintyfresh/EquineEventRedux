@@ -1,13 +1,13 @@
 import { gql } from '@apollo/client'
 import { GetServerSideProps } from 'next'
-import { useState } from 'react'
+import { Col, Container, Row } from 'react-bootstrap'
 import EventLayout, { EVENT_LAYOUT_FRAGMENT } from '../../../components/EventLayout'
-import TimerInlineCreateForm from '../../../components/Timer/InlineCreateForm'
-import TimerListItem, { TIMER_LIST_ITEM_FRAGMENT } from '../../../components/Timer/ListItem'
-import { TIMER_PRESET_SELECT_FRAGMENT } from '../../../components/TimerPreset/Select'
-import { EventTimersQuery, EventTimersQueryVariables, TimerCreateInput, TimerFragment, useCloneTimerWithOffsetMutation, useCreateTimerMutation, useDeleteTimerMutation, useEventTimersQuery, usePauseTimerMutation, useResetTimerMutation, useSkipTimerToNextPhaseMutation, useTimerCreatedSubscription, useTimerDeletedSubscription, useTimerUpdatedSubscription, useUnpauseTimerMutation, useUpdateTimerMutation } from '../../../lib/generated/graphql'
+import TimerControlsBar from '../../../components/Timer/TimerControlsBar'
+import TimerListItem, { TIMER_LIST_ITEM_FRAGMENT } from '../../../components/Timer/TimerListItem'
+import { EventTimersQuery, EventTimersQueryVariables, TimerFragment, useCloneTimerWithOffsetMutation, useDeleteTimerMutation, useEventTimersQuery, usePauseTimerMutation, useResetTimerMutation, useSkipTimerToNextPhaseMutation, useTimerCreatedSubscription, useTimerDeletedSubscription, useTimerUpdatedSubscription, useUnpauseTimerMutation, useUpdateTimerMutation } from '../../../lib/generated/graphql'
 import { initializeApolloClient } from '../../../lib/graphql/client'
 import { NextPageWithLayout } from '../../../lib/types/next-page'
+import React from 'react'
 
 const TIMER_FRAGMENT = gql`
   fragment Timer on Timer {
@@ -26,15 +26,9 @@ const EVENT_TIMERS_QUERY = gql`
         ...Timer
       }
     }
-    timerPresets {
-      nodes {
-        ...TimerPresetSelect
-      }
-    }
   }
   ${EVENT_LAYOUT_FRAGMENT}
   ${TIMER_FRAGMENT}
-  ${TIMER_PRESET_SELECT_FRAGMENT}
 `
 
 gql`
@@ -65,17 +59,6 @@ gql`
       timerId
     }
   }
-`
-
-gql`
-  mutation CreateTimer($eventId: ID!, $input: TimerCreateInput!) {
-    timerCreate(eventId: $eventId, input: $input) {
-      timer {
-        ...Timer
-      }
-    }
-  }
-  ${TIMER_FRAGMENT}
 `
 
 gql`
@@ -153,12 +136,14 @@ gql`
   ${TIMER_FRAGMENT}
 `
 
-export const getServerSideProps: GetServerSideProps = async ({ params }) => {
+export const getServerSideProps: GetServerSideProps = async ({ params, query }) => {
   const apolloClient = initializeApolloClient()
 
   if (!params || !params.id) {
     return { notFound: true }
   }
+
+  const fullscreen = query.fullscreen === 'true'
 
   const { data } = await apolloClient.query<EventTimersQuery, EventTimersQueryVariables>({
     query: EVENT_TIMERS_QUERY,
@@ -170,7 +155,8 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
     props: {
       initialApolloState: apolloClient.cache.extract(),
       id: params.id,
-      event: data.event
+      event: data.event,
+      fullscreen
     }
   }
 }
@@ -195,7 +181,12 @@ const upsertTimer = (newTimer: TimerFragment, timers: TimerFragment[]): TimerFra
   ]
 }
 
-const EventTimersPage: NextPageWithLayout<{ id: string } & EventTimersQuery> = ({ id, event: { id: eventId } }) => {
+type EventTimersPageProps = EventTimersQuery & {
+  id: string
+  fullscreen: boolean
+}
+
+const EventTimersPage: NextPageWithLayout<EventTimersPageProps> = ({ id, fullscreen, event: { id: eventId } }) => {
   const { data } = useEventTimersQuery({
     variables: { id }
   })
@@ -242,12 +233,6 @@ const EventTimersPage: NextPageWithLayout<{ id: string } & EventTimersQuery> = (
     }
   })
 
-  const [timerCreateInput, setTimerCreateInput] = useState<TimerCreateInput>({ presetId: '' })
-
-  const [createTimer, {}] = useCreateTimerMutation({
-    variables: { eventId, input: timerCreateInput }
-  })
-
   const [updateTimer, {}] = useUpdateTimerMutation()
   const [deleteTimer, {}] = useDeleteTimerMutation()
   const [pauseTimer, {}] = usePauseTimerMutation()
@@ -260,21 +245,24 @@ const EventTimersPage: NextPageWithLayout<{ id: string } & EventTimersQuery> = (
     return null
   }
 
+  const colProps: Partial<React.ComponentProps<typeof Col>> =
+    fullscreen
+      ? { xs: 12, sm: 6, md: 4 }
+      : { xs: 12, md: 6 }
+
   return (
-    <div className="w-100">
-      <TimerInlineCreateForm
-        presets={data.timerPresets.nodes}
-        input={timerCreateInput}
-        onUpdate={setTimerCreateInput}
-        onSubmit={() => {
-          createTimer()
-        }}
-      />
-      <div>
+    <>
+      {!fullscreen && (
+        <TimerControlsBar
+          eventId={data.event.id}
+        />
+      )}
+      <Row className="justify-content-center">
         {data.event.timers.map((timer) => (
-          <div className="pb-5" key={timer.id}>
+          <Col className="pb-5" key={timer.id} {...colProps}>
             <TimerListItem
               timer={timer}
+              readOnly={fullscreen}
               onLabelUpdate={({ id }, label) => updateTimer({ variables: { id, input: { label } } })}
               onPause={({ id }) => pauseTimer({ variables: { id } })}
               onUnpause={({ id }) => unpauseTimer({ variables: { id } })}
@@ -289,17 +277,23 @@ const EventTimersPage: NextPageWithLayout<{ id: string } & EventTimersQuery> = (
               onSkipToNextPhase={({ id }) => skipToNextPhase({ variables: { id } })}
               onClone={({ id }, input) => cloneWithOffset({ variables: { id, input } })}
             />
-          </div>
+          </Col>
         ))}
-      </div>
-    </div>
+      </Row>
+    </>
   )
 }
 
-EventTimersPage.getLayout = (page: React.ReactElement<EventTimersQuery>) => (
-  <EventLayout event={page.props.event}>
-    {page}
-  </EventLayout>
+EventTimersPage.getLayout = (page: React.ReactElement<EventTimersPageProps>) => (
+  page.props.fullscreen ? (
+    <Container fluid style={{ 'minHeight': '100vh' }} className="d-flex flex-column justify-content-center">
+      {page}
+    </Container>
+  ) : (
+    <EventLayout event={page.props.event}>
+      {page}
+    </EventLayout>
+  )
 )
 
 export default EventTimersPage

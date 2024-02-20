@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client'
 import React, { useEffect, useMemo, useState } from 'react'
 import { TimerListItemFragment } from '../../lib/generated/graphql'
-import TimerListItemControls, { TimerListItemControlsProps } from './ListItemControls'
+import TimerListItemControls, { TimerListItemControlsProps } from './TimerListItemControls'
 
 export const TIMER_LIST_ITEM_FRAGMENT = gql`
   fragment TimerListItem on Timer {

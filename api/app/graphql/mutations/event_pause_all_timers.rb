@@ -16,7 +16,15 @@ module Mutations
 
     def resolve(event_id:)
       event = ::Event.find(event_id)
-      timers = event.timers.active
+      timers = event.timers.active.lock
+
+      event.transaction do
+        time = Time.current
+
+        timers.preload(:preset).find_each do |timer|
+          timer.pause!(time)
+        end
+      end
 
       { event:, timers: }
     end

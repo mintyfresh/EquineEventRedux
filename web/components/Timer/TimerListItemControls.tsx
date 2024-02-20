@@ -1,8 +1,25 @@
-import { Button, Card, Col, Collapse, Form, Row } from 'react-bootstrap'
-import { TimerCloneWithOffsetInput, TimerListItemFragment } from '../../lib/generated/graphql'
+import { IconDefinition, faBackwardFast, faCircle, faCirclePause, faFastForward, faPause, faPlay, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBackwardFast, faPlay, faPause, faFastForward, faCircle, faTrash, faCirclePause } from '@fortawesome/free-solid-svg-icons'
-import { useState } from 'react'
+import React, { useState } from 'react'
+import { Button, Card, Col, Collapse, Row } from 'react-bootstrap'
+import { TimerCloneWithOffsetInput, TimerListItemFragment } from '../../lib/generated/graphql'
+
+interface TimerControlsButtonProps extends React.ComponentProps<typeof Button> {
+  icon: IconDefinition
+  color?: string
+}
+
+const TimerControlsButton: React.FC<TimerControlsButtonProps> = ({ icon, color, ...props }) => (
+  <Button
+    variant="outline-secondary"
+    className="mx-1"
+    style={{ 'borderWidth': '2px' }}
+    {...props}
+  >
+    <FontAwesomeIcon icon={icon} color={color ?? 'black'} />
+  </Button>
+
+)
 
 export interface TimerListItemControlsProps {
   timer: TimerListItemFragment
@@ -20,63 +37,39 @@ const TimerListItemControls: React.FC<TimerListItemControlsProps> = ({ timer, on
 
   return (
     <>
-      <Button
+      <TimerControlsButton
         title="Reset"
-        variant="outline-secondary"
-        className="mx-1"
-        style={{ 'borderWidth': '2px'}}
         onClick={() => onReset?.(timer)}
-      >
-        <FontAwesomeIcon icon={faBackwardFast} color="black" />
-      </Button>
-      <Button
+        icon={faBackwardFast}
+      />
+      <TimerControlsButton
         title="Resume"
-        variant="outline-secondary"
-        className="mx-1"
-        style={{ 'borderWidth': '2px'}}
         disabled={!timer.isPaused || timer.isExpired}
         onClick={() => onUnpause?.(timer)}
-      >
-        <FontAwesomeIcon icon={faPlay} color="black" />
-      </Button>
-      <Button
+        icon={faPlay}
+      />
+      <TimerControlsButton
         title="Pause"
-        variant="outline-secondary"
-        className="mx-1"
-        style={{ 'borderWidth': '2px'}}
         disabled={timer.isPaused || timer.isExpired}
         onClick={() => onPause?.(timer)}
-      >
-        <FontAwesomeIcon icon={faPause} color="black" />
-      </Button>
-      <Button
+        icon={faPause}
+      />
+      <TimerControlsButton
         title="Skip to next step"
-        variant="outline-secondary"
-        className="mx-1"
-        style={{ 'borderWidth': '2px'}}
         disabled={timer.isExpired}
         onClick={() => onSkipToNextPhase?.(timer)}
-      >
-        <FontAwesomeIcon icon={faFastForward} color="black" />
-      </Button>
-      <Button
+        icon={faFastForward}
+      />
+      <TimerControlsButton
         title="Clone"
-        variant="outline-secondary"
-        className="mx-1"
-        style={{ 'borderWidth': '2px'}}
         onClick={() => { setOpen(!open) }}
-      >
-        <FontAwesomeIcon icon={faCircle} color="black" />
-      </Button>
-      <Button
+        icon={faCircle}
+      />
+      <TimerControlsButton
         title="Delete"
-        variant="outline-secondary"
-        className="mx-1"
-        style={{ 'borderWidth': '2px'}}
         onClick={() => onDelete?.(timer)}
-      >
-        <FontAwesomeIcon icon={faTrash} color="black" />
-      </Button>
+        icon={faTrash}
+      />
       <Collapse in={open}>
         <Row className="mt-3">
           <Col xs="auto" className="mx-auto">

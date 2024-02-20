@@ -1129,18 +1129,38 @@ export type SlipRoundFragment = { __typename?: 'Round', id: string, number: numb
 
 export type SlipMatchFragment = { __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, table: number, player1: { __typename?: 'Player', id: string, name: string, score: number }, player2?: { __typename?: 'Player', id: string, name: string, score: number } | null };
 
+export type PauseAllEventTimersMutationVariables = Exact<{
+  eventId: Scalars['ID'];
+}>;
+
+
+export type PauseAllEventTimersMutation = { __typename?: 'Mutation', eventPauseAllTimers?: { __typename?: 'EventPauseAllTimersPayload', timers?: Array<{ __typename?: 'Timer', id: string, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> }> | null } | null };
+
+export type UnpauseAllEventTimersMutationVariables = Exact<{
+  eventId: Scalars['ID'];
+}>;
+
+
+export type UnpauseAllEventTimersMutation = { __typename?: 'Mutation', eventUnpauseAllTimers?: { __typename?: 'EventUnpauseAllTimersPayload', timers?: Array<{ __typename?: 'Timer', id: string, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> }> | null } | null };
+
+export type TimerInlineCreateFormPresetsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type TimerInlineCreateFormPresetsQuery = { __typename?: 'Query', timerPresets: { __typename?: 'TimerPresetConnection', nodes: Array<{ __typename?: 'TimerPreset', id: string, name: string, phasesCount: number, totalDurationInSeconds: number }> } };
+
+export type CreateTimerInlineMutationVariables = Exact<{
+  eventId: Scalars['ID'];
+  input: TimerCreateInput;
+}>;
+
+
+export type CreateTimerInlineMutation = { __typename?: 'Mutation', timerCreate?: { __typename?: 'TimerCreatePayload', timer?: { __typename?: 'Timer', id: string } | null } | null };
+
 export type TimerListItemFragment = { __typename?: 'Timer', id: string, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> };
 
 export type TimerPresetSelectFragment = { __typename?: 'TimerPreset', id: string, name: string, phasesCount: number, totalDurationInSeconds: number };
 
 export type ErrorsFragment = { __typename?: 'Error', attribute: string, message: string };
-
-export type EventShowQueryVariables = Exact<{
-  id: Scalars['ID'];
-}>;
-
-
-export type EventShowQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, slug: string, deleted: boolean } };
 
 export type EventExportQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -1188,7 +1208,7 @@ export type EventTimersQueryVariables = Exact<{
 }>;
 
 
-export type EventTimersQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, slug: string, deleted: boolean, timers: Array<{ __typename?: 'Timer', id: string, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> }> }, timerPresets: { __typename?: 'TimerPresetConnection', nodes: Array<{ __typename?: 'TimerPreset', id: string, name: string, phasesCount: number, totalDurationInSeconds: number }> } };
+export type EventTimersQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, slug: string, deleted: boolean, timers: Array<{ __typename?: 'Timer', id: string, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> }> } };
 
 export type TimerCreatedSubscriptionVariables = Exact<{
   eventId: Scalars['ID'];
@@ -1210,14 +1230,6 @@ export type TimerDeletedSubscriptionVariables = Exact<{
 
 
 export type TimerDeletedSubscription = { __typename?: 'Subscription', timerDeleted: { __typename?: 'TimerDeletedPayload', timerId: string } };
-
-export type CreateTimerMutationVariables = Exact<{
-  eventId: Scalars['ID'];
-  input: TimerCreateInput;
-}>;
-
-
-export type CreateTimerMutation = { __typename?: 'Mutation', timerCreate?: { __typename?: 'TimerCreatePayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null } | null };
 
 export type UpdateTimerMutationVariables = Exact<{
   id: Scalars['ID'];
@@ -2277,48 +2289,153 @@ export function useGeneratePairingsMutation(baseOptions?: Apollo.MutationHookOpt
 export type GeneratePairingsMutationHookResult = ReturnType<typeof useGeneratePairingsMutation>;
 export type GeneratePairingsMutationResult = Apollo.MutationResult<GeneratePairingsMutation>;
 export type GeneratePairingsMutationOptions = Apollo.BaseMutationOptions<GeneratePairingsMutation, GeneratePairingsMutationVariables>;
-export const EventShowDocument = gql`
-    query EventShow($id: ID!) {
-  event(id: $id) {
-    id
-    name
-    ...EventLayout
+export const PauseAllEventTimersDocument = gql`
+    mutation PauseAllEventTimers($eventId: ID!) {
+  eventPauseAllTimers(eventId: $eventId) {
+    timers {
+      ...TimerListItem
+    }
   }
 }
-    ${EventLayoutFragmentDoc}`;
+    ${TimerListItemFragmentDoc}`;
+export type PauseAllEventTimersMutationFn = Apollo.MutationFunction<PauseAllEventTimersMutation, PauseAllEventTimersMutationVariables>;
 
 /**
- * __useEventShowQuery__
+ * __usePauseAllEventTimersMutation__
  *
- * To run a query within a React component, call `useEventShowQuery` and pass it any options that fit your needs.
- * When your component renders, `useEventShowQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a mutation, you first call `usePauseAllEventTimersMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `usePauseAllEventTimersMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [pauseAllEventTimersMutation, { data, loading, error }] = usePauseAllEventTimersMutation({
+ *   variables: {
+ *      eventId: // value for 'eventId'
+ *   },
+ * });
+ */
+export function usePauseAllEventTimersMutation(baseOptions?: Apollo.MutationHookOptions<PauseAllEventTimersMutation, PauseAllEventTimersMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<PauseAllEventTimersMutation, PauseAllEventTimersMutationVariables>(PauseAllEventTimersDocument, options);
+      }
+export type PauseAllEventTimersMutationHookResult = ReturnType<typeof usePauseAllEventTimersMutation>;
+export type PauseAllEventTimersMutationResult = Apollo.MutationResult<PauseAllEventTimersMutation>;
+export type PauseAllEventTimersMutationOptions = Apollo.BaseMutationOptions<PauseAllEventTimersMutation, PauseAllEventTimersMutationVariables>;
+export const UnpauseAllEventTimersDocument = gql`
+    mutation UnpauseAllEventTimers($eventId: ID!) {
+  eventUnpauseAllTimers(eventId: $eventId) {
+    timers {
+      ...TimerListItem
+    }
+  }
+}
+    ${TimerListItemFragmentDoc}`;
+export type UnpauseAllEventTimersMutationFn = Apollo.MutationFunction<UnpauseAllEventTimersMutation, UnpauseAllEventTimersMutationVariables>;
+
+/**
+ * __useUnpauseAllEventTimersMutation__
+ *
+ * To run a mutation, you first call `useUnpauseAllEventTimersMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUnpauseAllEventTimersMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [unpauseAllEventTimersMutation, { data, loading, error }] = useUnpauseAllEventTimersMutation({
+ *   variables: {
+ *      eventId: // value for 'eventId'
+ *   },
+ * });
+ */
+export function useUnpauseAllEventTimersMutation(baseOptions?: Apollo.MutationHookOptions<UnpauseAllEventTimersMutation, UnpauseAllEventTimersMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UnpauseAllEventTimersMutation, UnpauseAllEventTimersMutationVariables>(UnpauseAllEventTimersDocument, options);
+      }
+export type UnpauseAllEventTimersMutationHookResult = ReturnType<typeof useUnpauseAllEventTimersMutation>;
+export type UnpauseAllEventTimersMutationResult = Apollo.MutationResult<UnpauseAllEventTimersMutation>;
+export type UnpauseAllEventTimersMutationOptions = Apollo.BaseMutationOptions<UnpauseAllEventTimersMutation, UnpauseAllEventTimersMutationVariables>;
+export const TimerInlineCreateFormPresetsDocument = gql`
+    query TimerInlineCreateFormPresets {
+  timerPresets {
+    nodes {
+      ...TimerPresetSelect
+    }
+  }
+}
+    ${TimerPresetSelectFragmentDoc}`;
+
+/**
+ * __useTimerInlineCreateFormPresetsQuery__
+ *
+ * To run a query within a React component, call `useTimerInlineCreateFormPresetsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTimerInlineCreateFormPresetsQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useEventShowQuery({
+ * const { data, loading, error } = useTimerInlineCreateFormPresetsQuery({
  *   variables: {
- *      id: // value for 'id'
  *   },
  * });
  */
-export function useEventShowQuery(baseOptions: Apollo.QueryHookOptions<EventShowQuery, EventShowQueryVariables> & ({ variables: EventShowQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+export function useTimerInlineCreateFormPresetsQuery(baseOptions?: Apollo.QueryHookOptions<TimerInlineCreateFormPresetsQuery, TimerInlineCreateFormPresetsQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<EventShowQuery, EventShowQueryVariables>(EventShowDocument, options);
+        return Apollo.useQuery<TimerInlineCreateFormPresetsQuery, TimerInlineCreateFormPresetsQueryVariables>(TimerInlineCreateFormPresetsDocument, options);
       }
-export function useEventShowLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<EventShowQuery, EventShowQueryVariables>) {
+export function useTimerInlineCreateFormPresetsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TimerInlineCreateFormPresetsQuery, TimerInlineCreateFormPresetsQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<EventShowQuery, EventShowQueryVariables>(EventShowDocument, options);
+          return Apollo.useLazyQuery<TimerInlineCreateFormPresetsQuery, TimerInlineCreateFormPresetsQueryVariables>(TimerInlineCreateFormPresetsDocument, options);
         }
-export function useEventShowSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<EventShowQuery, EventShowQueryVariables>) {
+export function useTimerInlineCreateFormPresetsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<TimerInlineCreateFormPresetsQuery, TimerInlineCreateFormPresetsQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<EventShowQuery, EventShowQueryVariables>(EventShowDocument, options);
+          return Apollo.useSuspenseQuery<TimerInlineCreateFormPresetsQuery, TimerInlineCreateFormPresetsQueryVariables>(TimerInlineCreateFormPresetsDocument, options);
         }
-export type EventShowQueryHookResult = ReturnType<typeof useEventShowQuery>;
-export type EventShowLazyQueryHookResult = ReturnType<typeof useEventShowLazyQuery>;
-export type EventShowSuspenseQueryHookResult = ReturnType<typeof useEventShowSuspenseQuery>;
-export type EventShowQueryResult = Apollo.QueryResult<EventShowQuery, EventShowQueryVariables>;
+export type TimerInlineCreateFormPresetsQueryHookResult = ReturnType<typeof useTimerInlineCreateFormPresetsQuery>;
+export type TimerInlineCreateFormPresetsLazyQueryHookResult = ReturnType<typeof useTimerInlineCreateFormPresetsLazyQuery>;
+export type TimerInlineCreateFormPresetsSuspenseQueryHookResult = ReturnType<typeof useTimerInlineCreateFormPresetsSuspenseQuery>;
+export type TimerInlineCreateFormPresetsQueryResult = Apollo.QueryResult<TimerInlineCreateFormPresetsQuery, TimerInlineCreateFormPresetsQueryVariables>;
+export const CreateTimerInlineDocument = gql`
+    mutation CreateTimerInline($eventId: ID!, $input: TimerCreateInput!) {
+  timerCreate(eventId: $eventId, input: $input) {
+    timer {
+      id
+    }
+  }
+}
+    `;
+export type CreateTimerInlineMutationFn = Apollo.MutationFunction<CreateTimerInlineMutation, CreateTimerInlineMutationVariables>;
+
+/**
+ * __useCreateTimerInlineMutation__
+ *
+ * To run a mutation, you first call `useCreateTimerInlineMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateTimerInlineMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createTimerInlineMutation, { data, loading, error }] = useCreateTimerInlineMutation({
+ *   variables: {
+ *      eventId: // value for 'eventId'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateTimerInlineMutation(baseOptions?: Apollo.MutationHookOptions<CreateTimerInlineMutation, CreateTimerInlineMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateTimerInlineMutation, CreateTimerInlineMutationVariables>(CreateTimerInlineDocument, options);
+      }
+export type CreateTimerInlineMutationHookResult = ReturnType<typeof useCreateTimerInlineMutation>;
+export type CreateTimerInlineMutationResult = Apollo.MutationResult<CreateTimerInlineMutation>;
+export type CreateTimerInlineMutationOptions = Apollo.BaseMutationOptions<CreateTimerInlineMutation, CreateTimerInlineMutationVariables>;
 export const EventExportDocument = gql`
     query EventExport($id: ID!) {
   event(id: $id) {
@@ -2609,15 +2726,9 @@ export const EventTimersDocument = gql`
       ...Timer
     }
   }
-  timerPresets {
-    nodes {
-      ...TimerPresetSelect
-    }
-  }
 }
     ${EventLayoutFragmentDoc}
-${TimerFragmentDoc}
-${TimerPresetSelectFragmentDoc}`;
+${TimerFragmentDoc}`;
 
 /**
  * __useEventTimersQuery__
@@ -2745,42 +2856,6 @@ export function useTimerDeletedSubscription(baseOptions: Apollo.SubscriptionHook
       }
 export type TimerDeletedSubscriptionHookResult = ReturnType<typeof useTimerDeletedSubscription>;
 export type TimerDeletedSubscriptionResult = Apollo.SubscriptionResult<TimerDeletedSubscription>;
-export const CreateTimerDocument = gql`
-    mutation CreateTimer($eventId: ID!, $input: TimerCreateInput!) {
-  timerCreate(eventId: $eventId, input: $input) {
-    timer {
-      ...Timer
-    }
-  }
-}
-    ${TimerFragmentDoc}`;
-export type CreateTimerMutationFn = Apollo.MutationFunction<CreateTimerMutation, CreateTimerMutationVariables>;
-
-/**
- * __useCreateTimerMutation__
- *
- * To run a mutation, you first call `useCreateTimerMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCreateTimerMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [createTimerMutation, { data, loading, error }] = useCreateTimerMutation({
- *   variables: {
- *      eventId: // value for 'eventId'
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useCreateTimerMutation(baseOptions?: Apollo.MutationHookOptions<CreateTimerMutation, CreateTimerMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateTimerMutation, CreateTimerMutationVariables>(CreateTimerDocument, options);
-      }
-export type CreateTimerMutationHookResult = ReturnType<typeof useCreateTimerMutation>;
-export type CreateTimerMutationResult = Apollo.MutationResult<CreateTimerMutation>;
-export type CreateTimerMutationOptions = Apollo.BaseMutationOptions<CreateTimerMutation, CreateTimerMutationVariables>;
 export const UpdateTimerDocument = gql`
     mutation UpdateTimer($id: ID!, $input: TimerUpdateInput!) {
   timerUpdate(id: $id, input: $input) {

@@ -155,20 +155,22 @@ class Timer < ApplicationRecord
   # Pauses the timer.
   # If the timer is already paused or expired, nothing happens.
   #
+  # @param at [Time] the time at which to pause the timer
   # @return [Boolean]
-  def pause!
-    pausable? && update!(paused_at: Time.current)
+  def pause!(at = Time.current)
+    pausable? && update!(paused_at: at)
   end
 
   # Unpauses the timer.
   # If the timer is not paused, nothing happens.
   #
+  # @param at [Time] the time at which to unpause the timer
   # @return [Boolean]
-  def unpause!
+  def unpause!(at = Time.current)
     return false unless unpausable?
 
     # Adjust the expiry by the amount of time the timer was paused.
-    self.expires_at += Time.current - paused_at
+    self.expires_at += at - paused_at
     self.paused_at   = nil
 
     save!
