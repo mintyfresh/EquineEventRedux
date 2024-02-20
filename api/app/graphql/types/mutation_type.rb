@@ -33,5 +33,7 @@ module Types
     field :timer_clone_with_offset, mutation: Mutations::TimerCloneWithOffset
 
     field :timer_preset_create, mutation: Mutations::TimerPresetCreate
+    field :timer_preset_update, mutation: Mutations::TimerPresetUpdate
+    field :timer_preset_delete, mutation: Mutations::TimerPresetDelete
   end
 end

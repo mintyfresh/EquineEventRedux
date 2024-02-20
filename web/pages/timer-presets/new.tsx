@@ -21,6 +21,7 @@ gql`
 
 const NewTimerPresetPage = () => {
   const [errors, setErrors] = useErrors()
+
   const [input, setInput] = useState<TimerPresetCreateInput>({
     name: '',
     phases: [
@@ -33,7 +34,7 @@ const NewTimerPresetPage = () => {
   })
 
   const router = useRouter()
-  const [createTimerPreset, {}] = useCreateTimerPresetMutation({
+  const [createTimerPreset, { loading }] = useCreateTimerPresetMutation({
     onCompleted: (data) => {
       setErrors(data?.timerPresetCreate?.errors)
 
@@ -47,8 +48,11 @@ const NewTimerPresetPage = () => {
     <>
       <h1>Create new timer preset</h1>
       <TimerPresetForm
+        className="mb-5"
         input={input}
         errors={errors}
+        submit="Create timer preset"
+        disabled={loading}
         onUpdate={setInput}
         onSubmit={(input) => createTimerPreset({ variables: { input } })}
       />

@@ -1,11 +1,11 @@
 import { gql } from '@apollo/client'
-import { GetServerSideProps } from 'next'
-import { initializeApolloClient } from '../lib/graphql/client'
-import { TimerPresetsQuery, useTimerPresetsQuery } from '../lib/generated/graphql'
-import { Alert, Button, Card, Col, Row } from 'react-bootstrap'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faVolumeUp } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { GetServerSideProps } from 'next'
 import Link from 'next/link'
+import { Alert, Button, Card, Col, Row } from 'react-bootstrap'
+import { TimerPresetsQuery, useDeleteTimerPresetMutation, useTimerPresetsQuery } from '../lib/generated/graphql'
+import { initializeApolloClient } from '../lib/graphql/client'
 
 const TIMER_PRESETS_QUERY = gql`
   query TimerPresets {
@@ -27,7 +27,14 @@ const TIMER_PRESETS_QUERY = gql`
       }
     }
   }
+`
 
+gql`
+  mutation DeleteTimerPreset($id: ID!) {
+    timerPresetDelete(id: $id) {
+      success
+    }
+  }
 `
 
 export const getServerSideProps: GetServerSideProps = async () => {
@@ -45,7 +52,15 @@ export const getServerSideProps: GetServerSideProps = async () => {
 }
 
 const TimerPresetsPage = () => {
-  const { data } = useTimerPresetsQuery()
+  const { data, refetch } = useTimerPresetsQuery()
+
+  const [deleteTimerPreset, {}] = useDeleteTimerPresetMutation({
+    onCompleted: ({ timerPresetDelete }) => {
+      if (timerPresetDelete?.success) {
+        refetch()
+      }
+    }
+  })
 
   return (
     <>
@@ -77,7 +92,17 @@ const TimerPresetsPage = () => {
               <Card.Title><h4>{preset.name}</h4></Card.Title>
             </Col>
             <Col xs="auto">
-              <Button variant="outline-secondary">Edit</Button>
+              <Link href="/timer-presets/[id]/edit" as={`/timer-presets/${preset.id}/edit`} passHref>
+                <Button as="a" variant="outline-secondary">Edit</Button>
+              </Link>
+              {!preset.isSystem && (
+                <Button variant="outline-danger" className="ms-2" onClick={() => (
+                  confirm(`Are you sure you want to delete the timer preset "${preset.name}"?`) &&
+                    deleteTimerPreset({ variables: { id: preset.id } })
+                )}>
+                  Delete
+                </Button>
+              )}
             </Col>
           </Row>
           <Card.Text>
