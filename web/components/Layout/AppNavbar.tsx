@@ -23,9 +23,6 @@ const AppNavbar: React.FC<AppNavbarProps> = (props) => (
           <ActiveLink href="/timer-presets" passHref>
             <Nav.Link>Timer Presets</Nav.Link>
           </ActiveLink>
-          <Nav.Link onClick={showTimer}>
-            Timer
-          </Nav.Link>
         </Nav>
       </Navbar.Collapse>
     </Container>

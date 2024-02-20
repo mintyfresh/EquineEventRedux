@@ -60,7 +60,7 @@ const EventListItem: React.FC<EventListItemProps> = ({ event, onDelete, onRestor
 
   return (
     <ListGroup.Item>
-      <Link href="/events/[id]" as={`/events/${event.deleted ? event.id : event.slug}`}>
+      <Link href="/events/[id]/players" as={`/events/${event.deleted ? event.id : event.slug}/players`}>
         {event.name}
       </Link>
       <EllipsisDropdown align="end" className="float-end">

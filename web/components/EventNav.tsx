@@ -17,11 +17,6 @@ const EventNav: React.FC<{ event: EventNavFragment }> = ({ event }) => {
   return (
     <Nav variant="tabs" className="mb-3">
       <Nav.Item>
-        <ActiveLink href="/events/[id]" as={`/events/${id}`} passHref>
-          <Nav.Link>Status</Nav.Link>
-        </ActiveLink>
-      </Nav.Item>
-      <Nav.Item>
         <ActiveLink href="/events/[id]/players" as={`/events/${id}/players`} passHref>
           <Nav.Link accessKey="y">Pla<u>y</u>ers</Nav.Link>
         </ActiveLink>
@@ -39,6 +34,11 @@ const EventNav: React.FC<{ event: EventNavFragment }> = ({ event }) => {
       <Nav.Item>
         <ActiveLink href="/events/[id]/export" as={`/events/${id}/export`} passHref>
           <Nav.Link accessKey="x">E<u>x</u>port</Nav.Link>
+        </ActiveLink>
+      </Nav.Item>
+      <Nav.Item>
+        <ActiveLink href="/events/[id]/timers" as={`/events/${id}/timers`} passHref>
+          <Nav.Link accessKey="t"><u>T</u>imers</Nav.Link>
         </ActiveLink>
       </Nav.Item>
     </Nav>
