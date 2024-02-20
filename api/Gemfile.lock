@@ -147,6 +147,7 @@ GEM
       net-pop
       net-smtp
     marcel (1.0.2)
+    method_source (1.0.0)
     mini_mime (1.1.5)
     minitest (5.22.2)
     msgpack (1.5.3)
@@ -306,6 +307,7 @@ DEPENDENCIES
   graphql-order_by!
   graphql-rails_logger
   has_unique_attribute
+  method_source
   moonfire!
   oj
   pg (~> 1.1)

@@ -15,10 +15,6 @@ module Mutations
       new_timer.paused = input.paused
       new_timer.save!
 
-      EquineEventApiSchema.subscriptions.trigger(
-        :timer_event, { event_id: new_timer.event_id }, { event_type: TimerEvent::CREATE, timer: new_timer }
-      )
-
       { timer: new_timer }
     end
   end

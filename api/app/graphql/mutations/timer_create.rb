@@ -17,10 +17,6 @@ module Mutations
         timer.event = event
       end
 
-      EquineEventApiSchema.subscriptions.trigger(
-        :timer_event, { event_id: event.id }, { event_type: TimerEvent::CREATE, timer: result[:timer] }
-      )
-
       { **result, event: }
     end
   end

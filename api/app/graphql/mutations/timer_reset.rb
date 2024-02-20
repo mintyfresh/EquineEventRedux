@@ -17,10 +17,6 @@ module Mutations
       timer  = ::Timer.find(id)
       result = timer.reset!(paused:)
 
-      EquineEventApiSchema.subscriptions.trigger(
-        :timer_event, { event_id: timer.event_id }, { event_type: TimerEvent::RESET, timer: }
-      )
-
       { result:, timer: }
     end
   end

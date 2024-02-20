@@ -5,7 +5,7 @@ import EventLayout, { EVENT_LAYOUT_FRAGMENT } from '../../../components/EventLay
 import TimerInlineCreateForm from '../../../components/Timer/InlineCreateForm'
 import TimerListItem, { TIMER_LIST_ITEM_FRAGMENT } from '../../../components/Timer/ListItem'
 import { TIMER_PRESET_SELECT_FRAGMENT } from '../../../components/TimerPreset/Select'
-import { EventTimersQuery, EventTimersQueryVariables, TimerCreateInput, TimerEventSubscription, TimerEventType, TimerFragment, useCloneTimerWithOffsetMutation, useCreateTimerMutation, useDeleteTimerMutation, useEventTimersQuery, usePauseTimerMutation, useResetTimerMutation, useSkipTimerToNextPhaseMutation, useTimerDeletedSubscription, useTimerEventSubscription, useUnpauseTimerMutation, useUpdateTimerMutation } from '../../../lib/generated/graphql'
+import { EventTimersQuery, EventTimersQueryVariables, TimerCreateInput, TimerFragment, useCloneTimerWithOffsetMutation, useCreateTimerMutation, useDeleteTimerMutation, useEventTimersQuery, usePauseTimerMutation, useResetTimerMutation, useSkipTimerToNextPhaseMutation, useTimerCreatedSubscription, useTimerDeletedSubscription, useTimerUpdatedSubscription, useUnpauseTimerMutation, useUpdateTimerMutation } from '../../../lib/generated/graphql'
 import { initializeApolloClient } from '../../../lib/graphql/client'
 import { NextPageWithLayout } from '../../../lib/types/next-page'
 
@@ -38,9 +38,19 @@ const EVENT_TIMERS_QUERY = gql`
 `
 
 gql`
-  subscription TimerEvent($eventId: ID!) {
-    timerEvent(eventId: $eventId) {
-      eventType
+  subscription TimerCreated($eventId: ID!) {
+    timerCreated(eventId: $eventId) {
+      timer {
+        ...Timer
+      }
+    }
+  }
+  ${TIMER_FRAGMENT}
+`
+
+gql`
+  subscription TimerUpdated($eventId: ID!) {
+    timerUpdated(eventId: $eventId) {
       timer {
         ...Timer
       }
@@ -165,31 +175,24 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   }
 }
 
-const mergeTimers = (data: EventTimersQuery, event: TimerEventSubscription['timerEvent']): TimerFragment[] => {
-  switch (event.eventType) {
-    case TimerEventType.Create: {
-      const timers = data.event!.timers ?? []
-      const exists = timers.some((timer) => timer.id === event.timer!.id)
+const upsertTimer = (newTimer: TimerFragment, timers: TimerFragment[]): TimerFragment[] => {
+  const index = timers.findIndex(({ id }) => id === newTimer.id)
 
-      if (!event.timer || exists) {
-        return timers
-      }
-
-      return [
-        ...data.event!.timers,
-        event.timer
-      ]
-    }
-    default: {
-      const timers = data.event!.timers ?? []
-
-      return timers.map((timer) =>
-        timer.id === event.timer!.id
-          ? event.timer!
-          : timer
-      )
-    }
+  // no existing timer, append it to the end
+  if (index === -1) {
+    return [...timers, newTimer]
   }
+
+  const updatedTimer =
+    new Date(newTimer.instant).getTime() > new Date(timers[index].instant).getTime()
+      ? newTimer // if the new timer object is most recent, use it
+      : timers[index] // otherwise, keep the old one
+
+  return [
+    ...timers.slice(0, index),
+    updatedTimer,
+    ...timers.slice(index + 1)
+  ]
 }
 
 const EventTimersPage: NextPageWithLayout<{ id: string } & EventTimersQuery> = ({ id, event: { id: eventId } }) => {
@@ -197,24 +200,30 @@ const EventTimersPage: NextPageWithLayout<{ id: string } & EventTimersQuery> = (
     variables: { id }
   })
 
-  useTimerEventSubscription({
+  useTimerCreatedSubscription({
+    fetchPolicy: 'no-cache', // we manually add the element to the cache
     variables: { eventId },
     onData: ({ client, data: { data: subscription } }) => {
-      data && subscription?.timerEvent && client.writeQuery<EventTimersQuery, EventTimersQueryVariables>({
+      data && subscription?.timerCreated && client.writeQuery<EventTimersQuery, EventTimersQueryVariables>({
         query: EVENT_TIMERS_QUERY,
         variables: { id },
         data: {
           ...data,
           event: {
             ...data.event,
-            timers: mergeTimers(data, subscription.timerEvent)
+            timers: upsertTimer(subscription.timerCreated.timer, data.event.timers)
           }
         }
       })
     }
   })
 
+  useTimerUpdatedSubscription({
+    variables: { eventId } // apollo will automatically handle these events
+  })
+
   useTimerDeletedSubscription({
+    fetchPolicy: 'no-cache', // we manually remove the element from the cache
     variables: { eventId },
     onData: ({ client, data: { data: subscription } }) => {
       data && subscription?.timerDeleted && client.writeQuery<EventTimersQuery, EventTimersQueryVariables>({

@@ -40,6 +40,18 @@ class Timer < ApplicationRecord
     self.phases = preset.phases.map { |phase| TimerPhase.build_from_preset_phase(phase) } if phases.none?
   end
 
+  after_create_commit do
+    EquineEventApiSchema.subscriptions.trigger(:timer_created, { event_id: }, { timer: self })
+  end
+
+  after_update_commit if: :saved_changes? do
+    EquineEventApiSchema.subscriptions.trigger(:timer_updated, { event_id: }, { timer: self })
+  end
+
+  after_destroy_commit do
+    EquineEventApiSchema.subscriptions.trigger(:timer_deleted, { event_id: }, { timer_id: id })
+  end
+
   # @!method self.active
   #   Returns active timers.
   #   (i.e. timers that are not paused and have not expired.)
