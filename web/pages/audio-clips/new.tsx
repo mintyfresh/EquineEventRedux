@@ -6,6 +6,7 @@ import { Button, Form } from 'react-bootstrap'
 import FormControlErrors from '../../components/Form/FormControlErrors'
 import { ERRORS_FRAGMENT, useErrors } from '../../lib/errors'
 import { AudioClipCreateInput, useUploadAudioClipMutation } from '../../lib/generated/graphql'
+import FormBaseErrors from '../../components/Form/FormBaseErrors'
 
 gql`
   mutation UploadAudioClip($input: AudioClipCreateInput!) {
@@ -80,6 +81,7 @@ const NewAudioClipPage: NextPage = () => {
             errors={errors}
           />
         </Form.Group>
+        <FormBaseErrors errors={errors} />
         <Form.Group>
           <Button type="submit" disabled={loading}>
             Upload
