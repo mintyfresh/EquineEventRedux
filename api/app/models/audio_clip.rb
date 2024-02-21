@@ -26,7 +26,7 @@ class AudioClip < ApplicationRecord
   has_one_attached :file
 
   validates :name, presence: true, length: { maximum: NAME_MAX_LENGTH }
-  validates :file, attached: true, content_type: %i[aac mpeg ogg wav], size: { less_than: 5.megabytes }
+  validates :file, attached: true, content_type: %i[aac mp3 ogg wav], size: { less_than: 5.megabytes }
 
   before_validation if: -> { file.attached? } do
     self.name ||= file.filename.to_s.first(NAME_MAX_LENGTH)

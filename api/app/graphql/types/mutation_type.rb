@@ -2,6 +2,8 @@
 
 module Types
   class MutationType < Types::BaseObject
+    field :audio_clip_create, mutation: Mutations::AudioClipCreate
+
     field :event_create, mutation: Mutations::EventCreate
     field :event_update, mutation: Mutations::EventUpdate
     field :event_delete, mutation: Mutations::EventDelete

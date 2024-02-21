@@ -115,6 +115,12 @@ const TimerPresetFormPhase: React.FC<TimerPresetFormPhaseProps> = ({ index, phas
               />
               <Form.Text>
                 Played when the phase ends.
+                {index === 0 && (
+                  <span>{' '}
+                    You can manage and upload files in the <a href="/audio-clips" target="_blank">Audio Clips</a> section.
+                    (Link will open in a new tab.)
+                  </span>
+                )}
               </Form.Text>
               <FormControlErrors
                 name={`audioClip`}

@@ -1,5 +1,6 @@
-import { ApolloClient, InMemoryCache, NormalizedCacheObject, createHttpLink, split } from '@apollo/client'
+import { ApolloClient, InMemoryCache, NormalizedCacheObject, split } from '@apollo/client'
 import { getMainDefinition } from '@apollo/client/utilities'
+import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
 import ActionCableLink from "graphql-ruby-client/subscriptions/ActionCableLink"
 import { useMemo } from 'react'
 import result from '../generated/graphql'
@@ -11,9 +12,26 @@ if (!isSSR) {
   window.ActionCable = require('@rails/actioncable')
 }
 
-export const createApolloClient = () => {
+const createHttpLink = () => {
   const httpUri = isSSR ? process.env.API_URL : '/api/graphql'
-  const httpLink = createHttpLink({ uri: httpUri })
+
+  return createUploadLink({
+    uri: httpUri
+  })
+}
+
+const createWSLink = () => {
+  if (isSSR) {
+    return () => null // no web-sockets during SSR
+  }
+
+  return new ActionCableLink({
+    cable: window.ActionCable.createConsumer(process.env.NEXT_PUBLIC_CABLE_URL)
+  })
+}
+
+export const createApolloClient = () => {
+  const httpLink = createHttpLink()
 
   const link = split(
     ({ query }) => {
@@ -24,11 +42,7 @@ export const createApolloClient = () => {
         definition.operation === 'subscription'
       )
     },
-    isSSR
-      ? () => null // do not process subscriptions on the server
-      : new ActionCableLink({
-        cable: window.ActionCable.createConsumer(process.env.NEXT_PUBLIC_CABLE_URL)
-      }),
+    createWSLink(),
     httpLink
   )
 

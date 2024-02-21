@@ -95,6 +95,9 @@ GEM
     annotate (3.2.0)
       activerecord (>= 3.2, < 8.0)
       rake (>= 10.4, < 14.0)
+    apollo_upload_server (2.1.5)
+      actionpack (>= 6.1.6)
+      graphql (>= 1.8)
     ast (2.4.2)
     base64 (0.2.0)
     bigdecimal (3.1.6)
@@ -298,6 +301,7 @@ PLATFORMS
 DEPENDENCIES
   active_storage_validations
   annotate
+  apollo_upload_server (~> 2.1)
   bootsnap
   byebug
   factory_bot_rails
