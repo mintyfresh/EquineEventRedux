@@ -4,12 +4,14 @@
 #
 # Table name: timer_presets
 #
-#  id           :uuid             not null, primary key
-#  name         :string           not null
-#  system_ref   :string
-#  phases_count :integer          default(0), not null
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
+#  id             :uuid             not null, primary key
+#  name           :string           not null
+#  system_ref     :string
+#  phases_count   :integer          default(0), not null
+#  total_duration :interval         not null
+#  last_used_at   :datetime
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
 #
 # Indexes
 #

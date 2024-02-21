@@ -4,12 +4,14 @@
 #
 # Table name: timer_presets
 #
-#  id           :uuid             not null, primary key
-#  name         :string           not null
-#  system_ref   :string
-#  phases_count :integer          default(0), not null
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
+#  id             :uuid             not null, primary key
+#  name           :string           not null
+#  system_ref     :string
+#  phases_count   :integer          default(0), not null
+#  total_duration :interval         not null
+#  last_used_at   :datetime
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
 #
 # Indexes
 #
@@ -53,8 +55,11 @@ class TimerPreset < ApplicationRecord
 
   before_save if: :phases_changed? do
     offset = 0
-    total_duration = total_duration_in_seconds
 
+    # Calculate the total duration of all the phases.
+    self.total_duration = phases.reject(&:marked_for_destruction?).filter_map(&:duration).sum(0.seconds)
+
+    # Calculate each of the phase's offsets from the start and end of the total duration.
     phases.sort_by { |phase| [phase.position, phase.created_at || Float::INFINITY] }.each do |phase|
       next if phase.marked_for_destruction?
 
@@ -83,18 +88,11 @@ class TimerPreset < ApplicationRecord
     (phases.reject(&:marked_for_destruction?).filter_map(&:position).max || 0) + 1
   end
 
-  # Calculates the total duration of all the phases.
-  #
-  # @return [ActiveSupport::Duration, nil]
-  def total_duration
-    phases.reject(&:marked_for_destruction?).filter_map(&:duration).sum(0.seconds)
-  end
-
-  # Calculates the total duration of all the phases in seconds.
+  # Returns the total duration of all the phases in seconds.
   #
   # @return [Integer]
   def total_duration_in_seconds
-    phases.reject(&:marked_for_destruction?).filter_map(&:duration_in_seconds).sum
+    total_duration.to_i
   end
 
   # Determines if any of the phases have changed.

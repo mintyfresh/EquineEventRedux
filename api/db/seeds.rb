@@ -1,19 +1,22 @@
 # frozen_string_literal: true
 
 AudioClip.find_or_create_by!(system_ref: 'begin') do |clip|
+  clip.name = 'We begin... now!'
   clip.file = File.open('assets/audio_clips/begin.wav')
 end
 
 AudioClip.find_or_create_by!(system_ref: 'soft-time') do |clip|
+  clip.name = "It's fine..."
   clip.file = File.open('assets/audio_clips/over.wav')
 end
 
 AudioClip.find_or_create_by!(system_ref: 'hard-time') do |clip|
+  clip.name = 'Great whickering stallions!'
   clip.file = File.open('assets/audio_clips/time.wav')
 end
 
 TimerPreset.find_or_create_by!(system_ref: '35-minute-builtin') do |preset|
-  preset.name = '35 Minute'
+  preset.name = '35 Minute Game'
 
   # 3 minute setup phase
   preset.phases.build(
@@ -44,7 +47,7 @@ TimerPreset.find_or_create_by!(system_ref: '35-minute-builtin') do |preset|
 end
 
 TimerPreset.find_or_create_by!(system_ref: '45-minute-builtin') do |preset|
-  preset.name = '45 Minute'
+  preset.name = '45 Minute Game'
 
   # 3 minute setup phase
   preset.phases.build(

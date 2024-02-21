@@ -40,6 +40,10 @@ class Timer < ApplicationRecord
     self.phases = preset.phases.map { |phase| TimerPhase.build_from_preset_phase(phase) } if phases.none?
   end
 
+  after_create do
+    preset.update!(last_used_at: Time.current)
+  end
+
   after_create_commit do
     EquineEventApiSchema.subscriptions.trigger(:timer_created, { event_id: }, { timer: self })
   end

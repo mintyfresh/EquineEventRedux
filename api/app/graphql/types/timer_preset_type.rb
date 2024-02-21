@@ -13,6 +13,10 @@ module Types
       description 'The total duration, formatted as a human-readable string'
     end
     field :total_duration_in_seconds, Integer, null: false
+    field :last_used_at, GraphQL::Types::ISO8601DateTime, null: true do
+      description 'When this timer preset was last used to create a timer'
+    end
+
     field :phases, [Types::TimerPresetPhaseType], null: false do
       argument :limit, Integer, required: false do
         description 'If specified, the first N phases will be returned'

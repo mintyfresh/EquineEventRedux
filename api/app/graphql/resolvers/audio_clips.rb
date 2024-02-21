@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
 module Resolvers
-  AudioClips = RecordList['AudioClip']
+  class AudioClips < RecordList['AudioClip']
+    def resolve(**)
+      super(**).order(:created_at, :id)
+    end
+  end
 end

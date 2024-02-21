@@ -149,6 +149,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_19_062502) do
     t.string "name", null: false
     t.string "system_ref"
     t.integer "phases_count", default: 0, null: false
+    t.interval "total_duration", null: false
+    t.datetime "last_used_at", precision: nil
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_timer_presets_on_name", unique: true
