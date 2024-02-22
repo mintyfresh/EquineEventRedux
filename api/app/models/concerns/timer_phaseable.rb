@@ -3,6 +3,35 @@
 module TimerPhaseable
   extend ActiveSupport::Concern
 
+  # A module that provides methods for calculating the total duration and offsets of a collection of phases.
+  # Intended to be included as an extension to a `has_many` association.
+  module CollectionHelpers
+    # Calculates the total duration of all the phases in the collection.
+    #
+    # @return [ActiveSupport::Duration]
+    def calculate_total_duration
+      filter_map { |phase| phase.duration unless phase.marked_for_destruction? }.sum(0.seconds)
+    end
+
+    # Calculates each of the phase's offsets from the start and end of the total duration.
+    #
+    #
+    # @param total_duration [ActiveSupport::Duration]
+    # @return [void]
+    def calculate_offsets(total_duration = calculate_total_duration)
+      time_elapsed = 0
+
+      # Calculate each of the phase's offsets from the start and end of the total duration.
+      sort_by { |phase| [phase.position, phase.created_at || Float::INFINITY] }.each do |phase|
+        next if phase.marked_for_destruction?
+
+        phase.offset_from_start = time_elapsed
+        time_elapsed += phase.duration_in_seconds
+        phase.offset_from_end = total_duration - time_elapsed
+      end
+    end
+  end
+
   DURATION_MINIMUM = 10.seconds
   DURATION_UNITS = %w[seconds minutes hours].freeze
 

@@ -102,4 +102,30 @@ RSpec.describe Timer do
       expect(timer.time_remaining).to eq(time_remaining)
     end
   end
+
+  describe '#dup_with_extension' do
+    subject(:dup_with_extension) { timer.dup_with_extension(extension_in_seconds) }
+
+    let(:timer) { create(:timer) }
+    let(:extension_in_seconds) { [30, 60, 90].sample }
+
+    it 'returns a new timer', :aggregate_failures do
+      expect(dup_with_extension).to be_a(described_class)
+      expect(dup_with_extension).not_to eq(timer)
+    end
+
+    it 'starts the new timer at the same phase' do
+      expect(dup_with_extension.current_phase.preset_phase).to eq(timer.current_phase.preset_phase)
+    end
+
+    it 'adds the extension to the current phase of the new timer', :aggregate_failures do
+      expect(dup_with_extension.current_phase.extension_in_seconds).to eq(extension_in_seconds)
+      expect(dup_with_extension.current_phase.duration).to eq(timer.current_phase.duration + extension_in_seconds)
+    end
+
+    it 'adds the extension to the total duration of the new timer' do
+      dup_with_extension.save!
+      expect(dup_with_extension.total_duration).to eq(timer.total_duration + extension_in_seconds.seconds)
+    end
+  end
 end

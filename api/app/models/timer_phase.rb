@@ -4,18 +4,19 @@
 #
 # Table name: timer_phases
 #
-#  id                :uuid             not null, primary key
-#  timer_id          :uuid             not null
-#  preset_phase_id   :uuid             not null
-#  audio_clip_id     :uuid
-#  name              :string           not null
-#  position          :integer          not null
-#  duration_amount   :integer          not null
-#  duration_unit     :string           not null
-#  offset_from_start :integer          not null
-#  offset_from_end   :integer          not null
-#  created_at        :datetime         not null
-#  updated_at        :datetime         not null
+#  id                   :uuid             not null, primary key
+#  timer_id             :uuid             not null
+#  preset_phase_id      :uuid             not null
+#  audio_clip_id        :uuid
+#  name                 :string           not null
+#  position             :integer          not null
+#  duration_amount      :integer          not null
+#  duration_unit        :string           not null
+#  offset_from_start    :integer          not null
+#  offset_from_end      :integer          not null
+#  extension_in_seconds :integer          default(0), not null
+#  created_at           :datetime         not null
+#  updated_at           :datetime         not null
 #
 # Indexes
 #
@@ -35,6 +36,8 @@ class TimerPhase < ApplicationRecord
   belongs_to :timer, inverse_of: :phases
   belongs_to :preset_phase, class_name: 'TimerPresetPhase'
 
+  validates :extension_in_seconds, numericality: { only_integer: true }
+
   # Constructs a new TimerPhase from a TimerPresetPhase.
   #
   # @param phase [TimerPresetPhase]
@@ -49,5 +52,23 @@ class TimerPhase < ApplicationRecord
       offset_from_start: phase.offset_from_start,
       offset_from_end:   phase.offset_from_end
     )
+  end
+
+  # Returns the duration of the phase, including the extension.
+  #
+  # @return [ActiveSupport::Duration]
+  def duration
+    if (value = super) && (extension = self.extension)
+      value + extension
+    else
+      value
+    end
+  end
+
+  # Returns the extension as a duration.
+  #
+  # @return [ActiveSupport::Duration, nil]
+  def extension
+    extension_in_seconds&.seconds
   end
 end

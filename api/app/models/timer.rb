@@ -33,11 +33,17 @@ class Timer < ApplicationRecord
 
   strips_whitespace_from :label
 
-  has_many :phases, -> { ordered }, class_name: 'TimerPhase', dependent: :destroy, inverse_of: :timer
+  has_many :phases, -> { ordered }, class_name: 'TimerPhase', dependent: :destroy, inverse_of: :timer,
+           extend: TimerPhaseable::CollectionHelpers
 
   before_create do
     self.expires_at ||= (paused_at || Time.current) + preset.total_duration
     self.phases = preset.phases.map { |phase| TimerPhase.build_from_preset_phase(phase) } if phases.none?
+  end
+
+  before_save if: :phases_changed? do
+    # Recalculate the phase offsets.
+    phases.calculate_offsets(total_duration)
   end
 
   after_create do
@@ -94,14 +100,14 @@ class Timer < ApplicationRecord
     phases.find { |phase| phase.interval.cover?(time_elapsed(at)) }
   end
 
-  # Creates a duplicate of the timer with an offset added to the expiration time.
+  # Creates a duplicate of the timer with an extension to the current phase.
   #
-  # @param offset [ActiveSupport::Duration]
+  # @param extension_in_seconds [Integer]
   # @return [Timer]
-  def dup_with_offset(offset)
+  def dup_with_extension(extension_in_seconds)
     dup.tap do |timer|
-      timer.expires_at += offset
       timer.phases = phases.map(&:dup)
+      timer.current_phase.extension_in_seconds += extension_in_seconds
     end
   end
 
@@ -207,7 +213,7 @@ class Timer < ApplicationRecord
   #
   # @return [ActiveSupport::Duration]
   def total_duration
-    phases.sum(0.seconds, &:duration)
+    phases.calculate_total_duration
   end
 
   # The total duration of the timer in seconds.
@@ -243,5 +249,12 @@ class Timer < ApplicationRecord
     else
       0.0
     end
+  end
+
+  # Checks if the phases have unsaved changes.
+  #
+  # @return [Boolean]
+  def phases_changed?
+    phases.any?(&:changed_for_autosave?)
   end
 end

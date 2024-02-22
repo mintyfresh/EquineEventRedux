@@ -32,7 +32,8 @@ class TimerPreset < ApplicationRecord
   # @type [Integer]
   PHASES_MAX_COUNT = 10
 
-  has_many :phases, -> { ordered }, class_name: 'TimerPresetPhase', dependent: :destroy, inverse_of: :timer_preset
+  has_many :phases, -> { ordered }, class_name: 'TimerPresetPhase', dependent: :destroy, inverse_of: :timer_preset,
+           extend: TimerPhaseable::CollectionHelpers
   accepts_nested_attributes_for :phases, allow_destroy: true, limit: PHASES_MAX_COUNT * 2
 
   validates :name, presence: true, length: { maximum: NAME_MAX_LENGTH }, uniqueness: { if: :name_changed? }
@@ -54,19 +55,11 @@ class TimerPreset < ApplicationRecord
   end
 
   before_save if: :phases_changed? do
-    offset = 0
+    # Recalculate the total duration of all the phases.
+    self.total_duration = phases.calculate_total_duration
 
-    # Calculate the total duration of all the phases.
-    self.total_duration = phases.reject(&:marked_for_destruction?).filter_map(&:duration).sum(0.seconds)
-
-    # Calculate each of the phase's offsets from the start and end of the total duration.
-    phases.sort_by { |phase| [phase.position, phase.created_at || Float::INFINITY] }.each do |phase|
-      next if phase.marked_for_destruction?
-
-      phase.offset_from_start = offset
-      offset += phase.duration_in_seconds
-      phase.offset_from_end = total_duration - offset
-    end
+    # Recalculate the phase offsets.
+    phases.calculate_offsets(total_duration)
   end
 
   # @!method self.system

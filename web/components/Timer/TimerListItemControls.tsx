@@ -2,7 +2,7 @@ import { IconDefinition, faBackwardFast, faCircle, faCirclePause, faFastForward,
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React, { useState } from 'react'
 import { Button, Card, Col, Collapse, Row } from 'react-bootstrap'
-import { TimerCloneWithOffsetInput, TimerListItemFragment } from '../../lib/generated/graphql'
+import { TimerCloneWithExtensionInput, TimerListItemFragment } from '../../lib/generated/graphql'
 
 interface TimerControlsButtonProps extends React.ComponentProps<typeof Button> {
   icon: IconDefinition
@@ -27,7 +27,7 @@ export interface TimerListItemControlsProps {
   onUnpause?(timer: TimerListItemFragment): void
   onReset?(timer: TimerListItemFragment): void
   onSkipToNextPhase?(timer: TimerListItemFragment): void
-  onClone?(timer: TimerListItemFragment, input: TimerCloneWithOffsetInput): void
+  onClone?(timer: TimerListItemFragment, input: TimerCloneWithExtensionInput): void
   onDelete?(timer: TimerListItemFragment): void
 }
 
@@ -81,7 +81,7 @@ const TimerListItemControls: React.FC<TimerListItemControlsProps> = ({ timer, on
                   variant="outline-secondary"
                   className="mx-1"
                   style={{ 'borderWidth': '2px'}}
-                  onClick={() => onClone?.(timer, { offsetInSeconds: minutes * 60, paused: startPaused })}
+                  onClick={() => onClone?.(timer, { extensionInSeconds: minutes * 60, paused: startPaused })}
                 >
                   +{minutes}
                 </Button>

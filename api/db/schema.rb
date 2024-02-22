@@ -120,6 +120,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_19_062502) do
     t.string "duration_unit", null: false
     t.integer "offset_from_start", null: false
     t.integer "offset_from_end", null: false
+    t.integer "extension_in_seconds", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["audio_clip_id"], name: "index_timer_phases_on_audio_clip_id"

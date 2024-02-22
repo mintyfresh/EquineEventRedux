@@ -1,13 +1,13 @@
 import { gql } from '@apollo/client'
 import { GetServerSideProps } from 'next'
+import React from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
 import EventLayout, { EVENT_LAYOUT_FRAGMENT } from '../../../components/EventLayout'
 import TimerControlsBar from '../../../components/Timer/TimerControlsBar'
 import TimerListItem, { TIMER_LIST_ITEM_FRAGMENT } from '../../../components/Timer/TimerListItem'
-import { EventTimersQuery, EventTimersQueryVariables, TimerFragment, useCloneTimerWithOffsetMutation, useDeleteTimerMutation, useEventTimersQuery, usePauseTimerMutation, useResetTimerMutation, useSkipTimerToNextPhaseMutation, useTimerCreatedSubscription, useTimerDeletedSubscription, useTimerUpdatedSubscription, useUnpauseTimerMutation, useUpdateTimerMutation } from '../../../lib/generated/graphql'
+import { EventTimersQuery, EventTimersQueryVariables, TimerFragment, useCloneTimerWithExtensionMutation, useDeleteTimerMutation, useEventTimersQuery, usePauseTimerMutation, useResetTimerMutation, useSkipTimerToNextPhaseMutation, useTimerCreatedSubscription, useTimerDeletedSubscription, useTimerUpdatedSubscription, useUnpauseTimerMutation, useUpdateTimerMutation } from '../../../lib/generated/graphql'
 import { initializeApolloClient } from '../../../lib/graphql/client'
 import { NextPageWithLayout } from '../../../lib/types/next-page'
-import React from 'react'
 
 const TIMER_FRAGMENT = gql`
   fragment Timer on Timer {
@@ -115,8 +115,8 @@ gql`
 `
 
 gql`
-  mutation CloneTimerWithOffset($id: ID!, $input: TimerCloneWithOffsetInput!) {
-    timerCloneWithOffset(id: $id, input: $input) {
+  mutation CloneTimerWithExtension($id: ID!, $input: TimerCloneWithExtensionInput!) {
+    timerCloneWithExtension(id: $id, input: $input) {
       timer {
         ...Timer
       }
@@ -238,7 +238,7 @@ const EventTimersPage: NextPageWithLayout<EventTimersPageProps> = ({ id, fullscr
   const [pauseTimer, {}] = usePauseTimerMutation()
   const [unpauseTimer, {}] = useUnpauseTimerMutation()
   const [skipToNextPhase, {}] = useSkipTimerToNextPhaseMutation()
-  const [cloneWithOffset, {}] = useCloneTimerWithOffsetMutation()
+  const [cloneWithExtension, {}] = useCloneTimerWithExtensionMutation()
   const [resetTimer, {}] = useResetTimerMutation()
 
   if (!data?.event) {
@@ -275,7 +275,7 @@ const EventTimersPage: NextPageWithLayout<EventTimersPageProps> = ({ id, fullscr
                   resetTimer({ variables: { id } })
               )}
               onSkipToNextPhase={({ id }) => skipToNextPhase({ variables: { id } })}
-              onClone={({ id }, input) => cloneWithOffset({ variables: { id, input } })}
+              onClone={({ id }, input) => cloneWithExtension({ variables: { id, input } })}
             />
           </Col>
         ))}
