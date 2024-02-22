@@ -1,0 +1,30 @@
+query EventTimers($id: ID!) {
+  event(id: $id) {
+    id
+    name
+    ...EventLayout
+    ...TimerList
+  }
+}
+
+subscription TimerCreated($eventId: ID!) {
+  timerCreated(eventId: $eventId) {
+    timer {
+      ...TimerListItem
+    }
+  }
+}
+
+subscription TimerUpdated($eventId: ID!) {
+  timerUpdated(eventId: $eventId) {
+    timer {
+      ...TimerListItem
+    }
+  }
+}
+
+subscription TimerDeleted($eventId: ID!) {
+  timerDeleted(eventId: $eventId) {
+    timerId
+  }
+}

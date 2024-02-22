@@ -1,0 +1,46 @@
+
+mutation DeleteTimer($id: ID!) {
+  timerDelete(id: $id) {
+    success
+  }
+}
+
+mutation PauseTimer($id: ID!) {
+  timerPause(id: $id) {
+    timer {
+      ...TimerListItem
+    }
+  }
+}
+
+mutation UnpauseTimer($id: ID!) {
+  timerUnpause(id: $id) {
+    timer {
+      ...TimerListItem
+    }
+  }
+}
+
+mutation SkipTimerToNextPhase($id: ID!) {
+  timerSkipToNextPhase(id: $id) {
+    timer {
+      ...TimerListItem
+    }
+  }
+}
+
+mutation CloneTimerWithExtension($id: ID!, $input: TimerCloneWithExtensionInput!) {
+  timerCloneWithExtension(id: $id, input: $input) {
+    timer {
+      ...TimerListItem
+    }
+  }
+}
+
+mutation ResetTimer($id: ID!) {
+  timerReset(id: $id) {
+    timer {
+      ...TimerListItem
+    }
+  }
+}

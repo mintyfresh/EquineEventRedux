@@ -108,6 +108,7 @@ class Timer < ApplicationRecord
     dup.tap do |timer|
       timer.phases = phases.map(&:dup)
       timer.current_phase.extension_in_seconds += extension_in_seconds
+      timer.expires_at += extension_in_seconds
     end
   end
 
@@ -125,7 +126,7 @@ class Timer < ApplicationRecord
   # @param at [Time] the time at which to check for expiration
   # @return [Boolean]
   def expired?(at = Time.current)
-    expires_at <= at
+    expires_at <= at && !paused?
   end
 
   # Checks if the timer is paused.

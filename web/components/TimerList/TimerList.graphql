@@ -1,0 +1,6 @@
+fragment TimerList on Event {
+  id
+  timers {
+    ...TimerListItem
+  }
+}

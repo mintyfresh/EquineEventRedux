@@ -1,0 +1,30 @@
+mutation UpdateTimer($id: ID!, $input: TimerUpdateInput!) {
+  timerUpdate(id: $id, input: $input) {
+    timer {
+      ...TimerListItem
+    }
+  }
+}
+
+fragment TimerListItem on Timer {
+  id
+  label
+  instant
+  isExpired
+  expiresAt
+  isPaused
+  pausedAt
+  totalDurationInSeconds
+  phases {
+    id
+    name
+    position
+    durationInSeconds
+    offsetFromStart
+    offsetFromEnd
+    audioClip {
+      id
+      fileUrl
+    }
+  }
+}

@@ -1,4 +1,4 @@
-import { faChevronDown, faChevronUp, faFlag, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faFlag, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
 import { Button, Card, Col, Form, InputGroup, Row } from 'react-bootstrap'

@@ -67,6 +67,20 @@ class TimerPreset < ApplicationRecord
   #   @return [Class<TimerPreset>]
   scope :system, -> { where.not(system_ref: nil) }
 
+  # @!method self.order_by_last_used_at(direction)
+  #   Orders the timer presets by the last used at timestamp.
+  #   Timer presets that have never been used are placed last either way.
+  #
+  #   @param direction [String] The direction to order the timer presets.
+  #   @return [Class<TimerPreset>]
+  scope :order_by_last_used_at, lambda { |direction|
+    case direction.to_s.downcase
+    when 'asc'  then order(last_used_at: :asc)
+    when 'desc' then order(Arel.sql("#{connection.quote_table_name('timer_presets.last_used_at')} DESC NULLS LAST"))
+    else raise ArgumentError, "Invalid direction: #{direction.inspect}"
+    end
+  }
+
   # Determines if the timer preset is system-defined.
   #
   # @return [Boolean]

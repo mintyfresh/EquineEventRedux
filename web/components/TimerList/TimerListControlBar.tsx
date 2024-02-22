@@ -1,38 +1,14 @@
 import React from 'react'
 import { Button, Col, Dropdown, DropdownButton, Row } from 'react-bootstrap'
-import TimerInlineCreateForm from './TimerInlineCreateForm'
-import { gql } from '@apollo/client'
-import { TIMER_LIST_ITEM_FRAGMENT } from './TimerListItem'
-import { usePauseAllEventTimersMutation, useUnpauseAllEventTimersMutation } from '../../lib/generated/graphql'
+import { TimerListItemFragment, usePauseAllEventTimersMutation, useUnpauseAllEventTimersMutation } from '../../lib/generated/graphql'
+import TimerListInlineForm from './TimerListInlineForm'
 
-gql`
-  mutation PauseAllEventTimers($eventId: ID!) {
-    eventPauseAllTimers(eventId: $eventId) {
-      timers {
-        ...TimerListItem
-      }
-    }
-  }
-  ${TIMER_LIST_ITEM_FRAGMENT}
-`
-
-gql`
-  mutation UnpauseAllEventTimers($eventId: ID!) {
-    eventUnpauseAllTimers(eventId: $eventId) {
-      timers {
-        ...TimerListItem
-      }
-    }
-  }
-  ${TIMER_LIST_ITEM_FRAGMENT}
-`
-
-export interface TimerControlsBarProps {
+export interface TimerListControlBarProps {
   eventId: string
-  onTimerCreate?: (timerId: string) => void
+  onTimerCreate?: (timer: TimerListItemFragment) => void
 }
 
-const TimerControlsBar: React.FC<TimerControlsBarProps> = ({ eventId, onTimerCreate }) => {
+const TimerListControlBar: React.FC<TimerListControlBarProps> = ({ eventId, onTimerCreate }) => {
   const showFullscreenView = () => {
     window.open('?fullscreen=true', 'Timers', 'menubar=no,toolbar=no,location=no,status=no,directories=no')
   }
@@ -43,9 +19,9 @@ const TimerControlsBar: React.FC<TimerControlsBarProps> = ({ eventId, onTimerCre
   return (
     <Row>
       <Col>
-        <TimerInlineCreateForm
+        <TimerListInlineForm
           eventId={eventId}
-          onCreate={(timerId) => onTimerCreate?.(timerId)}
+          onCreate={onTimerCreate}
         />
       </Col>
       <Col xs="auto">
@@ -68,4 +44,4 @@ const TimerControlsBar: React.FC<TimerControlsBarProps> = ({ eventId, onTimerCre
   )
 }
 
-export default TimerControlsBar
+export default TimerListControlBar

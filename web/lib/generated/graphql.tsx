@@ -1171,6 +1171,8 @@ export type SlipRoundFragment = { __typename?: 'Round', id: string, number: numb
 
 export type SlipMatchFragment = { __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, table: number, player1: { __typename?: 'Player', id: string, name: string, score: number }, player2?: { __typename?: 'Player', id: string, name: string, score: number } | null };
 
+export type TimerListFragment = { __typename?: 'Event', id: string, timers: Array<{ __typename?: 'Timer', id: string, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> }> };
+
 export type PauseAllEventTimersMutationVariables = Exact<{
   eventId: Scalars['ID'];
 }>;
@@ -1185,10 +1187,10 @@ export type UnpauseAllEventTimersMutationVariables = Exact<{
 
 export type UnpauseAllEventTimersMutation = { __typename?: 'Mutation', eventUnpauseAllTimers?: { __typename?: 'EventUnpauseAllTimersPayload', timers?: Array<{ __typename?: 'Timer', id: string, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> }> | null } | null };
 
-export type TimerInlineCreateFormPresetsQueryVariables = Exact<{ [key: string]: never; }>;
+export type TimerListInlineFormPresetsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type TimerInlineCreateFormPresetsQuery = { __typename?: 'Query', timerPresets: { __typename?: 'TimerPresetConnection', nodes: Array<{ __typename?: 'TimerPreset', id: string, name: string, phasesCount: number, totalDurationInSeconds: number }> } };
+export type TimerListInlineFormPresetsQuery = { __typename?: 'Query', timerPresets: { __typename?: 'TimerPresetConnection', nodes: Array<{ __typename?: 'TimerPreset', id: string, name: string, phasesCount: number, totalDurationInSeconds: number }> } };
 
 export type CreateTimerInlineMutationVariables = Exact<{
   eventId: Scalars['ID'];
@@ -1196,9 +1198,60 @@ export type CreateTimerInlineMutationVariables = Exact<{
 }>;
 
 
-export type CreateTimerInlineMutation = { __typename?: 'Mutation', timerCreate?: { __typename?: 'TimerCreatePayload', timer?: { __typename?: 'Timer', id: string } | null } | null };
+export type CreateTimerInlineMutation = { __typename?: 'Mutation', timerCreate?: { __typename?: 'TimerCreatePayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null } | null };
+
+export type UpdateTimerMutationVariables = Exact<{
+  id: Scalars['ID'];
+  input: TimerUpdateInput;
+}>;
+
+
+export type UpdateTimerMutation = { __typename?: 'Mutation', timerUpdate?: { __typename?: 'TimerUpdatePayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null } | null };
 
 export type TimerListItemFragment = { __typename?: 'Timer', id: string, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> };
+
+export type DeleteTimerMutationVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type DeleteTimerMutation = { __typename?: 'Mutation', timerDelete?: { __typename?: 'TimerDeletePayload', success?: boolean | null } | null };
+
+export type PauseTimerMutationVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type PauseTimerMutation = { __typename?: 'Mutation', timerPause?: { __typename?: 'TimerPausePayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null } | null };
+
+export type UnpauseTimerMutationVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type UnpauseTimerMutation = { __typename?: 'Mutation', timerUnpause?: { __typename?: 'TimerUnpausePayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null } | null };
+
+export type SkipTimerToNextPhaseMutationVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type SkipTimerToNextPhaseMutation = { __typename?: 'Mutation', timerSkipToNextPhase?: { __typename?: 'TimerSkipToNextPhasePayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null } | null };
+
+export type CloneTimerWithExtensionMutationVariables = Exact<{
+  id: Scalars['ID'];
+  input: TimerCloneWithExtensionInput;
+}>;
+
+
+export type CloneTimerWithExtensionMutation = { __typename?: 'Mutation', timerCloneWithExtension?: { __typename?: 'TimerCloneWithExtensionPayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null } | null };
+
+export type ResetTimerMutationVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type ResetTimerMutation = { __typename?: 'Mutation', timerReset?: { __typename?: 'TimerResetPayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null } | null };
 
 export type TimerPresetSelectFragment = { __typename?: 'TimerPreset', id: string, name: string, phasesCount: number, totalDurationInSeconds: number };
 
@@ -1262,8 +1315,6 @@ export type EventSlipsQueryVariables = Exact<{
 
 export type EventSlipsQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, slug: string, deleted: boolean, rounds: Array<{ __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, table: number, player1: { __typename?: 'Player', id: string, name: string, score: number }, player2?: { __typename?: 'Player', id: string, name: string, score: number } | null }> }> } };
 
-export type TimerFragment = { __typename?: 'Timer', id: string, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> };
-
 export type EventTimersQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
@@ -1291,57 +1342,6 @@ export type TimerDeletedSubscriptionVariables = Exact<{
 
 
 export type TimerDeletedSubscription = { __typename?: 'Subscription', timerDeleted: { __typename?: 'TimerDeletedPayload', timerId: string } };
-
-export type UpdateTimerMutationVariables = Exact<{
-  id: Scalars['ID'];
-  input: TimerUpdateInput;
-}>;
-
-
-export type UpdateTimerMutation = { __typename?: 'Mutation', timerUpdate?: { __typename?: 'TimerUpdatePayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null } | null };
-
-export type DeleteTimerMutationVariables = Exact<{
-  id: Scalars['ID'];
-}>;
-
-
-export type DeleteTimerMutation = { __typename?: 'Mutation', timerDelete?: { __typename?: 'TimerDeletePayload', success?: boolean | null } | null };
-
-export type PauseTimerMutationVariables = Exact<{
-  id: Scalars['ID'];
-}>;
-
-
-export type PauseTimerMutation = { __typename?: 'Mutation', timerPause?: { __typename?: 'TimerPausePayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null } | null };
-
-export type UnpauseTimerMutationVariables = Exact<{
-  id: Scalars['ID'];
-}>;
-
-
-export type UnpauseTimerMutation = { __typename?: 'Mutation', timerUnpause?: { __typename?: 'TimerUnpausePayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null } | null };
-
-export type SkipTimerToNextPhaseMutationVariables = Exact<{
-  id: Scalars['ID'];
-}>;
-
-
-export type SkipTimerToNextPhaseMutation = { __typename?: 'Mutation', timerSkipToNextPhase?: { __typename?: 'TimerSkipToNextPhasePayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null } | null };
-
-export type CloneTimerWithExtensionMutationVariables = Exact<{
-  id: Scalars['ID'];
-  input: TimerCloneWithExtensionInput;
-}>;
-
-
-export type CloneTimerWithExtensionMutation = { __typename?: 'Mutation', timerCloneWithExtension?: { __typename?: 'TimerCloneWithExtensionPayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null } | null };
-
-export type ResetTimerMutationVariables = Exact<{
-  id: Scalars['ID'];
-}>;
-
-
-export type ResetTimerMutation = { __typename?: 'Mutation', timerReset?: { __typename?: 'TimerResetPayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null } | null };
 
 export type EventsIndexQueryVariables = Exact<{
   deleted?: InputMaybe<DeletedFilter>;
@@ -1627,20 +1627,6 @@ export const SlipMatchFragmentDoc = gql`
   table
 }
     `;
-export const TimerPresetSelectFragmentDoc = gql`
-    fragment TimerPresetSelect on TimerPreset {
-  id
-  name
-  phasesCount
-  totalDurationInSeconds
-}
-    `;
-export const ErrorsFragmentDoc = gql`
-    fragment Errors on Error {
-  attribute
-  message(full: true)
-}
-    `;
 export const TimerListItemFragmentDoc = gql`
     fragment TimerListItem on Timer {
   id
@@ -1665,11 +1651,28 @@ export const TimerListItemFragmentDoc = gql`
   }
 }
     `;
-export const TimerFragmentDoc = gql`
-    fragment Timer on Timer {
-  ...TimerListItem
+export const TimerListFragmentDoc = gql`
+    fragment TimerList on Event {
+  id
+  timers {
+    ...TimerListItem
+  }
 }
     ${TimerListItemFragmentDoc}`;
+export const TimerPresetSelectFragmentDoc = gql`
+    fragment TimerPresetSelect on TimerPreset {
+  id
+  name
+  phasesCount
+  totalDurationInSeconds
+}
+    `;
+export const ErrorsFragmentDoc = gql`
+    fragment Errors on Error {
+  attribute
+  message(full: true)
+}
+    `;
 export const AudioClipSelectDocument = gql`
     query AudioClipSelect {
   audioClips {
@@ -2420,8 +2423,8 @@ export function useUnpauseAllEventTimersMutation(baseOptions?: Apollo.MutationHo
 export type UnpauseAllEventTimersMutationHookResult = ReturnType<typeof useUnpauseAllEventTimersMutation>;
 export type UnpauseAllEventTimersMutationResult = Apollo.MutationResult<UnpauseAllEventTimersMutation>;
 export type UnpauseAllEventTimersMutationOptions = Apollo.BaseMutationOptions<UnpauseAllEventTimersMutation, UnpauseAllEventTimersMutationVariables>;
-export const TimerInlineCreateFormPresetsDocument = gql`
-    query TimerInlineCreateFormPresets {
+export const TimerListInlineFormPresetsDocument = gql`
+    query TimerListInlineFormPresets {
   timerPresets {
     nodes {
       ...TimerPresetSelect
@@ -2431,45 +2434,45 @@ export const TimerInlineCreateFormPresetsDocument = gql`
     ${TimerPresetSelectFragmentDoc}`;
 
 /**
- * __useTimerInlineCreateFormPresetsQuery__
+ * __useTimerListInlineFormPresetsQuery__
  *
- * To run a query within a React component, call `useTimerInlineCreateFormPresetsQuery` and pass it any options that fit your needs.
- * When your component renders, `useTimerInlineCreateFormPresetsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useTimerListInlineFormPresetsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTimerListInlineFormPresetsQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useTimerInlineCreateFormPresetsQuery({
+ * const { data, loading, error } = useTimerListInlineFormPresetsQuery({
  *   variables: {
  *   },
  * });
  */
-export function useTimerInlineCreateFormPresetsQuery(baseOptions?: Apollo.QueryHookOptions<TimerInlineCreateFormPresetsQuery, TimerInlineCreateFormPresetsQueryVariables>) {
+export function useTimerListInlineFormPresetsQuery(baseOptions?: Apollo.QueryHookOptions<TimerListInlineFormPresetsQuery, TimerListInlineFormPresetsQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<TimerInlineCreateFormPresetsQuery, TimerInlineCreateFormPresetsQueryVariables>(TimerInlineCreateFormPresetsDocument, options);
+        return Apollo.useQuery<TimerListInlineFormPresetsQuery, TimerListInlineFormPresetsQueryVariables>(TimerListInlineFormPresetsDocument, options);
       }
-export function useTimerInlineCreateFormPresetsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TimerInlineCreateFormPresetsQuery, TimerInlineCreateFormPresetsQueryVariables>) {
+export function useTimerListInlineFormPresetsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TimerListInlineFormPresetsQuery, TimerListInlineFormPresetsQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<TimerInlineCreateFormPresetsQuery, TimerInlineCreateFormPresetsQueryVariables>(TimerInlineCreateFormPresetsDocument, options);
+          return Apollo.useLazyQuery<TimerListInlineFormPresetsQuery, TimerListInlineFormPresetsQueryVariables>(TimerListInlineFormPresetsDocument, options);
         }
-export function useTimerInlineCreateFormPresetsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<TimerInlineCreateFormPresetsQuery, TimerInlineCreateFormPresetsQueryVariables>) {
+export function useTimerListInlineFormPresetsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<TimerListInlineFormPresetsQuery, TimerListInlineFormPresetsQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<TimerInlineCreateFormPresetsQuery, TimerInlineCreateFormPresetsQueryVariables>(TimerInlineCreateFormPresetsDocument, options);
+          return Apollo.useSuspenseQuery<TimerListInlineFormPresetsQuery, TimerListInlineFormPresetsQueryVariables>(TimerListInlineFormPresetsDocument, options);
         }
-export type TimerInlineCreateFormPresetsQueryHookResult = ReturnType<typeof useTimerInlineCreateFormPresetsQuery>;
-export type TimerInlineCreateFormPresetsLazyQueryHookResult = ReturnType<typeof useTimerInlineCreateFormPresetsLazyQuery>;
-export type TimerInlineCreateFormPresetsSuspenseQueryHookResult = ReturnType<typeof useTimerInlineCreateFormPresetsSuspenseQuery>;
-export type TimerInlineCreateFormPresetsQueryResult = Apollo.QueryResult<TimerInlineCreateFormPresetsQuery, TimerInlineCreateFormPresetsQueryVariables>;
+export type TimerListInlineFormPresetsQueryHookResult = ReturnType<typeof useTimerListInlineFormPresetsQuery>;
+export type TimerListInlineFormPresetsLazyQueryHookResult = ReturnType<typeof useTimerListInlineFormPresetsLazyQuery>;
+export type TimerListInlineFormPresetsSuspenseQueryHookResult = ReturnType<typeof useTimerListInlineFormPresetsSuspenseQuery>;
+export type TimerListInlineFormPresetsQueryResult = Apollo.QueryResult<TimerListInlineFormPresetsQuery, TimerListInlineFormPresetsQueryVariables>;
 export const CreateTimerInlineDocument = gql`
     mutation CreateTimerInline($eventId: ID!, $input: TimerCreateInput!) {
   timerCreate(eventId: $eventId, input: $input) {
     timer {
-      id
+      ...TimerListItem
     }
   }
 }
-    `;
+    ${TimerListItemFragmentDoc}`;
 export type CreateTimerInlineMutationFn = Apollo.MutationFunction<CreateTimerInlineMutation, CreateTimerInlineMutationVariables>;
 
 /**
@@ -2497,6 +2500,251 @@ export function useCreateTimerInlineMutation(baseOptions?: Apollo.MutationHookOp
 export type CreateTimerInlineMutationHookResult = ReturnType<typeof useCreateTimerInlineMutation>;
 export type CreateTimerInlineMutationResult = Apollo.MutationResult<CreateTimerInlineMutation>;
 export type CreateTimerInlineMutationOptions = Apollo.BaseMutationOptions<CreateTimerInlineMutation, CreateTimerInlineMutationVariables>;
+export const UpdateTimerDocument = gql`
+    mutation UpdateTimer($id: ID!, $input: TimerUpdateInput!) {
+  timerUpdate(id: $id, input: $input) {
+    timer {
+      ...TimerListItem
+    }
+  }
+}
+    ${TimerListItemFragmentDoc}`;
+export type UpdateTimerMutationFn = Apollo.MutationFunction<UpdateTimerMutation, UpdateTimerMutationVariables>;
+
+/**
+ * __useUpdateTimerMutation__
+ *
+ * To run a mutation, you first call `useUpdateTimerMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateTimerMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateTimerMutation, { data, loading, error }] = useUpdateTimerMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateTimerMutation(baseOptions?: Apollo.MutationHookOptions<UpdateTimerMutation, UpdateTimerMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateTimerMutation, UpdateTimerMutationVariables>(UpdateTimerDocument, options);
+      }
+export type UpdateTimerMutationHookResult = ReturnType<typeof useUpdateTimerMutation>;
+export type UpdateTimerMutationResult = Apollo.MutationResult<UpdateTimerMutation>;
+export type UpdateTimerMutationOptions = Apollo.BaseMutationOptions<UpdateTimerMutation, UpdateTimerMutationVariables>;
+export const DeleteTimerDocument = gql`
+    mutation DeleteTimer($id: ID!) {
+  timerDelete(id: $id) {
+    success
+  }
+}
+    `;
+export type DeleteTimerMutationFn = Apollo.MutationFunction<DeleteTimerMutation, DeleteTimerMutationVariables>;
+
+/**
+ * __useDeleteTimerMutation__
+ *
+ * To run a mutation, you first call `useDeleteTimerMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteTimerMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteTimerMutation, { data, loading, error }] = useDeleteTimerMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteTimerMutation(baseOptions?: Apollo.MutationHookOptions<DeleteTimerMutation, DeleteTimerMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteTimerMutation, DeleteTimerMutationVariables>(DeleteTimerDocument, options);
+      }
+export type DeleteTimerMutationHookResult = ReturnType<typeof useDeleteTimerMutation>;
+export type DeleteTimerMutationResult = Apollo.MutationResult<DeleteTimerMutation>;
+export type DeleteTimerMutationOptions = Apollo.BaseMutationOptions<DeleteTimerMutation, DeleteTimerMutationVariables>;
+export const PauseTimerDocument = gql`
+    mutation PauseTimer($id: ID!) {
+  timerPause(id: $id) {
+    timer {
+      ...TimerListItem
+    }
+  }
+}
+    ${TimerListItemFragmentDoc}`;
+export type PauseTimerMutationFn = Apollo.MutationFunction<PauseTimerMutation, PauseTimerMutationVariables>;
+
+/**
+ * __usePauseTimerMutation__
+ *
+ * To run a mutation, you first call `usePauseTimerMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `usePauseTimerMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [pauseTimerMutation, { data, loading, error }] = usePauseTimerMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function usePauseTimerMutation(baseOptions?: Apollo.MutationHookOptions<PauseTimerMutation, PauseTimerMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<PauseTimerMutation, PauseTimerMutationVariables>(PauseTimerDocument, options);
+      }
+export type PauseTimerMutationHookResult = ReturnType<typeof usePauseTimerMutation>;
+export type PauseTimerMutationResult = Apollo.MutationResult<PauseTimerMutation>;
+export type PauseTimerMutationOptions = Apollo.BaseMutationOptions<PauseTimerMutation, PauseTimerMutationVariables>;
+export const UnpauseTimerDocument = gql`
+    mutation UnpauseTimer($id: ID!) {
+  timerUnpause(id: $id) {
+    timer {
+      ...TimerListItem
+    }
+  }
+}
+    ${TimerListItemFragmentDoc}`;
+export type UnpauseTimerMutationFn = Apollo.MutationFunction<UnpauseTimerMutation, UnpauseTimerMutationVariables>;
+
+/**
+ * __useUnpauseTimerMutation__
+ *
+ * To run a mutation, you first call `useUnpauseTimerMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUnpauseTimerMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [unpauseTimerMutation, { data, loading, error }] = useUnpauseTimerMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useUnpauseTimerMutation(baseOptions?: Apollo.MutationHookOptions<UnpauseTimerMutation, UnpauseTimerMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UnpauseTimerMutation, UnpauseTimerMutationVariables>(UnpauseTimerDocument, options);
+      }
+export type UnpauseTimerMutationHookResult = ReturnType<typeof useUnpauseTimerMutation>;
+export type UnpauseTimerMutationResult = Apollo.MutationResult<UnpauseTimerMutation>;
+export type UnpauseTimerMutationOptions = Apollo.BaseMutationOptions<UnpauseTimerMutation, UnpauseTimerMutationVariables>;
+export const SkipTimerToNextPhaseDocument = gql`
+    mutation SkipTimerToNextPhase($id: ID!) {
+  timerSkipToNextPhase(id: $id) {
+    timer {
+      ...TimerListItem
+    }
+  }
+}
+    ${TimerListItemFragmentDoc}`;
+export type SkipTimerToNextPhaseMutationFn = Apollo.MutationFunction<SkipTimerToNextPhaseMutation, SkipTimerToNextPhaseMutationVariables>;
+
+/**
+ * __useSkipTimerToNextPhaseMutation__
+ *
+ * To run a mutation, you first call `useSkipTimerToNextPhaseMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSkipTimerToNextPhaseMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [skipTimerToNextPhaseMutation, { data, loading, error }] = useSkipTimerToNextPhaseMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useSkipTimerToNextPhaseMutation(baseOptions?: Apollo.MutationHookOptions<SkipTimerToNextPhaseMutation, SkipTimerToNextPhaseMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SkipTimerToNextPhaseMutation, SkipTimerToNextPhaseMutationVariables>(SkipTimerToNextPhaseDocument, options);
+      }
+export type SkipTimerToNextPhaseMutationHookResult = ReturnType<typeof useSkipTimerToNextPhaseMutation>;
+export type SkipTimerToNextPhaseMutationResult = Apollo.MutationResult<SkipTimerToNextPhaseMutation>;
+export type SkipTimerToNextPhaseMutationOptions = Apollo.BaseMutationOptions<SkipTimerToNextPhaseMutation, SkipTimerToNextPhaseMutationVariables>;
+export const CloneTimerWithExtensionDocument = gql`
+    mutation CloneTimerWithExtension($id: ID!, $input: TimerCloneWithExtensionInput!) {
+  timerCloneWithExtension(id: $id, input: $input) {
+    timer {
+      ...TimerListItem
+    }
+  }
+}
+    ${TimerListItemFragmentDoc}`;
+export type CloneTimerWithExtensionMutationFn = Apollo.MutationFunction<CloneTimerWithExtensionMutation, CloneTimerWithExtensionMutationVariables>;
+
+/**
+ * __useCloneTimerWithExtensionMutation__
+ *
+ * To run a mutation, you first call `useCloneTimerWithExtensionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCloneTimerWithExtensionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [cloneTimerWithExtensionMutation, { data, loading, error }] = useCloneTimerWithExtensionMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCloneTimerWithExtensionMutation(baseOptions?: Apollo.MutationHookOptions<CloneTimerWithExtensionMutation, CloneTimerWithExtensionMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CloneTimerWithExtensionMutation, CloneTimerWithExtensionMutationVariables>(CloneTimerWithExtensionDocument, options);
+      }
+export type CloneTimerWithExtensionMutationHookResult = ReturnType<typeof useCloneTimerWithExtensionMutation>;
+export type CloneTimerWithExtensionMutationResult = Apollo.MutationResult<CloneTimerWithExtensionMutation>;
+export type CloneTimerWithExtensionMutationOptions = Apollo.BaseMutationOptions<CloneTimerWithExtensionMutation, CloneTimerWithExtensionMutationVariables>;
+export const ResetTimerDocument = gql`
+    mutation ResetTimer($id: ID!) {
+  timerReset(id: $id) {
+    timer {
+      ...TimerListItem
+    }
+  }
+}
+    ${TimerListItemFragmentDoc}`;
+export type ResetTimerMutationFn = Apollo.MutationFunction<ResetTimerMutation, ResetTimerMutationVariables>;
+
+/**
+ * __useResetTimerMutation__
+ *
+ * To run a mutation, you first call `useResetTimerMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useResetTimerMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [resetTimerMutation, { data, loading, error }] = useResetTimerMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useResetTimerMutation(baseOptions?: Apollo.MutationHookOptions<ResetTimerMutation, ResetTimerMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ResetTimerMutation, ResetTimerMutationVariables>(ResetTimerDocument, options);
+      }
+export type ResetTimerMutationHookResult = ReturnType<typeof useResetTimerMutation>;
+export type ResetTimerMutationResult = Apollo.MutationResult<ResetTimerMutation>;
+export type ResetTimerMutationOptions = Apollo.BaseMutationOptions<ResetTimerMutation, ResetTimerMutationVariables>;
 export const IndexAudioClipsDocument = gql`
     query IndexAudioClips {
   audioClips {
@@ -2904,13 +3152,11 @@ export const EventTimersDocument = gql`
     id
     name
     ...EventLayout
-    timers {
-      ...Timer
-    }
+    ...TimerList
   }
 }
     ${EventLayoutFragmentDoc}
-${TimerFragmentDoc}`;
+${TimerListFragmentDoc}`;
 
 /**
  * __useEventTimersQuery__
@@ -2948,11 +3194,11 @@ export const TimerCreatedDocument = gql`
     subscription TimerCreated($eventId: ID!) {
   timerCreated(eventId: $eventId) {
     timer {
-      ...Timer
+      ...TimerListItem
     }
   }
 }
-    ${TimerFragmentDoc}`;
+    ${TimerListItemFragmentDoc}`;
 
 /**
  * __useTimerCreatedSubscription__
@@ -2980,11 +3226,11 @@ export const TimerUpdatedDocument = gql`
     subscription TimerUpdated($eventId: ID!) {
   timerUpdated(eventId: $eventId) {
     timer {
-      ...Timer
+      ...TimerListItem
     }
   }
 }
-    ${TimerFragmentDoc}`;
+    ${TimerListItemFragmentDoc}`;
 
 /**
  * __useTimerUpdatedSubscription__
@@ -3038,251 +3284,6 @@ export function useTimerDeletedSubscription(baseOptions: Apollo.SubscriptionHook
       }
 export type TimerDeletedSubscriptionHookResult = ReturnType<typeof useTimerDeletedSubscription>;
 export type TimerDeletedSubscriptionResult = Apollo.SubscriptionResult<TimerDeletedSubscription>;
-export const UpdateTimerDocument = gql`
-    mutation UpdateTimer($id: ID!, $input: TimerUpdateInput!) {
-  timerUpdate(id: $id, input: $input) {
-    timer {
-      ...Timer
-    }
-  }
-}
-    ${TimerFragmentDoc}`;
-export type UpdateTimerMutationFn = Apollo.MutationFunction<UpdateTimerMutation, UpdateTimerMutationVariables>;
-
-/**
- * __useUpdateTimerMutation__
- *
- * To run a mutation, you first call `useUpdateTimerMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUpdateTimerMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [updateTimerMutation, { data, loading, error }] = useUpdateTimerMutation({
- *   variables: {
- *      id: // value for 'id'
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useUpdateTimerMutation(baseOptions?: Apollo.MutationHookOptions<UpdateTimerMutation, UpdateTimerMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<UpdateTimerMutation, UpdateTimerMutationVariables>(UpdateTimerDocument, options);
-      }
-export type UpdateTimerMutationHookResult = ReturnType<typeof useUpdateTimerMutation>;
-export type UpdateTimerMutationResult = Apollo.MutationResult<UpdateTimerMutation>;
-export type UpdateTimerMutationOptions = Apollo.BaseMutationOptions<UpdateTimerMutation, UpdateTimerMutationVariables>;
-export const DeleteTimerDocument = gql`
-    mutation DeleteTimer($id: ID!) {
-  timerDelete(id: $id) {
-    success
-  }
-}
-    `;
-export type DeleteTimerMutationFn = Apollo.MutationFunction<DeleteTimerMutation, DeleteTimerMutationVariables>;
-
-/**
- * __useDeleteTimerMutation__
- *
- * To run a mutation, you first call `useDeleteTimerMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useDeleteTimerMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [deleteTimerMutation, { data, loading, error }] = useDeleteTimerMutation({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useDeleteTimerMutation(baseOptions?: Apollo.MutationHookOptions<DeleteTimerMutation, DeleteTimerMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<DeleteTimerMutation, DeleteTimerMutationVariables>(DeleteTimerDocument, options);
-      }
-export type DeleteTimerMutationHookResult = ReturnType<typeof useDeleteTimerMutation>;
-export type DeleteTimerMutationResult = Apollo.MutationResult<DeleteTimerMutation>;
-export type DeleteTimerMutationOptions = Apollo.BaseMutationOptions<DeleteTimerMutation, DeleteTimerMutationVariables>;
-export const PauseTimerDocument = gql`
-    mutation PauseTimer($id: ID!) {
-  timerPause(id: $id) {
-    timer {
-      ...Timer
-    }
-  }
-}
-    ${TimerFragmentDoc}`;
-export type PauseTimerMutationFn = Apollo.MutationFunction<PauseTimerMutation, PauseTimerMutationVariables>;
-
-/**
- * __usePauseTimerMutation__
- *
- * To run a mutation, you first call `usePauseTimerMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `usePauseTimerMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [pauseTimerMutation, { data, loading, error }] = usePauseTimerMutation({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function usePauseTimerMutation(baseOptions?: Apollo.MutationHookOptions<PauseTimerMutation, PauseTimerMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<PauseTimerMutation, PauseTimerMutationVariables>(PauseTimerDocument, options);
-      }
-export type PauseTimerMutationHookResult = ReturnType<typeof usePauseTimerMutation>;
-export type PauseTimerMutationResult = Apollo.MutationResult<PauseTimerMutation>;
-export type PauseTimerMutationOptions = Apollo.BaseMutationOptions<PauseTimerMutation, PauseTimerMutationVariables>;
-export const UnpauseTimerDocument = gql`
-    mutation UnpauseTimer($id: ID!) {
-  timerUnpause(id: $id) {
-    timer {
-      ...Timer
-    }
-  }
-}
-    ${TimerFragmentDoc}`;
-export type UnpauseTimerMutationFn = Apollo.MutationFunction<UnpauseTimerMutation, UnpauseTimerMutationVariables>;
-
-/**
- * __useUnpauseTimerMutation__
- *
- * To run a mutation, you first call `useUnpauseTimerMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUnpauseTimerMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [unpauseTimerMutation, { data, loading, error }] = useUnpauseTimerMutation({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useUnpauseTimerMutation(baseOptions?: Apollo.MutationHookOptions<UnpauseTimerMutation, UnpauseTimerMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<UnpauseTimerMutation, UnpauseTimerMutationVariables>(UnpauseTimerDocument, options);
-      }
-export type UnpauseTimerMutationHookResult = ReturnType<typeof useUnpauseTimerMutation>;
-export type UnpauseTimerMutationResult = Apollo.MutationResult<UnpauseTimerMutation>;
-export type UnpauseTimerMutationOptions = Apollo.BaseMutationOptions<UnpauseTimerMutation, UnpauseTimerMutationVariables>;
-export const SkipTimerToNextPhaseDocument = gql`
-    mutation SkipTimerToNextPhase($id: ID!) {
-  timerSkipToNextPhase(id: $id) {
-    timer {
-      ...Timer
-    }
-  }
-}
-    ${TimerFragmentDoc}`;
-export type SkipTimerToNextPhaseMutationFn = Apollo.MutationFunction<SkipTimerToNextPhaseMutation, SkipTimerToNextPhaseMutationVariables>;
-
-/**
- * __useSkipTimerToNextPhaseMutation__
- *
- * To run a mutation, you first call `useSkipTimerToNextPhaseMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useSkipTimerToNextPhaseMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [skipTimerToNextPhaseMutation, { data, loading, error }] = useSkipTimerToNextPhaseMutation({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useSkipTimerToNextPhaseMutation(baseOptions?: Apollo.MutationHookOptions<SkipTimerToNextPhaseMutation, SkipTimerToNextPhaseMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<SkipTimerToNextPhaseMutation, SkipTimerToNextPhaseMutationVariables>(SkipTimerToNextPhaseDocument, options);
-      }
-export type SkipTimerToNextPhaseMutationHookResult = ReturnType<typeof useSkipTimerToNextPhaseMutation>;
-export type SkipTimerToNextPhaseMutationResult = Apollo.MutationResult<SkipTimerToNextPhaseMutation>;
-export type SkipTimerToNextPhaseMutationOptions = Apollo.BaseMutationOptions<SkipTimerToNextPhaseMutation, SkipTimerToNextPhaseMutationVariables>;
-export const CloneTimerWithExtensionDocument = gql`
-    mutation CloneTimerWithExtension($id: ID!, $input: TimerCloneWithExtensionInput!) {
-  timerCloneWithExtension(id: $id, input: $input) {
-    timer {
-      ...Timer
-    }
-  }
-}
-    ${TimerFragmentDoc}`;
-export type CloneTimerWithExtensionMutationFn = Apollo.MutationFunction<CloneTimerWithExtensionMutation, CloneTimerWithExtensionMutationVariables>;
-
-/**
- * __useCloneTimerWithExtensionMutation__
- *
- * To run a mutation, you first call `useCloneTimerWithExtensionMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCloneTimerWithExtensionMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [cloneTimerWithExtensionMutation, { data, loading, error }] = useCloneTimerWithExtensionMutation({
- *   variables: {
- *      id: // value for 'id'
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useCloneTimerWithExtensionMutation(baseOptions?: Apollo.MutationHookOptions<CloneTimerWithExtensionMutation, CloneTimerWithExtensionMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CloneTimerWithExtensionMutation, CloneTimerWithExtensionMutationVariables>(CloneTimerWithExtensionDocument, options);
-      }
-export type CloneTimerWithExtensionMutationHookResult = ReturnType<typeof useCloneTimerWithExtensionMutation>;
-export type CloneTimerWithExtensionMutationResult = Apollo.MutationResult<CloneTimerWithExtensionMutation>;
-export type CloneTimerWithExtensionMutationOptions = Apollo.BaseMutationOptions<CloneTimerWithExtensionMutation, CloneTimerWithExtensionMutationVariables>;
-export const ResetTimerDocument = gql`
-    mutation ResetTimer($id: ID!) {
-  timerReset(id: $id) {
-    timer {
-      ...Timer
-    }
-  }
-}
-    ${TimerFragmentDoc}`;
-export type ResetTimerMutationFn = Apollo.MutationFunction<ResetTimerMutation, ResetTimerMutationVariables>;
-
-/**
- * __useResetTimerMutation__
- *
- * To run a mutation, you first call `useResetTimerMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useResetTimerMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [resetTimerMutation, { data, loading, error }] = useResetTimerMutation({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useResetTimerMutation(baseOptions?: Apollo.MutationHookOptions<ResetTimerMutation, ResetTimerMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<ResetTimerMutation, ResetTimerMutationVariables>(ResetTimerDocument, options);
-      }
-export type ResetTimerMutationHookResult = ReturnType<typeof useResetTimerMutation>;
-export type ResetTimerMutationResult = Apollo.MutationResult<ResetTimerMutation>;
-export type ResetTimerMutationOptions = Apollo.BaseMutationOptions<ResetTimerMutation, ResetTimerMutationVariables>;
 export const EventsIndexDocument = gql`
     query EventsIndex($deleted: DeletedFilter) {
   events(deleted: $deleted) {

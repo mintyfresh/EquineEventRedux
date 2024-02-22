@@ -1,0 +1,15 @@
+query TimerListInlineFormPresets {
+  timerPresets {
+    nodes {
+      ...TimerPresetSelect
+    }
+  }
+}
+
+mutation CreateTimerInline($eventId: ID!, $input: TimerCreateInput!) {
+  timerCreate(eventId: $eventId, input: $input) {
+    timer {
+      ...TimerListItem
+    }
+  }
+}

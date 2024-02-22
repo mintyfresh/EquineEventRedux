@@ -2,7 +2,7 @@ import { IconDefinition, faBackwardFast, faCircle, faCirclePause, faFastForward,
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React, { useState } from 'react'
 import { Button, Card, Col, Collapse, Row } from 'react-bootstrap'
-import { TimerCloneWithExtensionInput, TimerListItemFragment } from '../../lib/generated/graphql'
+import { TimerListItemFragment, useCloneTimerWithExtensionMutation, useDeleteTimerMutation, usePauseTimerMutation, useResetTimerMutation, useSkipTimerToNextPhaseMutation, useUnpauseTimerMutation } from '../../lib/generated/graphql'
 
 interface TimerControlsButtonProps extends React.ComponentProps<typeof Button> {
   icon: IconDefinition
@@ -23,51 +23,102 @@ const TimerControlsButton: React.FC<TimerControlsButtonProps> = ({ icon, color, 
 
 export interface TimerListItemControlsProps {
   timer: TimerListItemFragment
-  onPause?(timer: TimerListItemFragment): void
-  onUnpause?(timer: TimerListItemFragment): void
-  onReset?(timer: TimerListItemFragment): void
-  onSkipToNextPhase?(timer: TimerListItemFragment): void
-  onClone?(timer: TimerListItemFragment, input: TimerCloneWithExtensionInput): void
+  onCreate?(timer: TimerListItemFragment): void
+  onUpdate?(timer: TimerListItemFragment): void
   onDelete?(timer: TimerListItemFragment): void
 }
 
-const TimerListItemControls: React.FC<TimerListItemControlsProps> = ({ timer, onPause, onUnpause, onReset, onSkipToNextPhase, onClone, onDelete }) => {
+const TimerListItemControls: React.FC<TimerListItemControlsProps> = ({ timer, onCreate, onUpdate, onDelete }) => {
   const [open, setOpen] = useState(false)
   const [startPaused, setStartPaused] = useState(false)
+
+  const [resetTimer, {}] = useResetTimerMutation({
+    variables: { id: timer.id },
+    onCompleted({ timerReset }) {
+      if (timerReset?.timer) {
+        onUpdate?.(timerReset.timer)
+      }
+    }
+  })
+  const [pauseTimer, {}] = usePauseTimerMutation({
+    variables: { id: timer.id },
+    onCompleted({ timerPause }) {
+      if (timerPause?.timer) {
+        onUpdate?.(timerPause.timer)
+      }
+    }
+  })
+  const [unpauseTimer, {}] = useUnpauseTimerMutation({
+    variables: { id: timer.id },
+    onCompleted({ timerUnpause }) {
+      if (timerUnpause?.timer) {
+        onUpdate?.(timerUnpause.timer)
+      }
+    }
+  })
+  const [skipToNextPhase, {}] = useSkipTimerToNextPhaseMutation({
+    variables: { id: timer.id },
+    onCompleted({ timerSkipToNextPhase }) {
+      if (timerSkipToNextPhase?.timer) {
+        onUpdate?.(timerSkipToNextPhase.timer)
+      }
+    }
+  })
+  const [deleteTimer, {}] = useDeleteTimerMutation({
+    variables: { id: timer.id },
+    onCompleted({ timerDelete }) {
+      if (timerDelete?.success) {
+        onDelete?.(timer)
+      }
+    }
+  })
+  const [cloneWithExtension, {}] = useCloneTimerWithExtensionMutation({
+    onCompleted({ timerCloneWithExtension }) {
+      if (timerCloneWithExtension?.timer) {
+        onCreate?.(timerCloneWithExtension.timer)
+      }
+    }
+  })
 
   return (
     <>
       <TimerControlsButton
         title="Reset"
-        onClick={() => onReset?.(timer)}
+        onClick={() => (
+          confirm('Are you sure you want to reset this timer?') &&
+            resetTimer()
+        )}
         icon={faBackwardFast}
       />
       <TimerControlsButton
         title="Resume"
         disabled={!timer.isPaused || timer.isExpired}
-        onClick={() => onUnpause?.(timer)}
+        onClick={() => unpauseTimer()}
         icon={faPlay}
       />
       <TimerControlsButton
         title="Pause"
         disabled={timer.isPaused || timer.isExpired}
-        onClick={() => onPause?.(timer)}
+        onClick={() => pauseTimer()}
         icon={faPause}
       />
       <TimerControlsButton
         title="Skip to next step"
         disabled={timer.isExpired}
-        onClick={() => onSkipToNextPhase?.(timer)}
+        onClick={() => skipToNextPhase()}
         icon={faFastForward}
       />
       <TimerControlsButton
         title="Clone"
-        onClick={() => { setOpen(!open) }}
+        onClick={() => setOpen(!open)}
         icon={faCircle}
       />
       <TimerControlsButton
         title="Delete"
-        onClick={() => onDelete?.(timer)}
+        onClick={() => (
+          confirm('Are you sure you want to delete this timer?') &&
+            deleteTimer()
+        )}
         icon={faTrash}
       />
       <Collapse in={open}>
@@ -81,7 +132,9 @@ const TimerListItemControls: React.FC<TimerListItemControlsProps> = ({ timer, on
                   variant="outline-secondary"
                   className="mx-1"
                   style={{ 'borderWidth': '2px'}}
-                  onClick={() => onClone?.(timer, { extensionInSeconds: minutes * 60, paused: startPaused })}
+                  onClick={() => cloneWithExtension({
+                    variables: { id: timer.id, input: { extensionInSeconds: minutes * 60, paused: startPaused } }
+                  })}
                 >
                   +{minutes}
                 </Button>

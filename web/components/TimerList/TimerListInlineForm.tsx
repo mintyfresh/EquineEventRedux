@@ -1,38 +1,16 @@
-import { gql } from '@apollo/client'
 import { useState } from 'react'
 import { Button, Col, Form, InputGroup, Row } from 'react-bootstrap'
-import { TimerCreateInput, useCreateTimerInlineMutation, useTimerInlineCreateFormPresetsQuery } from '../../lib/generated/graphql'
-import TimerPresetSelect, { TIMER_PRESET_SELECT_FRAGMENT } from '../TimerPreset/TimerPresetSelect'
+import { TimerCreateInput, TimerListItemFragment, useCreateTimerInlineMutation, useTimerListInlineFormPresetsQuery } from '../../lib/generated/graphql'
+import TimerPresetSelect from '../TimerPreset/TimerPresetSelect'
 
-gql`
-  query TimerInlineCreateFormPresets {
-    timerPresets {
-      nodes {
-        ...TimerPresetSelect
-      }
-    }
-  }
-  ${TIMER_PRESET_SELECT_FRAGMENT}
-`
-
-gql`
-  mutation CreateTimerInline($eventId: ID!, $input: TimerCreateInput!) {
-    timerCreate(eventId: $eventId, input: $input) {
-      timer {
-        id
-      }
-    }
-  }
-`
-
-export interface TimerInlineCreateFormProps {
+export interface TimerListInlineFormProps {
   eventId: string
-  onCreate?: (timerId: string) => void
+  onCreate?: (timer: TimerListItemFragment) => void
 }
 
-const TimerInlineCreateForm: React.FC<TimerInlineCreateFormProps> = ({ eventId, onCreate }) => {
+const TimerListInlineForm: React.FC<TimerListInlineFormProps> = ({ eventId, onCreate }) => {
   const [input, setInput] = useState<TimerCreateInput | null>(null)
-  const { data } = useTimerInlineCreateFormPresetsQuery({
+  const { data } = useTimerListInlineFormPresetsQuery({
     onCompleted: ({ timerPresets }) => {
       setInput((input) => input ?? { presetId: timerPresets.nodes[0]?.id ?? '' })
     }
@@ -41,7 +19,7 @@ const TimerInlineCreateForm: React.FC<TimerInlineCreateFormProps> = ({ eventId, 
   const [createTimer, {}] = useCreateTimerInlineMutation({
     onCompleted: ({ timerCreate }) => {
       if (timerCreate?.timer) {
-        onCreate?.(timerCreate.timer.id)
+        onCreate?.(timerCreate.timer)
       }
     }
   })
@@ -74,4 +52,4 @@ const TimerInlineCreateForm: React.FC<TimerInlineCreateFormProps> = ({ eventId, 
   )
 }
 
-export default TimerInlineCreateForm
+export default TimerListInlineForm

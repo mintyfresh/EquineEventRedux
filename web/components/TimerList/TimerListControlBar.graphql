@@ -1,0 +1,15 @@
+mutation PauseAllEventTimers($eventId: ID!) {
+  eventPauseAllTimers(eventId: $eventId) {
+    timers {
+      ...TimerListItem
+    }
+  }
+}
+
+mutation UnpauseAllEventTimers($eventId: ID!) {
+  eventUnpauseAllTimers(eventId: $eventId) {
+    timers {
+      ...TimerListItem
+    }
+  }
+}

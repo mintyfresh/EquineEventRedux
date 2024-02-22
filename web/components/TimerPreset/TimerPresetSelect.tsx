@@ -1,17 +1,6 @@
-import { gql } from '@apollo/client'
-import { TimerPresetSelectFragment } from '../../lib/generated/graphql'
 import React from 'react'
 import { Form } from 'react-bootstrap'
-
-export const TIMER_PRESET_SELECT_FRAGMENT = gql`
-  fragment TimerPresetSelect on TimerPreset {
-    id
-    name
-    phasesCount
-    totalDurationInSeconds
-  }
-
-`
+import { TimerPresetSelectFragment } from '../../lib/generated/graphql'
 
 export interface TimerPresetSelectProps extends Omit<React.ComponentProps<typeof Form.Select>, 'value' | 'onChange'> {
   timerPresets: TimerPresetSelectFragment[]

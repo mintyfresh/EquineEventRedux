@@ -1,0 +1,6 @@
+fragment TimerPresetSelect on TimerPreset {
+  id
+  name
+  phasesCount
+  totalDurationInSeconds
+}

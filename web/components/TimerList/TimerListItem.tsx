@@ -1,32 +1,6 @@
-import { gql } from '@apollo/client'
 import React, { useEffect, useMemo, useState } from 'react'
-import { TimerListItemFragment } from '../../lib/generated/graphql'
-import TimerListItemControls, { TimerListItemControlsProps } from './TimerListItemControls'
-
-export const TIMER_LIST_ITEM_FRAGMENT = gql`
-  fragment TimerListItem on Timer {
-    id
-    label
-    instant
-    isExpired
-    expiresAt
-    isPaused
-    pausedAt
-    totalDurationInSeconds
-    phases {
-      id
-      name
-      position
-      durationInSeconds
-      offsetFromStart
-      offsetFromEnd
-      audioClip {
-        id
-        fileUrl
-      }
-    }
-  }
-`
+import { TimerListItemFragment, useUpdateTimerMutation } from '../../lib/generated/graphql'
+import TimerListItemControls from './TimerListItemControls'
 
 type TimerPhaseList = TimerListItemFragment['phases']
 type TimerPhase = TimerPhaseList[0]
@@ -59,15 +33,17 @@ const calculateTimeRemainingInPhase = (timeRemaining: number, currentPhase: Time
   return Math.max(0, timeRemaining - currentPhase.offsetFromEnd)
 }
 
-export interface TimerListItemProps extends TimerListItemControlsProps {
+export interface TimerListItemProps {
   timer: TimerListItemFragment
   readOnly?: boolean
-  onLabelUpdate?: (timer: TimerListItemFragment, label: string) => void
+  onCreate?(timer: TimerListItemFragment): void
+  onUpdate?(timer: TimerListItemFragment): void
+  onDelete?(timer: TimerListItemFragment): void
 }
 
 const UPDATE_INTERVAL = 100
 
-const TimerListItem: React.FC<TimerListItemProps> = ({ timer, readOnly, onLabelUpdate, onPause, onUnpause, onReset, onSkipToNextPhase, onClone, onDelete }) => {
+const TimerListItem: React.FC<TimerListItemProps> = ({ timer, readOnly, onCreate, onUpdate, onDelete }) => {
   const [currentPhase, setCurrentPhase] = useState<TimerPhase | null>(null)
   const [hours, setHours] = useState(0)
   const [minutes, setMinutes] = useState(0)
@@ -124,6 +100,14 @@ const TimerListItem: React.FC<TimerListItemProps> = ({ timer, readOnly, onLabelU
     }
   }, [audioClip])
 
+  const [updateTimer, {}] = useUpdateTimerMutation({
+    onCompleted({ timerUpdate }) {
+      if (timerUpdate?.timer) {
+        onUpdate?.(timerUpdate.timer)
+      }
+    }
+  })
+
   return (
     <div className="text-center mb-5">
       <h3 className="mb-0 pb-0" style={{ 'fontSize': '70px', 'fontWeight': 'lighter' }}>
@@ -143,7 +127,7 @@ const TimerListItem: React.FC<TimerListItemProps> = ({ timer, readOnly, onLabelU
             placeholder="Click to add label"
             readOnly={readOnly}
             style={{ 'fontSize': '36px', 'fontWeight': 'lighter', 'textAlign': 'center', 'border': 'none', 'borderBottom': readOnly ? 'none' : '1px solid #000' }}
-            onBlur={(event) => onLabelUpdate?.(timer, event.currentTarget.value)}
+            onBlur={(event) => updateTimer({ variables: { id: timer.id, input: { label: event.currentTarget.value } } })}
             onKeyPress={(event) => event.key === 'Enter' && event.currentTarget.blur()}
           />
         </div>
@@ -152,11 +136,8 @@ const TimerListItem: React.FC<TimerListItemProps> = ({ timer, readOnly, onLabelU
         <div className="mx-auto">
           <TimerListItemControls
             timer={timer}
-            onPause={onPause}
-            onUnpause={onUnpause}
-            onReset={onReset}
-            onSkipToNextPhase={onSkipToNextPhase}
-            onClone={onClone}
+            onCreate={onCreate}
+            onUpdate={onUpdate}
             onDelete={onDelete}
           />
         </div>

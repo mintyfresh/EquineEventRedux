@@ -12,7 +12,7 @@ module Mutations
       old_timer = ::Timer.find(id)
 
       new_timer = old_timer.dup_with_extension(input.extension_in_seconds)
-      new_timer.paused = input.paused
+      new_timer.paused = true if input.paused
       new_timer.save!
 
       { timer: new_timer }
