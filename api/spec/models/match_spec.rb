@@ -15,6 +15,7 @@
 #  updated_at :datetime         not null
 #  deleted_at :datetime
 #  deleted_in :uuid
+#  complete   :boolean          default(FALSE), not null
 #
 # Indexes
 #
@@ -94,5 +95,40 @@ RSpec.describe Match do
     match.player2 = nil
     match.save
     expect(match.winner_id).to eq(match.player1_id)
+  end
+
+  it 'does not mark the match as complete if it has no winner and is not a draw' do
+    match.winner_id = nil
+    match.draw = false
+    match.save
+    expect(match).not_to be_complete
+  end
+
+  it 'automatically sets the match as complete if it has a winner' do
+    match.winner_id = match.player1_id
+    match.save
+    expect(match).to be_complete
+  end
+
+  it 'automatically sets the match as complete if it is a draw' do
+    match.draw = true
+    match.save
+    expect(match).to be_complete
+  end
+
+  it 'automatically sets the round as complete if the final match is complete', :aggregate_failures do
+    match.save
+    create_list(:match, 2, :with_winner, round: match.round)
+    expect(match.round.reload).not_to be_complete
+    match.update!(draw: true)
+    expect(match.round).to be_complete
+  end
+
+  it 'automatically sets the round as complete if the final match is deleted', :aggregate_failures do
+    match.save
+    create_list(:match, 2, :with_winner, round: match.round)
+    expect(match.round.reload).not_to be_complete
+    match.destroy!
+    expect(match.round).to be_complete
   end
 end

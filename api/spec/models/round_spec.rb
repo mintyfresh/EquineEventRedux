@@ -11,6 +11,7 @@
 #  updated_at :datetime         not null
 #  deleted_at :datetime
 #  deleted_in :uuid
+#  complete   :boolean          default(FALSE), not null
 #
 # Indexes
 #
@@ -66,5 +67,32 @@ RSpec.describe Round do
     matches.first.destroy!
     round.destroy! && round.restore!
     expect(matches.each(&:reload).map(&:deleted?)).to eq([true, false, false])
+  end
+
+  it 'automatically marks itself as complete when all matches are complete' do
+    round.save!
+    create_list(:match, 3, round:, event: round.event)
+    round.matches.each { |match| match.draw = true }
+    round.save!
+    expect(round).to be_complete
+  end
+
+  it 'does not mark itself as complete when not all matches are complete' do
+    round.save!
+    create_list(:match, 3, round:, event: round.event)
+    round.matches.first(2).each { |match| match.update!(draw: true) }
+    expect(round).not_to be_complete
+  end
+
+  it 'does not mark itself as complete when it has no matches' do
+    round.save!
+    expect(round).not_to be_complete
+  end
+
+  it 'does not mark itself as complete when all matches are deleted' do
+    round.save!
+    create_list(:match, 3, round:, event: round.event)
+    round.matches.each(&:destroy!)
+    expect(round).not_to be_complete
   end
 end

@@ -11,6 +11,7 @@
 #  updated_at :datetime         not null
 #  deleted_at :datetime
 #  deleted_in :uuid
+#  complete   :boolean          default(FALSE), not null
 #
 # Indexes
 #
@@ -23,6 +24,8 @@
 #
 class Round < ApplicationRecord
   include SoftDeletable
+
+  define_model_callbacks :match_completion, only: :after
 
   belongs_to :event, inverse_of: :rounds
 
@@ -49,6 +52,8 @@ class Round < ApplicationRecord
     self.number = event.next_round_number
   end
 
+  before_save :calculate_round_completeness, if: :matches_changed?
+
   after_soft_delete do
     matches.each { |match| match.destroy!(deleted_in:) }
   end
@@ -57,18 +62,30 @@ class Round < ApplicationRecord
     matches.each { |match| match.restore! if match.deleted_in == deleted_in }
   end
 
-  # Determine if all matches in the round are complete.
-  # There must be at least one match for the round to be considered complete.
-  #
-  # @return [Boolean]
-  def complete?
-    matches.all?(&:complete?) && matches.any?
+  after_match_completion do
+    calculate_round_completeness
+    save! if changed?
   end
+
+  # @!method self.active
+  #   @return [Class<Round>]
+  scope :active, -> { where(complete: false) }
+  # @!method self.complete
+  #   @return [Class<Round>]
+  scope :complete, -> { where(complete: true) }
 
   # @return [Boolean]
   def matches_changed?
     matches.target.any? do |match|
       match.new_record? || match.changed? || match.marked_for_destruction?
     end
+  end
+
+private
+
+  # @return [void]
+  def calculate_round_completeness
+    matches = self.matches.non_deleted
+    self.complete = matches.present? && matches.all?(&:complete?)
   end
 end

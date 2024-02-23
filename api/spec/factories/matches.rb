@@ -15,6 +15,7 @@
 #  updated_at :datetime         not null
 #  deleted_at :datetime
 #  deleted_in :uuid
+#  complete   :boolean          default(FALSE), not null
 #
 # Indexes
 #

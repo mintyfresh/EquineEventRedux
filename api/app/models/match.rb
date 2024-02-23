@@ -15,6 +15,7 @@
 #  updated_at :datetime         not null
 #  deleted_at :datetime
 #  deleted_in :uuid
+#  complete   :boolean          default(FALSE), not null
 #
 # Indexes
 #
@@ -72,11 +73,23 @@ class Match < ApplicationRecord
     self.winner_id = player1_id if player2_id.nil?
   end
 
+  before_save do
+    self.complete = winner_id.present? || draw?
+  end
+
+  after_save if: -> { saved_change_to_complete?(to: true) } do
+    round.run_callbacks(:match_completion)
+  end
+
+  after_soft_delete unless: -> { round.deleted? } do
+    round.run_callbacks(:match_completion)
+  end
+
   publishes_messages_on :create, :update, :destroy
 
   # @!method self.complete
   #   @return [Class<Match>]
-  scope :complete, -> { where.not(winner_id: nil).or(draw) }
+  scope :complete, -> { where(complete: true) }
 
   # @!method self.draw
   #   @return [Class<Match>]
@@ -95,13 +108,6 @@ class Match < ApplicationRecord
   scope :paired_first, -> { order(Arel.sql(<<-SQL.squish) => 'ASC') }
     CASE WHEN "matches"."player2_id" IS NULL THEN 1 ELSE 0 END
   SQL
-
-  # Determines whether the match is complete.
-  #
-  # @return [Boolean]
-  def complete?
-    winner_id.present? || draw?
-  end
 
   # Returns the IDs of the players in the match as a tuple.
   #
