@@ -1,6 +1,7 @@
-fragment TimerList on Event {
+fragment TimerList on Round {
   id
   timers {
     ...TimerListItem
   }
+  ...TimerMatchSelect
 }

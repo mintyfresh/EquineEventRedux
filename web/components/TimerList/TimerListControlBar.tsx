@@ -4,23 +4,23 @@ import { TimerListItemFragment, usePauseAllEventTimersMutation, useUnpauseAllEve
 import TimerListInlineForm from './TimerListInlineForm'
 
 export interface TimerListControlBarProps {
-  eventId: string
+  roundId: string
   onTimerCreate?: (timer: TimerListItemFragment) => void
 }
 
-const TimerListControlBar: React.FC<TimerListControlBarProps> = ({ eventId, onTimerCreate }) => {
+const TimerListControlBar: React.FC<TimerListControlBarProps> = ({ roundId, onTimerCreate }) => {
   const showFullscreenView = () => {
     window.open('?fullscreen=true', 'Timers', 'menubar=no,toolbar=no,location=no,status=no,directories=no')
   }
 
-  const [pauseAllTimers, {}] = usePauseAllEventTimersMutation({ variables: { eventId } })
-  const [unpauseAllTimers, {}] = useUnpauseAllEventTimersMutation({ variables: { eventId } })
+  const [pauseAllTimers, {}] = usePauseAllEventTimersMutation({ variables: { roundId } })
+  const [unpauseAllTimers, {}] = useUnpauseAllEventTimersMutation({ variables: { roundId } })
 
   return (
     <Row>
       <Col>
         <TimerListInlineForm
-          eventId={eventId}
+          roundId={roundId}
           onCreate={onTimerCreate}
         />
       </Col>

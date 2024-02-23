@@ -18,8 +18,12 @@ module Types
       extension Extensions::DeletedFilterExtension
       extension GraphQL::OrderBy::Extension, type: EventRoundsOrderByType
     end
+    field :round, Types::RoundType, null: true do
+      argument :id, ID, required: true do
+        description 'ID of the round to find, or `current` for the current round.'
+      end
+    end
     field :current_round, Types::RoundType, null: true
-    field :timers, [Types::TimerType], null: false
 
     # @param deleted [Proc]
     # @param order_by_scope [ActiveRecord::Relation]
@@ -45,14 +49,20 @@ module Types
       dataloader.with(Sources::RecordList, ::Round, :event_id, scope: rounds).load(object.id)
     end
 
+    # @param id [String]
+    # @return [::Round, nil]
+    def round(id:)
+      if id == 'current'
+        current_round
+      else
+        dataloader.with(Sources::Record, ::Round, scope: ::Round.where(event_id: object.id)).load(id)
+      end
+    end
+
     # @return [::Round, nil]
     def current_round
       scope = ::Round.non_deleted.active
       dataloader.with(Sources::RecordList, ::Round, :event_id, scope:).load(object.id).max_by(&:number)
-    end
-
-    def timers
-      dataloader.with(Sources::RecordList, ::Timer, :event_id).load(object.id)
     end
   end
 end

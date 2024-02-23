@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { TimerListItemFragment, useUpdateTimerMutation } from '../../lib/generated/graphql'
+import { TimerListFragment, TimerListItemFragment, useUpdateTimerMutation } from '../../lib/generated/graphql'
 import TimerListItemControls from './TimerListItemControls'
 
 type TimerPhaseList = TimerListItemFragment['phases']
@@ -34,6 +34,7 @@ const calculateTimeRemainingInPhase = (timeRemaining: number, currentPhase: Time
 }
 
 export interface TimerListItemProps {
+  timerList: TimerListFragment
   timer: TimerListItemFragment
   readOnly?: boolean
   onCreate?(timer: TimerListItemFragment): void
@@ -43,7 +44,7 @@ export interface TimerListItemProps {
 
 const UPDATE_INTERVAL = 100
 
-const TimerListItem: React.FC<TimerListItemProps> = ({ timer, readOnly, onCreate, onUpdate, onDelete }) => {
+const TimerListItem: React.FC<TimerListItemProps> = ({ timerList, timer, readOnly, onCreate, onUpdate, onDelete }) => {
   const [currentPhase, setCurrentPhase] = useState<TimerPhase | null>(null)
   const [hours, setHours] = useState(0)
   const [minutes, setMinutes] = useState(0)
@@ -135,6 +136,7 @@ const TimerListItem: React.FC<TimerListItemProps> = ({ timer, readOnly, onCreate
       {readOnly || (
         <div className="mx-auto">
           <TimerListItemControls
+            timerList={timerList}
             timer={timer}
             onCreate={onCreate}
             onUpdate={onUpdate}

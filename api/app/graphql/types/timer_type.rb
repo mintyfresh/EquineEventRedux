@@ -3,6 +3,9 @@
 module Types
   class TimerType < BaseObject
     field :id, ID, null: false
+    field :round_id, ID, null: false
+    field :match_id, ID, null: true
+
     field :label, String, null: true
     field :expires_at, GraphQL::Types::ISO8601DateTime, null: false
     field :is_expired, Boolean, null: false, resolver_method: :expired?

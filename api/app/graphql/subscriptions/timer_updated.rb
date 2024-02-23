@@ -2,7 +2,7 @@
 
 module Subscriptions
   class TimerUpdated < BaseSubscription
-    argument :event_id, ID, required: true
+    argument :round_id, ID, required: true
 
     field :timer, Types::TimerType, null: false
   end

@@ -6,8 +6,8 @@ query TimerListInlineFormPresets {
   }
 }
 
-mutation CreateTimerInline($eventId: ID!, $input: TimerCreateInput!) {
-  timerCreate(eventId: $eventId, input: $input) {
+mutation CreateTimerInline($roundId: ID!, $input: TimerCreateInput!) {
+  timerCreate(roundId: $roundId, input: $input) {
     timer {
       ...TimerListItem
     }

@@ -161,15 +161,17 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_23_024122) do
   end
 
   create_table "timers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "event_id", null: false
     t.uuid "preset_id", null: false
+    t.uuid "round_id", null: false
+    t.uuid "match_id"
     t.string "label"
     t.datetime "expires_at", precision: nil
     t.datetime "paused_at", precision: nil
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["event_id"], name: "index_timers_on_event_id"
+    t.index ["match_id"], name: "index_timers_on_match_id", unique: true
     t.index ["preset_id"], name: "index_timers_on_preset_id"
+    t.index ["round_id"], name: "index_timers_on_round_id"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
@@ -184,7 +186,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_23_024122) do
   add_foreign_key "timer_phases", "timers"
   add_foreign_key "timer_preset_phases", "audio_clips"
   add_foreign_key "timer_preset_phases", "timer_presets"
-  add_foreign_key "timers", "events"
+  add_foreign_key "timers", "matches"
+  add_foreign_key "timers", "rounds"
   add_foreign_key "timers", "timer_presets", column: "preset_id"
 
   create_view "player_matches", sql_definition: <<-SQL

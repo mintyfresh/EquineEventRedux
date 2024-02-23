@@ -1,6 +1,6 @@
 import { GetServerSideProps } from 'next'
 import React from 'react'
-import { Container } from 'react-bootstrap'
+import { Alert, Container } from 'react-bootstrap'
 import EventLayout from '../../../components/EventLayout'
 import TimerList from '../../../components/TimerList/TimerList'
 import { EventTimersDocument, EventTimersQuery, EventTimersQueryVariables, TimerListItemFragment, useEventTimersQuery, useTimerCreatedSubscription, useTimerDeletedSubscription, useTimerUpdatedSubscription } from '../../../lib/generated/graphql'
@@ -18,14 +18,14 @@ export const getServerSideProps: GetServerSideProps = async ({ params, query }) 
 
   const { data } = await apolloClient.query<EventTimersQuery, EventTimersQueryVariables>({
     query: EventTimersDocument,
-    variables: { id: params.id as string },
+    variables: { eventId: params.id as string },
     fetchPolicy: 'network-only'
   })
 
   return {
     props: {
       initialApolloState: apolloClient.cache.extract(),
-      id: params.id,
+      slug: params.id,
       event: data.event,
       fullscreen
     }
@@ -56,24 +56,33 @@ const upsertTimer = (newTimer: TimerListItemFragment, timers: TimerListItemFragm
 }
 
 type EventTimersPageProps = EventTimersQuery & {
-  id: string
+  slug: string
   fullscreen: boolean
 }
 
-const EventTimersPage: NextPageWithLayout<EventTimersPageProps> = ({ id, fullscreen, event: { id: eventId } }) => {
+const EventTimersPage: NextPageWithLayout<EventTimersPageProps> = ({ slug, fullscreen, event }) => {
+  const eventId = event.id
+  
   const { data, client } = useEventTimersQuery({
-    variables: { id }
+    variables: { eventId: slug }
   })
+
+  const currentRound = data ? data.event.currentRound : event.currentRound
+  const roundId = currentRound?.id
+  const roundTimers = currentRound?.timers ?? []
 
   const onTimerCreate = (timer: TimerListItemFragment) => {
     data && client.writeQuery<EventTimersQuery, EventTimersQueryVariables>({
       query: EventTimersDocument,
-      variables: { id },
+      variables: { eventId },
       data: {
         ...data,
         event: {
           ...data.event,
-          timers: upsertTimer(timer, data.event.timers)
+          currentRound: data.event.currentRound && {
+            ...data.event.currentRound,
+            timers: upsertTimer(timer, roundTimers)
+          }
         }
       }
     })
@@ -82,44 +91,54 @@ const EventTimersPage: NextPageWithLayout<EventTimersPageProps> = ({ id, fullscr
   const onTimerDelete = (id: string) => {
     data && client.writeQuery<EventTimersQuery, EventTimersQueryVariables>({
       query: EventTimersDocument,
-      variables: { id },
+      variables: { eventId },
       data: {
         ...data,
         event: {
           ...data.event,
-          timers: data.event.timers.filter((timer) => timer.id !== id)
+          currentRound: data.event.currentRound && {
+            ...data.event.currentRound,
+            timers: roundTimers.filter((timer) => timer.id !== id)
+          }
         }
       }
     })
   }
 
   useTimerCreatedSubscription({
+    skip: !roundId,
     fetchPolicy: 'no-cache', // we manually add the element to the cache
-    variables: { eventId },
+    variables: { roundId: roundId! },
     onData: ({ data: { data: subscription } }) => {
       subscription?.timerCreated && onTimerCreate(subscription.timerCreated.timer)
     }
   })
 
   useTimerUpdatedSubscription({
-    variables: { eventId } // apollo will automatically handle these events
+    skip: !roundId,
+    variables: { roundId: roundId! } // apollo will automatically handle these events
   })
 
   useTimerDeletedSubscription({
+    skip: !roundId,
     fetchPolicy: 'no-cache', // we manually remove the element from the cache
-    variables: { eventId },
+    variables: { roundId: roundId! },
     onData: ({ data: { data: subscription } }) => {
       subscription?.timerDeleted && onTimerDelete(subscription.timerDeleted.timerId)
     }
   })
 
-  if (!data?.event) {
-    return null
+  if (!currentRound) {
+    return (
+      <Alert variant="warning">
+        There is no round currently active to run timers for.
+      </Alert>
+    )
   }
 
   return (
     <TimerList
-      timerList={data.event}
+      timerList={currentRound}
       onTimerCreate={onTimerCreate}
       onTimerDelete={({ id }) => onTimerDelete(id)}
       readOnly={fullscreen}

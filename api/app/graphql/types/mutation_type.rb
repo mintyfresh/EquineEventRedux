@@ -10,8 +10,6 @@ module Types
     field :event_delete, mutation: Mutations::EventDelete
     field :event_restore, mutation: Mutations::EventRestore
     field :event_generate_pairings, mutation: Mutations::EventGeneratePairings
-    field :event_pause_all_timers, mutation: Mutations::EventPauseAllTimers
-    field :event_unpause_all_timers, mutation: Mutations::EventUnpauseAllTimers
 
     field :match_update, mutation: Mutations::MatchUpdate
 
@@ -25,6 +23,8 @@ module Types
     field :round_update, mutation: Mutations::RoundUpdate
     field :round_delete, mutation: Mutations::RoundDelete
     field :round_restore, mutation: Mutations::RoundRestore
+    field :round_pause_all_timers, mutation: Mutations::RoundPauseAllTimers
+    field :round_unpause_all_timers, mutation: Mutations::RoundUnpauseAllTimers
 
     field :timer_create, mutation: Mutations::TimerCreate
     field :timer_update, mutation: Mutations::TimerUpdate

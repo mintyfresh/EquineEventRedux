@@ -1,3 +1,20 @@
+fragment TimerMatchSelect on Round {
+  matches {
+    id
+    table
+    player1 {
+      id
+      name
+    }
+    player2 {
+      id
+      name
+    }
+    timer {
+      id
+    }
+  }
+}
 
 mutation DeleteTimer($id: ID!) {
   timerDelete(id: $id) {

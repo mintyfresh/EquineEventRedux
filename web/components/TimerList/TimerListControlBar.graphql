@@ -1,13 +1,13 @@
-mutation PauseAllEventTimers($eventId: ID!) {
-  eventPauseAllTimers(eventId: $eventId) {
+mutation PauseAllEventTimers($roundId: ID!) {
+  roundPauseAllTimers(roundId: $roundId) {
     timers {
       ...TimerListItem
     }
   }
 }
 
-mutation UnpauseAllEventTimers($eventId: ID!) {
-  eventUnpauseAllTimers(eventId: $eventId) {
+mutation UnpauseAllEventTimers($roundId: ID!) {
+  roundUnpauseAllTimers(roundId: $roundId) {
     timers {
       ...TimerListItem
     }

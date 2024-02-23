@@ -1,5 +1,5 @@
 import React from 'react'
-import { Col, Row } from 'react-bootstrap'
+import { Alert, Col, Row } from 'react-bootstrap'
 import { TimerListFragment, TimerListItemFragment } from '../../lib/generated/graphql'
 import TimerListControlBar from './TimerListControlBar'
 import TimerListItem from './TimerListItem'
@@ -17,23 +17,30 @@ const TimerList: React.FC<TimerListProps> = ({ timerList, onTimerCreate, onTimer
     <>
       {!readOnly && (
         <TimerListControlBar
-          eventId={timerList.id}
+          roundId={timerList.id}
           onTimerCreate={onTimerCreate}
         />
       )}
-      <Row className="justify-content-center">
-        {timerList.timers.map((timer) => (
-          <Col key={timer.id} className="pb-5" md="6">
-            <TimerListItem
-              timer={timer}
-              readOnly={readOnly}
-              onCreate={onTimerCreate}
-              onUpdate={onTimerUpdate}
-              onDelete={onTimerDelete}
-            />
-          </Col>
-        ))}
-      </Row>
+      {timerList.timers.length > 0 ? (
+        <Row className="justify-content-center">
+          {timerList.timers.map((timer) => (
+            <Col key={timer.id} className="pb-5" md="6">
+              <TimerListItem
+                timerList={timerList}
+                timer={timer}
+                readOnly={readOnly}
+                onCreate={onTimerCreate}
+                onUpdate={onTimerUpdate}
+                onDelete={onTimerDelete}
+              />
+            </Col>
+          ))}
+        </Row>
+      ) : (
+        <Alert variant="info" className="mt-3">
+          No timers have been set for this round yet.
+        </Alert>
+      )}
     </>
   )
 }

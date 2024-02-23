@@ -1,8 +1,8 @@
 import { IconDefinition, faBackwardFast, faCircle, faCirclePause, faFastForward, faPause, faPlay, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React, { useState } from 'react'
-import { Button, Card, Col, Collapse, Row } from 'react-bootstrap'
-import { TimerListItemFragment, useCloneTimerWithExtensionMutation, useDeleteTimerMutation, usePauseTimerMutation, useResetTimerMutation, useSkipTimerToNextPhaseMutation, useUnpauseTimerMutation } from '../../lib/generated/graphql'
+import { Button, Card, Col, Collapse, Form, Row } from 'react-bootstrap'
+import { TimerListFragment, TimerListItemFragment, TimerMatchSelectFragment, useCloneTimerWithExtensionMutation, useDeleteTimerMutation, usePauseTimerMutation, useResetTimerMutation, useSkipTimerToNextPhaseMutation, useUnpauseTimerMutation } from '../../lib/generated/graphql'
 
 interface TimerControlsButtonProps extends React.ComponentProps<typeof Button> {
   icon: IconDefinition
@@ -22,15 +22,17 @@ const TimerControlsButton: React.FC<TimerControlsButtonProps> = ({ icon, color, 
 )
 
 export interface TimerListItemControlsProps {
+  timerList: TimerListFragment
   timer: TimerListItemFragment
   onCreate?(timer: TimerListItemFragment): void
   onUpdate?(timer: TimerListItemFragment): void
   onDelete?(timer: TimerListItemFragment): void
 }
 
-const TimerListItemControls: React.FC<TimerListItemControlsProps> = ({ timer, onCreate, onUpdate, onDelete }) => {
+const TimerListItemControls: React.FC<TimerListItemControlsProps> = ({ timerList, timer, onCreate, onUpdate, onDelete }) => {
   const [open, setOpen] = useState(false)
   const [startPaused, setStartPaused] = useState(false)
+  const [matchId, setMatchId] = useState<string | null>(null)
 
   const [resetTimer, {}] = useResetTimerMutation({
     variables: { id: timer.id },
@@ -79,6 +81,9 @@ const TimerListItemControls: React.FC<TimerListItemControlsProps> = ({ timer, on
       }
     }
   })
+
+  // Only allow cloning to a match that doesn't already have a timer.
+  const matches = timerList.matches.filter((match) => !match.timer?.id)
 
   return (
     <>
@@ -133,7 +138,7 @@ const TimerListItemControls: React.FC<TimerListItemControlsProps> = ({ timer, on
                   className="mx-1"
                   style={{ 'borderWidth': '2px'}}
                   onClick={() => cloneWithExtension({
-                    variables: { id: timer.id, input: { extensionInSeconds: minutes * 60, paused: startPaused } }
+                    variables: { id: timer.id, input: { extensionInSeconds: minutes * 60, matchId, paused: startPaused } }
                   })}
                 >
                   +{minutes}
@@ -148,6 +153,20 @@ const TimerListItemControls: React.FC<TimerListItemControlsProps> = ({ timer, on
               >
                 <FontAwesomeIcon icon={faCirclePause} color={startPaused ? 'green' : 'gray'} />
               </Button>
+              <Form.Select
+                title="Assign extension to a table"
+                className="mt-2"
+                placeholder="Assign extension to a table"
+                value={matchId ?? ''}
+                onChange={(event) => setMatchId(event.currentTarget.value || null)}
+              >
+                <option value=""></option>
+                {matches.map((match) => (
+                  <option key={match.id} value={match.id}>
+                    Table {match.table} - {match.player1.name} vs. {match.player2?.name ?? 'BYE'}
+                  </option>
+                ))}
+              </Form.Select>
             </Card>
           </Col>
         </Row>

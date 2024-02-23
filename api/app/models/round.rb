@@ -30,6 +30,7 @@ class Round < ApplicationRecord
   belongs_to :event, inverse_of: :rounds
 
   has_many :matches, dependent: :destroy, inverse_of: :round
+  has_many :timers, dependent: :destroy, inverse_of: :round
 
   accepts_nested_attributes_for :matches, allow_destroy: true, reject_if: :all_blank
 

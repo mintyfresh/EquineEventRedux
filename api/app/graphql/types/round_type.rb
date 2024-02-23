@@ -19,6 +19,8 @@ module Types
       extension Extensions::Players::ActiveOnlyExtension
     end
 
+    field :timers, [Types::TimerType], null: false
+
     # @return [Boolean]
     def complete?
       matches.present? && matches.all?(&:complete?)
@@ -52,6 +54,11 @@ module Types
       players = players.where.not(id: player_ids)
 
       dataloader.with(Sources::RecordList, ::Player, :event_id, scope: players).load(object.event_id)
+    end
+
+    # @return [Array<::Timer>]
+    def timers
+      dataloader.with(Sources::RecordList, ::Timer, :round_id).load(object.id)
     end
 
   private

@@ -4,11 +4,11 @@ import { TimerCreateInput, TimerListItemFragment, useCreateTimerInlineMutation, 
 import TimerPresetSelect from '../TimerPreset/TimerPresetSelect'
 
 export interface TimerListInlineFormProps {
-  eventId: string
+  roundId: string
   onCreate?: (timer: TimerListItemFragment) => void
 }
 
-const TimerListInlineForm: React.FC<TimerListInlineFormProps> = ({ eventId, onCreate }) => {
+const TimerListInlineForm: React.FC<TimerListInlineFormProps> = ({ roundId, onCreate }) => {
   const [input, setInput] = useState<TimerCreateInput | null>(null)
   const { data } = useTimerListInlineFormPresetsQuery({
     onCompleted: ({ timerPresets }) => {
@@ -28,7 +28,7 @@ const TimerListInlineForm: React.FC<TimerListInlineFormProps> = ({ eventId, onCr
     <Form
       onSubmit={(event) => {
         event.preventDefault()
-        createTimer({ variables: { eventId, input: input! } })
+        createTimer({ variables: { roundId, input: input! } })
       }}
     >
       <Row>

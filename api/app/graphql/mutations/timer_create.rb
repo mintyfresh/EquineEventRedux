@@ -2,22 +2,22 @@
 
 module Mutations
   class TimerCreate < RecordCreate['Timer']
-    field :event, Types::EventType, null: true do
-      description 'The Event to which the Timer was added'
+    field :round, Types::RoundType, null: true do
+      description 'The Round to which the Timer was added'
     end
 
-    argument :event_id, ID, required: true do
-      description 'The ID of the Event to add the Timer to'
+    argument :round_id, ID, required: true do
+      description 'The ID of the Round to add the Timer to'
     end
 
-    def resolve(event_id:, **)
-      event = ::Event.find(event_id)
+    def resolve(round_id:, **)
+      round = ::Round.find(round_id)
 
       result = super(**) do |timer|
-        timer.event = event
+        timer.round = round
       end
 
-      { **result, event: }
+      { **result, round: }
     end
   end
 end

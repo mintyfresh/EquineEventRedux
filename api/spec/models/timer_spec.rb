@@ -5,8 +5,9 @@
 # Table name: timers
 #
 #  id         :uuid             not null, primary key
-#  event_id   :uuid             not null
 #  preset_id  :uuid             not null
+#  round_id   :uuid             not null
+#  match_id   :uuid
 #  label      :string
 #  expires_at :datetime
 #  paused_at  :datetime
@@ -15,13 +16,15 @@
 #
 # Indexes
 #
-#  index_timers_on_event_id   (event_id)
+#  index_timers_on_match_id   (match_id) UNIQUE
 #  index_timers_on_preset_id  (preset_id)
+#  index_timers_on_round_id   (round_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (event_id => events.id)
+#  fk_rails_...  (match_id => matches.id)
 #  fk_rails_...  (preset_id => timer_presets.id)
+#  fk_rails_...  (round_id => rounds.id)
 #
 require 'rails_helper'
 
@@ -32,13 +35,23 @@ RSpec.describe Timer do
     expect(timer).to be_valid
   end
 
-  it 'is invalid without an event' do
-    timer.event = nil
+  it 'is invalid without a preset' do
+    timer.preset = nil
     expect(timer).to be_invalid
   end
 
-  it 'is invalid without a preset' do
-    timer.preset = nil
+  it 'is invalid without an round' do
+    timer.round = nil
+    expect(timer).to be_invalid
+  end
+
+  it 'is valid without an match' do
+    timer.match = nil
+    expect(timer).to be_valid
+  end
+
+  it 'is invalid when the match does not belong to the round' do
+    timer.match = build(:match)
     expect(timer).to be_invalid
   end
 
@@ -104,7 +117,7 @@ RSpec.describe Timer do
   end
 
   describe '#dup_with_extension' do
-    subject(:dup_with_extension) { timer.dup_with_extension(extension_in_seconds) }
+    subject(:dup_with_extension) { timer.dup_with_extension(extension_in_seconds:) }
 
     let(:timer) { create(:timer) }
     let(:extension_in_seconds) { [30, 60, 90].sample }

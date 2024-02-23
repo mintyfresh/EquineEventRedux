@@ -45,6 +45,7 @@ class Match < ApplicationRecord
   belongs_to :player2, class_name: 'Player', optional: true
 
   has_one :event, through: :round
+  has_one :timer, dependent: :destroy, inverse_of: :match
 
   validates :winner_id, absence: { if: :draw? }
   validates :table, numericality: { greater_than: 0 }

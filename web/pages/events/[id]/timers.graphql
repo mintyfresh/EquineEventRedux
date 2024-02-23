@@ -1,30 +1,33 @@
-query EventTimers($id: ID!) {
-  event(id: $id) {
+query EventTimers($eventId: ID!) {
+  event(id: $eventId) {
     id
     name
     ...EventLayout
-    ...TimerList
+    currentRound {
+      id
+      ...TimerList
+    }
   }
 }
 
-subscription TimerCreated($eventId: ID!) {
-  timerCreated(eventId: $eventId) {
+subscription TimerCreated($roundId: ID!) {
+  timerCreated(roundId: $roundId) {
     timer {
       ...TimerListItem
     }
   }
 }
 
-subscription TimerUpdated($eventId: ID!) {
-  timerUpdated(eventId: $eventId) {
+subscription TimerUpdated($roundId: ID!) {
+  timerUpdated(roundId: $roundId) {
     timer {
       ...TimerListItem
     }
   }
 }
 
-subscription TimerDeleted($eventId: ID!) {
-  timerDeleted(eventId: $eventId) {
+subscription TimerDeleted($roundId: ID!) {
+  timerDeleted(roundId: $roundId) {
     timerId
   }
 }

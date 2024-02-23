@@ -14,6 +14,7 @@ module Types
     field :player2, Types::PlayerType, null: true
 
     field :round, Types::RoundType, null: false
+    field :timer, Types::TimerType, null: true
 
     # @return [::Player]
     def player1
@@ -28,6 +29,11 @@ module Types
     # @return [::Round]
     def round
       dataloader.with(Sources::Record, ::Round).load(object.round_id)
+    end
+
+    # @return [::Timer, nil]
+    def timer
+      dataloader.with(Sources::Record, ::Timer, :match_id).load(object.id)
     end
   end
 end
