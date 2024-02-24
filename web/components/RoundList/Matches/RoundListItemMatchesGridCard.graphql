@@ -1,0 +1,16 @@
+fragment RoundListItemMatchesGridCard on Match {
+  id
+  table
+  winnerId
+  draw
+  player1 {
+    id
+    name
+    dropped
+  }
+  player2 {
+    id
+    name
+    dropped
+  }
+}

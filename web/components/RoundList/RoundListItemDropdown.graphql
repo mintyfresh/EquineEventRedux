@@ -1,0 +1,13 @@
+mutation DeleteRound($id: ID!) {
+  roundDelete(id: $id) {
+    success
+    errors {
+      ...Errors
+    }
+  }
+}
+
+fragment RoundListItemDropdown on Round {
+  id
+  ...EditRoundDropdownItem
+}

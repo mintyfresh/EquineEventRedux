@@ -1,0 +1,7 @@
+fragment RoundListItemMatchesGrid on Round {
+  id
+  number
+  matches {
+    ...RoundListItemMatchesGridCard
+  }
+}

@@ -1,0 +1,4 @@
+fragment RoundListItemMatches on Round {
+  ...RoundListItemMatchesGrid
+  ...RoundListItemMatchesList  
+}

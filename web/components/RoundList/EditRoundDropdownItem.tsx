@@ -9,6 +9,7 @@ import RoundModal from '../RoundModal'
 export const EDIT_ROUND_DROPDOWN_ITEM_FRAGMENT = gql`
   fragment EditRoundDropdownItem on Round {
     id
+    eventId
     number
     matches {
       id
@@ -72,11 +73,10 @@ const buildRoundInput = (round: EditRoundDropdownItemFragment): RoundInput => ({
 })
 
 export interface EditRoundDropdownItemProps {
-  event: { id: string }
   round: EditRoundDropdownItemFragment
 }
 
-const EditRoundDropdownItem: React.FC<EditRoundDropdownItemProps> = ({ event, round }) => {
+const EditRoundDropdownItem: React.FC<EditRoundDropdownItemProps> = ({ round }) => {
   const [visible, setVisible] = useState(false)
   const [input, setInput] = useState<RoundInput>(buildRoundInput(round))
   const [errors, setErrors] = useErrors()
@@ -118,7 +118,7 @@ const EditRoundDropdownItem: React.FC<EditRoundDropdownItemProps> = ({ event, ro
           mode="update"
           show={visible}
           players={data.round.players.concat(data.round.unpairedPlayers)}
-          event={event}
+          event={{ id: round.eventId }}
           input={input}
           errors={errors}
           disabled={loading}

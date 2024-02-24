@@ -1,40 +1,20 @@
-import { gql } from '@apollo/client'
 import { faCrown } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Card, Col, Row } from 'react-bootstrap'
-import { MatchCardFragment } from '../lib/generated/graphql'
 import React from 'react'
+import { Card, Col, Row } from 'react-bootstrap'
+import { RoundListItemMatchesGridCardFragment } from '../../../lib/generated/graphql'
 
-export const MATCH_CARD_FRAGMENT = gql`
-  fragment MatchCard on Match {
-    id
-    table
-    winnerId
-    draw
-    player1 {
-      id
-      name
-      dropped
-    }
-    player2 {
-      id
-      name
-      dropped
-    }
-  }
-
-`
-
-type MatchCardPlayer = MatchCardFragment['player1'] | MatchCardFragment['player2']
+type MatchCardPlayer = RoundListItemMatchesGridCardFragment['player1'] | RoundListItemMatchesGridCardFragment['player2']
 
 interface MatchCardPlayerProps {
-  match: MatchCardFragment
+  match: RoundListItemMatchesGridCardFragment
   player: MatchCardPlayer
+  disabled?: boolean
   className?: string
   onSetWinner?: (matchId: string, winnerId: string) => void
 }
 
-const MatchCardPlayer: React.FC<MatchCardPlayerProps> = ({ match, player, className, onSetWinner }) => {
+const MatchCardPlayer: React.FC<MatchCardPlayerProps> = ({ match, player, disabled, className, onSetWinner }) => {
   if (!player) {
     return (
       <Card.Text className={'h5 px-1 py-2 ' + className}>
@@ -47,7 +27,8 @@ const MatchCardPlayer: React.FC<MatchCardPlayerProps> = ({ match, player, classN
     <Card.Text
       className={'h5 px-1 py-2 ' + className}
       role="button"
-      onClick={() => onSetWinner?.(match.id, player.id)}
+      aria-disabled={disabled}
+      onClick={() => !disabled && onSetWinner?.(match.id, player.id)}
     >
       <FontAwesomeIcon
         icon={faCrown}
@@ -62,11 +43,12 @@ const MatchCardPlayer: React.FC<MatchCardPlayerProps> = ({ match, player, classN
 }
 
 interface MatchCardDividerProps {
-  match: MatchCardFragment
+  match: RoundListItemMatchesGridCardFragment
+  disabled?: boolean
   onSetDraw?: (matchId: string) => void
 }
 
-const MatchCardDivider: React.FC<MatchCardDividerProps> = ({ match, onSetDraw }) => {
+const MatchCardDivider: React.FC<MatchCardDividerProps> = ({ match, disabled, onSetDraw }) => {
   if (!match.player2) {
     return (
       <hr />
@@ -76,7 +58,8 @@ const MatchCardDivider: React.FC<MatchCardDividerProps> = ({ match, onSetDraw })
   return (
     <Row
       role="button"
-      onClick={() => onSetDraw?.(match.id)}
+      aria-disabled={disabled}
+      onClick={() => !disabled && onSetDraw?.(match.id)}
     >
       <Col><hr /></Col>
       <Col xs="auto" className="my-auto">
@@ -89,21 +72,22 @@ const MatchCardDivider: React.FC<MatchCardDividerProps> = ({ match, onSetDraw })
   )
 }
 
-export interface MatchCardProps {
-  match: MatchCardFragment
+export interface RoundListItemMatchesGridCardProps {
+  match: RoundListItemMatchesGridCardFragment
+  disabled?: boolean
   onSetWinner?: (matchId: string, winnerId: string) => void
   onSetDraw?: (matchId: string) => void
 }
 
-const MatchCard: React.FC<MatchCardProps> = ({ match, onSetWinner, onSetDraw }) => {
+const RoundListItemMatchesGridCard: React.FC<RoundListItemMatchesGridCardProps> = ({ match, disabled, onSetWinner, onSetDraw }) => {
   return (
     <Card className="text-center">
       <Card.Header>Table {match.table}</Card.Header>
-      <MatchCardPlayer match={match} player={match.player1} onSetWinner={onSetWinner} className="pt-4" />
-      <MatchCardDivider match={match} onSetDraw={onSetDraw} />
-      <MatchCardPlayer match={match} player={match.player2} onSetWinner={onSetWinner} className="pb-4" />
+      <MatchCardPlayer match={match} player={match.player1} disabled={disabled} onSetWinner={onSetWinner} className="pt-4" />
+      <MatchCardDivider match={match} disabled={disabled} onSetDraw={onSetDraw} />
+      <MatchCardPlayer match={match} player={match.player2} disabled={disabled} onSetWinner={onSetWinner} className="pb-4" />
     </Card>
   )
 }
 
-export default MatchCard
+export default RoundListItemMatchesGridCard

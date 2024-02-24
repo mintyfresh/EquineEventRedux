@@ -1,0 +1,7 @@
+fragment RoundListItemHeader on Round {
+  id
+  eventId
+  number
+  isComplete
+  ...RoundListItemDropdown
+}

@@ -1,0 +1,6 @@
+fragment RoundListItem on Round {
+  id
+  number
+  ...RoundListItemHeader
+  ...RoundListItemMatches
+}

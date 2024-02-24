@@ -1,0 +1,31 @@
+query EventMatches($id: ID!, $deleted: DeletedFilter) {
+  event(id: $id) {
+    id
+    name
+    ...EventLayout
+    ...CreateRoundButton
+    rounds(deleted: $deleted, orderBy: NUMBER, orderByDirection: DESC) {
+      ...RoundListItem
+    }
+    players {
+      totalCount
+    }
+  }
+}
+
+mutation SetMatchResolution($id: ID!, $winnerId: ID, $draw: Boolean!) {
+  matchUpdate(id: $id, input: { winnerId: $winnerId, draw: $draw }) {
+    match {
+      id
+      winnerId
+      draw
+      round {
+        id
+        isComplete
+      }
+    }
+    errors {
+      ...Errors
+    }
+  }
+}

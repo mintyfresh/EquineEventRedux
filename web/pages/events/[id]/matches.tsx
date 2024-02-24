@@ -1,57 +1,13 @@
-import { gql } from '@apollo/client'
 import { GetServerSideProps } from 'next'
 import { useEffect, useState } from 'react'
-import { Alert, Button, ButtonToolbar, Card } from 'react-bootstrap'
-import CreateRoundButton, { CREATE_ROUND_BUTTON_FRAGMENT } from '../../../components/CreateRoundButton'
-import EventLayout, { EVENT_LAYOUT_FRAGMENT } from '../../../components/EventLayout'
-import Round, { ROUND_FRAGMENT } from '../../../components/Round'
-import RoundList, { ROUND_LIST_ITEM_FRAGMENT } from '../../../components/RoundList'
-import { ERRORS_FRAGMENT } from '../../../lib/errors'
-import { DeletedFilter, EventMatchesQuery, EventMatchesQueryVariables, useEventMatchesQuery, useSetMatchResolutionMutation } from '../../../lib/generated/graphql'
+import { Alert, Button, ButtonToolbar, Card, OverlayTrigger, Tooltip } from 'react-bootstrap'
+import CreateRoundButton from '../../../components/CreateRoundButton'
+import EventLayout from '../../../components/EventLayout'
+import RoundList from '../../../components/RoundList'
+import { RoundViewMode } from '../../../components/RoundList/RoundListItem'
+import { DeletedFilter, EventMatchesDocument, EventMatchesQuery, EventMatchesQueryVariables, useEventMatchesQuery, useSetMatchResolutionMutation } from '../../../lib/generated/graphql'
 import { initializeApolloClient } from '../../../lib/graphql/client'
 import { NextPageWithLayout } from '../../../lib/types/next-page'
-
-const EVENT_MATCHES_QUERY = gql`
-  query EventMatches($id: ID!, $deleted: DeletedFilter) {
-    event(id: $id) {
-      id
-      name
-      ...EventLayout
-      ...CreateRoundButton
-      rounds(deleted: $deleted, orderBy: NUMBER, orderByDirection: DESC) {
-        ...RoundListItem
-        ...Round
-      }
-      players {
-        totalCount
-      }
-    }
-  }
-  ${EVENT_LAYOUT_FRAGMENT}
-  ${CREATE_ROUND_BUTTON_FRAGMENT}
-  ${ROUND_LIST_ITEM_FRAGMENT}
-  ${ROUND_FRAGMENT}
-`
-
-gql`
-  mutation SetMatchResolution($id: ID!, $winnerId: ID, $draw: Boolean!) {
-    matchUpdate(id: $id, input: { winnerId: $winnerId, draw: $draw }) {
-      match {
-        id
-        winnerId
-        draw
-        round {
-          id
-          isComplete
-        }
-      }
-      errors {
-        ...Errors
-      }
-    }
-  }
-  ${ERRORS_FRAGMENT}
-`
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   const apolloClient = initializeApolloClient()
@@ -61,7 +17,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   }
 
   const { data } = await apolloClient.query<EventMatchesQuery, EventMatchesQueryVariables>({
-    query: EVENT_MATCHES_QUERY,
+    query: EventMatchesDocument,
     variables: { id: params.id as string, deleted: undefined },
     fetchPolicy: 'network-only'
   })
@@ -76,7 +32,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 }
 
 const EventMatchesPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
-  const [view, setView] = useState<'legacy' | 'modern'>('modern')
+  const [view, setView] = useState<RoundViewMode>(RoundViewMode.Grid)
   const [deleted, setDeleted] = useState<boolean>(false)
 
   const { data, refetch } = useEventMatchesQuery({
@@ -94,7 +50,7 @@ const EventMatchesPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
   }
 
   useEffect(() => {
-    const view = localStorage.getItem('event-matches-view') as 'legacy' | 'modern'
+    const view = localStorage.getItem('event-matches-view') as RoundViewMode
     view && setView(view)
   }, [])
 
@@ -102,9 +58,14 @@ const EventMatchesPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
     localStorage.setItem('event-matches-view', view)
   }, [view])
 
+  const inverseViewMode = view === RoundViewMode.Grid ? RoundViewMode.List : RoundViewMode.Grid
+  const toggleViewMode = () => setView(inverseViewMode)
+
   if (!data?.event) {
     return null
   }
+
+  const allRoundsComplete = data.event.rounds.every((round) => round.isComplete)
 
   return (
     <>
@@ -115,42 +76,39 @@ const EventMatchesPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
       )}
       <ButtonToolbar className="mb-3 d-print-none">
         {!deleted && (
-          <CreateRoundButton
-            event={data.event}
-            onCreate={() => refetch()}
-          />
+          <OverlayTrigger
+            show={allRoundsComplete ? false : undefined}
+            trigger={['hover', 'click']}
+            overlay={
+              <Tooltip id="create-round">
+                All previous rounds must be complete before a new round can be created.
+              </Tooltip>
+            }
+          >
+            <div>
+              <CreateRoundButton
+                event={data.event}
+                disabled={!allRoundsComplete}
+                onCreate={() => refetch()}
+              />
+            </div>
+          </OverlayTrigger>
         )}
         <Button variant="outline-secondary" className="ms-auto" onClick={() => setDeleted(!deleted)}>
           {deleted ? 'Hide' : 'Show'} deleted
         </Button>
-        <Button variant="outline-secondary" className="ms-2" onClick={() => setView(view === 'legacy' ? 'modern' : 'legacy')} title="Toggle view">
-          Switch to {view === 'legacy' ? 'modern' : 'legacy'} view
+        <Button variant="outline-secondary" className="ms-2" onClick={toggleViewMode} title="Toggle view">
+          Switch to {inverseViewMode} view
         </Button>
       </ButtonToolbar>
-      {view === 'legacy' ? (
-        <RoundList
-          event={data.event}
-          rounds={data.event.rounds}
-          disabled={settingResolution}
-          onSetWinner={onSetWinner}
-          onSetDraw={onSetDraw}
-          onDelete={() => refetch()}
-        />
-      ) : (
-        <div>
-          {data.event.rounds.map((round) =>
-            <Round
-              key={round.id}
-              className="mb-3"
-              event={data.event}
-              round={round}
-              onSetWinner={onSetWinner}
-              onSetDraw={onSetDraw}
-              onDelete={() => refetch()}
-            />
-          )}
-        </div>
-      )}
+      <RoundList
+        rounds={data.event.rounds}
+        viewMode={view}
+        disabled={settingResolution}
+        onSetWinner={onSetWinner}
+        onSetDraw={onSetDraw}
+        onDelete={() => refetch()}
+      />
       {data.event.rounds.length === 0 && (
         <Card body>
           <Card.Text>

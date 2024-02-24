@@ -1,46 +1,17 @@
-import { gql } from '@apollo/client'
 import { Dropdown, ListGroup } from 'react-bootstrap'
-import { RoundMatchListFragment, RoundMatchListItemFragment } from '../../lib/generated/graphql'
-import EllipsisDropdown from '../EllipsisDropdown'
-import PlayerNameWithBadges, { PLAYER_NAME_WITH_BADGES_FRAGMENT } from '../Players/PlayerNameWithBadges'
+import { RoundListItemMatchesListFragment, RoundListItemMatchesListItemFragment } from '../../../lib/generated/graphql'
+import EllipsisDropdown from '../../EllipsisDropdown'
+import PlayerNameWithBadges from '../../Players/PlayerNameWithBadges'
 
-export const ROUND_MATCH_LIST_ITEM_FRAGMENT = gql`
-  fragment RoundMatchListItem on Match {
-    id
-    player1 {
-      id
-      ...PlayerNameWithBadges
-    }
-    player2 {
-      id
-      ...PlayerNameWithBadges
-    }
-    winnerId
-    draw
-    table
-  }
-  ${PLAYER_NAME_WITH_BADGES_FRAGMENT}
-`
-
-export const ROUND_MATCH_LIST_FRAGMENT = gql`
-  fragment RoundMatchList on Round {
-    isComplete
-    matches {
-      ...RoundMatchListItem
-    }
-  }
-  ${ROUND_MATCH_LIST_ITEM_FRAGMENT}
-`
-
-export interface RoundMatchesListProps {
-  round: RoundMatchListFragment
+export interface RoundListItemMatchesListProps {
+  round: RoundListItemMatchesListFragment
   disabled?: boolean
   onSetWinner?: (matchId: string, winnerId: string) => void
   onSetDraw?: (matchId: string) => void
 }
 
-const RoundMatchesList: React.FC<RoundMatchesListProps> = ({ round, disabled, onSetWinner, onSetDraw }) => {
-  const resolution = (match: RoundMatchListItemFragment) => {
+const RoundListItemMatchesList: React.FC<RoundListItemMatchesListProps> = ({ round, disabled, onSetWinner, onSetDraw }) => {
+  const resolution = (match: RoundListItemMatchesListItemFragment) => {
     if (match.draw) {
       return ' - Draw'
     }
@@ -88,4 +59,4 @@ const RoundMatchesList: React.FC<RoundMatchesListProps> = ({ round, disabled, on
   )
 }
 
-export default RoundMatchesList
+export default RoundListItemMatchesList
