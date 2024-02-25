@@ -148,6 +148,7 @@ class Timer < ApplicationRecord
 
       timer.match_id = match_id
       timer.paused = true if paused
+      timer.primary = false
     end
   end
 
