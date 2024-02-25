@@ -1,4 +1,4 @@
-fragment RoundListItemMatchesGridCard on Match {
+fragment RoundListItemMatchGridCard on Match {
   id
   table
   winnerId

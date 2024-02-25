@@ -1,0 +1,11 @@
+fragment RoundListItemMatchGrid on Round {
+  id
+  number
+  matches {
+    ...RoundListItemMatchTimer
+    ...RoundListItemMatchGridCard
+  }
+  primaryTimer {
+    id
+  }
+}

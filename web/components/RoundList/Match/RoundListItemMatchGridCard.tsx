@@ -2,12 +2,13 @@ import { faCrown } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
 import { Card, Col, Row } from 'react-bootstrap'
-import { RoundListItemMatchesGridCardFragment } from '../../../lib/generated/graphql'
+import { RoundListItemMatchGridCardFragment, RoundListItemMatchGridFragment } from '../../../lib/generated/graphql'
+import RoundListItemMatchTimer from './RoundListItemMatchTimer'
 
-type MatchCardPlayer = RoundListItemMatchesGridCardFragment['player1'] | RoundListItemMatchesGridCardFragment['player2']
+type MatchCardPlayer = RoundListItemMatchGridCardFragment['player1'] | RoundListItemMatchGridCardFragment['player2']
 
 interface MatchCardPlayerProps {
-  match: RoundListItemMatchesGridCardFragment
+  match: RoundListItemMatchGridCardFragment
   player: MatchCardPlayer
   disabled?: boolean
   className?: string
@@ -43,7 +44,7 @@ const MatchCardPlayer: React.FC<MatchCardPlayerProps> = ({ match, player, disabl
 }
 
 interface MatchCardDividerProps {
-  match: RoundListItemMatchesGridCardFragment
+  match: RoundListItemMatchGridCardFragment
   disabled?: boolean
   onSetDraw?: (matchId: string) => void
 }
@@ -72,17 +73,27 @@ const MatchCardDivider: React.FC<MatchCardDividerProps> = ({ match, disabled, on
   )
 }
 
-export interface RoundListItemMatchesGridCardProps {
-  match: RoundListItemMatchesGridCardFragment
+export interface RoundListItemMatchGridCardProps {
+  round: RoundListItemMatchGridFragment
+  match: RoundListItemMatchGridCardFragment
   disabled?: boolean
   onSetWinner?: (matchId: string, winnerId: string) => void
   onSetDraw?: (matchId: string) => void
 }
 
-const RoundListItemMatchesGridCard: React.FC<RoundListItemMatchesGridCardProps> = ({ match, disabled, onSetWinner, onSetDraw }) => {
+const RoundListItemMatchGridCard: React.FC<RoundListItemMatchGridCardProps> = ({ round, match, disabled, onSetWinner, onSetDraw }) => {
   return (
     <Card className="text-center">
-      <Card.Header>Table {match.table}</Card.Header>
+      <Card.Header>
+        Table {match.table}
+        <span className="text-muted">
+          {round.primaryTimer && ' - '}
+          <RoundListItemMatchTimer
+            round={round}
+            match={match}
+          />
+        </span>
+      </Card.Header>
       <MatchCardPlayer match={match} player={match.player1} disabled={disabled} onSetWinner={onSetWinner} className="pt-4" />
       <MatchCardDivider match={match} disabled={disabled} onSetDraw={onSetDraw} />
       <MatchCardPlayer match={match} player={match.player2} disabled={disabled} onSetWinner={onSetWinner} className="pb-4" />
@@ -90,4 +101,4 @@ const RoundListItemMatchesGridCard: React.FC<RoundListItemMatchesGridCardProps> 
   )
 }
 
-export default RoundListItemMatchesGridCard
+export default RoundListItemMatchGridCard

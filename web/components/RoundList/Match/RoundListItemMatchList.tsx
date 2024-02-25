@@ -1,17 +1,18 @@
 import { Dropdown, ListGroup } from 'react-bootstrap'
-import { RoundListItemMatchesListFragment, RoundListItemMatchesListItemFragment } from '../../../lib/generated/graphql'
+import { RoundListItemMatchListFragment, RoundListItemMatchListItemFragment } from '../../../lib/generated/graphql'
 import EllipsisDropdown from '../../EllipsisDropdown'
 import PlayerNameWithBadges from '../../Players/PlayerNameWithBadges'
+import RoundListItemMatchTimer from './RoundListItemMatchTimer'
 
-export interface RoundListItemMatchesListProps {
-  round: RoundListItemMatchesListFragment
+export interface RoundListItemMatchListProps {
+  round: RoundListItemMatchListFragment
   disabled?: boolean
   onSetWinner?: (matchId: string, winnerId: string) => void
   onSetDraw?: (matchId: string) => void
 }
 
-const RoundListItemMatchesList: React.FC<RoundListItemMatchesListProps> = ({ round, disabled, onSetWinner, onSetDraw }) => {
-  const resolution = (match: RoundListItemMatchesListItemFragment) => {
+const RoundListItemMatchList: React.FC<RoundListItemMatchListProps> = ({ round, disabled, onSetWinner, onSetDraw }) => {
+  const resolution = (match: RoundListItemMatchListItemFragment) => {
     if (match.draw) {
       return ' - Draw'
     }
@@ -30,6 +31,10 @@ const RoundListItemMatchesList: React.FC<RoundListItemMatchesListProps> = ({ rou
           Table {match.table} - <PlayerNameWithBadges player={match.player1} /> vs.{' '}
           {match.player2 ? <PlayerNameWithBadges player={match.player2} /> : <span className="text-muted">No-one</span>}
           {resolution(match)}
+          <span className="text-muted">
+            {round.primaryTimer && ' - '}
+            <RoundListItemMatchTimer round={round} match={match} />
+          </span>
           {match.player2 && (
             <EllipsisDropdown align="end" className="float-end d-print-none">
               <Dropdown.Header>Table {match.table}</Dropdown.Header>
@@ -59,4 +64,4 @@ const RoundListItemMatchesList: React.FC<RoundListItemMatchesListProps> = ({ rou
   )
 }
 
-export default RoundListItemMatchesList
+export default RoundListItemMatchList

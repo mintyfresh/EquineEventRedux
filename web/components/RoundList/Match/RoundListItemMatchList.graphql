@@ -1,0 +1,26 @@
+fragment RoundListItemMatchList on Round {
+  id
+  isComplete
+  matches {
+    ...RoundListItemMatchTimer
+    ...RoundListItemMatchListItem
+  }
+  primaryTimer {
+    id
+  }
+}
+
+fragment RoundListItemMatchListItem on Match {
+  id
+  player1 {
+    id
+    ...PlayerNameWithBadges
+  }
+  player2 {
+    id
+    ...PlayerNameWithBadges
+  }
+  winnerId
+  draw
+  table
+}

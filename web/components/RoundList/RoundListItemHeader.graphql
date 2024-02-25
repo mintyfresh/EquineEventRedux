@@ -26,7 +26,7 @@ fragment RoundListItemHeader on Round {
   number
   isComplete
   ...RoundListItemDropdown
-  timers(limit: 1, includeExpired: false, includeMatchTimers: false) {
+  primaryTimer {
     ...Timer
   }
 }

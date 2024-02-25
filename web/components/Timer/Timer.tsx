@@ -38,7 +38,7 @@ export interface TimerProps extends React.HTMLAttributes<HTMLSpanElement> {
 }
 
 const Timer: React.FC<TimerProps> = ({ timer, audioEnabled, formatter, ...props }) => {
-  const [currentPhase, setCurrentPhase] = useState<TimerPhaseFragment | null>(null)
+  const [phase, setPhase] = useState<TimerPhaseFragment | null>(null)
   const [hours, setHours] = useState(0)
   const [minutes, setMinutes] = useState(0)
   const [seconds, setSeconds] = useState(0)
@@ -67,11 +67,14 @@ const Timer: React.FC<TimerProps> = ({ timer, audioEnabled, formatter, ...props 
       setMinutes(Math.floor((timeRemainingInPhase % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE))
       setSeconds(Math.floor(timeRemainingInPhase % SECONDS_PER_MINUTE))
 
-      setCurrentPhase((existingPhase) => {
-        // Queue the audio clip for the phase transition, if it exists.
-        // (This block might get called a couple of times, so we queue it so that it only plays once.)
-        if (existingPhase?.audioClip && existingPhase?.id !== currentPhase?.id) {
-          setAudioClip(existingPhase.audioClip.fileUrl)
+      setPhase((previousPhase) => {
+        // if we switched phases, and there was an expired phase (this is not the first), and it was to the subsequent phase
+        // (this avoids situations where the phase is reset to the first, or the timer somehow jumps past the final phase)
+        if (previousPhase !== currentPhase && previousPhase && (currentPhase?.position ?? Infinity) > previousPhase.position) {
+          console.log('Phase changed:', currentPhase?.id, 'from', previousPhase?.id)
+          // queue the audio clip rather than playing it immediately
+          // (this block might be called more than once before the audio is played, so we need to ensure it's only played once)
+          setAudioClip(previousPhase?.audioClip?.fileUrl ?? null)
         }
 
         return currentPhase
@@ -81,12 +84,15 @@ const Timer: React.FC<TimerProps> = ({ timer, audioEnabled, formatter, ...props 
     return () => clearInterval(interval)
   }, [latency, expiresAt, pausedAt, timer.totalDurationInSeconds, timer.phases])
 
-  useEffect(() => {
+  useEffect(() => {    
     // Play the queued audio clip.
     if (audioClip) {
+      console.log('Playing queued audio clip:', audioClip)
+
       try {
-        audioEnabled &&
+        if (audioEnabled) {
           new Audio(audioClip).play()
+        }
       } catch (error) {
         console.error(error)
       } finally {
@@ -97,7 +103,7 @@ const Timer: React.FC<TimerProps> = ({ timer, audioEnabled, formatter, ...props 
 
   return (
     <span {...props}>
-      {formatter(hours, minutes, seconds, currentPhase, timer)}
+      {formatter(hours, minutes, seconds, phase, timer)}
     </span>
   )
 }

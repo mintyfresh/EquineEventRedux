@@ -1,0 +1,28 @@
+subscription RoundListItemMatchTimerCreated($roundId: ID!) {
+  timerCreated(roundId: $roundId) {
+    timer {
+      ...Timer
+    }
+  }
+}
+
+subscription RoundListItemMatchTimerUpdated($roundId: ID!) {
+  timerUpdated(roundId: $roundId) {
+    timer {
+      ...Timer
+    }
+  }
+}
+
+subscription RoundListItemMatchTimerDeleted($roundId: ID!) {
+  timerDeleted(roundId: $roundId) {
+    timerId
+  }
+}
+
+fragment RoundListItemMatchTimer on Match {
+  id
+  timer {
+    ...Timer
+  }
+}

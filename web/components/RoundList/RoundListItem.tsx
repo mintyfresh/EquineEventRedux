@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Card, Collapse } from 'react-bootstrap'
 import { RoundListItemFragment } from '../../lib/generated/graphql'
 import RoundListItemHeader from './RoundListItemHeader'
-import RoundListItemMatches from './RoundListItemMatches'
+import RoundListItemMatch from './RoundListItemMatch'
 
 export enum RoundViewMode {
   List = 'list',
@@ -32,7 +32,7 @@ const RoundListItem: React.FC<RoundListItemProps> = ({ round, viewMode, disabled
       />
       <Collapse in={expanded}>
         <div>
-          <RoundListItemMatches
+          <RoundListItemMatch
             round={round}
             viewMode={viewMode}
             disabled={disabled}

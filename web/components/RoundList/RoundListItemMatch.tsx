@@ -1,18 +1,18 @@
 import { Card } from 'react-bootstrap'
-import { RoundListItemMatchesFragment } from '../../lib/generated/graphql'
+import { RoundListItemMatchFragment } from '../../lib/generated/graphql'
 import { RoundViewMode } from './RoundListItem'
-import RoundListItemMatchesList from './Matches/RoundListItemMatchesList'
-import RoundListItemMatchesGrid from './Matches/RoundListItemMatchesGrid'
+import RoundListItemMatchList from './Match/RoundListItemMatchList'
+import RoundListItemMatchGrid from './Match/RoundListItemMatchGrid'
 
-export interface RoundListItemMatchesProps {
-  round: RoundListItemMatchesFragment
+export interface RoundListItemMatchProps {
+  round: RoundListItemMatchFragment
   viewMode?: RoundViewMode
   disabled?: boolean
   onSetWinner?(matchId: string, winnerId: string): void
   onSetDraw?(matchId: string): void
 }
 
-const RoundListItemMatches: React.FC<RoundListItemMatchesProps> = ({ round, viewMode, disabled, onSetWinner, onSetDraw }) => {
+const RoundListItemMatch: React.FC<RoundListItemMatchProps> = ({ round, viewMode, disabled, onSetWinner, onSetDraw }) => {
   if (round.matches.length === 0) {
     return (
       <Card.Body>
@@ -24,7 +24,7 @@ const RoundListItemMatches: React.FC<RoundListItemMatchesProps> = ({ round, view
   switch (viewMode) {
     case RoundViewMode.List:
       return (
-        <RoundListItemMatchesList
+        <RoundListItemMatchList
           round={round}
           disabled={disabled}
           onSetWinner={onSetWinner}
@@ -35,7 +35,7 @@ const RoundListItemMatches: React.FC<RoundListItemMatchesProps> = ({ round, view
     case RoundViewMode.Grid:
       return (
         <Card.Body className="pb-0">
-          <RoundListItemMatchesGrid
+          <RoundListItemMatchGrid
             round={round}
             disabled={disabled}
             onSetWinner={onSetWinner}
@@ -49,4 +49,4 @@ const RoundListItemMatches: React.FC<RoundListItemMatchesProps> = ({ round, view
   }
 }
 
-export default RoundListItemMatches
+export default RoundListItemMatch

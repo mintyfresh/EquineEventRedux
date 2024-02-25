@@ -4144,6 +4144,18 @@
             "deprecationReason": null
           },
           {
+            "name": "primaryTimer",
+            "description": "The primary timer for the round",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "Timer",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "timers",
             "description": null,
             "args": [

@@ -59,6 +59,7 @@ type EventTimersPageProps = EventTimersQuery & {
   slug: string
   fullscreen: boolean
 }
+
 const EventTimersPage: NextPageWithLayout<EventTimersPageProps> = ({ slug, fullscreen, event }) => {
   const eventId = event.id
   
@@ -91,6 +92,7 @@ const EventTimersPage: NextPageWithLayout<EventTimersPageProps> = ({ slug, fulls
     data && client.writeQuery<EventTimersQuery, EventTimersQueryVariables>({
       query: EventTimersDocument,
       variables: { eventId },
+      overwrite: true,
       data: {
         ...data,
         event: {

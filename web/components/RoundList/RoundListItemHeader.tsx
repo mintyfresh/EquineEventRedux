@@ -15,10 +15,10 @@ export interface RoundListItemHeaderProps extends React.ComponentProps<typeof Ca
 }
 
 const RoundListItemHeader: React.FC<RoundListItemHeaderProps> = ({ round, disabled, expanded, onExpand, onDelete, style, ...props }) => {
-  const timer = round.timers[0]
+  const timer = round.primaryTimer
 
   useRoundListItemHeaderTimerCreatedSubscription({
-    skip: timer && !timer.isExpired, // skip if we already have a timer
+    skip: !!timer && !timer.isExpired, // skip if we already have a timer
     variables: { roundId: round.id },
     fetchPolicy: 'no-cache', // manage cache manually
     onData({ client, data: { data } }) {
@@ -42,8 +42,7 @@ const RoundListItemHeader: React.FC<RoundListItemHeaderProps> = ({ round, disabl
           fragmentName: 'RoundListItemHeader'
         },
         (data) => data && ({
-          ...data,
-          timers: [newTimer],
+          ...data, primaryTimer: newTimer,
         })
       )
     }
@@ -59,7 +58,7 @@ const RoundListItemHeader: React.FC<RoundListItemHeaderProps> = ({ round, disabl
       const updatedTimer = data.timerUpdated.timer
 
       // skip if this is not our timer
-      if (timer.id !== updatedTimer.id) return
+      if (timer?.id !== updatedTimer.id) return
 
       // update the current timer
       client.cache.updateFragment<RoundListItemHeaderFragment>(
@@ -70,7 +69,7 @@ const RoundListItemHeader: React.FC<RoundListItemHeaderProps> = ({ round, disabl
           overwrite: true
         },
         (data) => data && ({
-          ...data, timers: [updatedTimer],
+          ...data, primaryTimer: updatedTimer,
         })
       )
     }
@@ -95,7 +94,7 @@ const RoundListItemHeader: React.FC<RoundListItemHeaderProps> = ({ round, disabl
           overwrite: true
         },
         (data) => data && ({
-          ...data, timers: [],
+          ...data, primaryTimer: null,
         })
       )
     }

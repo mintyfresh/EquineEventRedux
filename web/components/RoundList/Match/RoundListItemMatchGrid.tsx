@@ -1,21 +1,22 @@
 import React from 'react'
 import { Col, Row } from 'react-bootstrap'
-import { RoundListItemMatchesGridFragment } from '../../../lib/generated/graphql'
-import RoundMatchesGridCard from './RoundListItemMatchesGridCard'
+import { RoundListItemMatchGridFragment } from '../../../lib/generated/graphql'
+import RoundMatchesGridCard from './RoundListItemMatchGridCard'
 
-export interface RoundListItemMatchesGridProps {
-  round: RoundListItemMatchesGridFragment
+export interface RoundListItemMatchGridProps {
+  round: RoundListItemMatchGridFragment
   disabled?: boolean
   onSetWinner?: (matchId: string, winnerId: string) => void
   onSetDraw?: (matchId: string) => void
 }
 
-const RoundListItemMatchesGrid: React.FC<RoundListItemMatchesGridProps> = ({ round, disabled, onSetWinner, onSetDraw }) => {
+const RoundListItemMatchGrid: React.FC<RoundListItemMatchGridProps> = ({ round, disabled, onSetWinner, onSetDraw }) => {
   return (
     <Row>
       {round.matches.map((match) =>
         <Col key={match.id} lg="3" className="mb-3">
           <RoundMatchesGridCard
+            round={round}
             match={match}
             disabled={disabled}
             onSetWinner={onSetWinner}
@@ -27,4 +28,4 @@ const RoundListItemMatchesGrid: React.FC<RoundListItemMatchesGridProps> = ({ rou
   )
 }
 
-export default RoundListItemMatchesGrid
+export default RoundListItemMatchGrid
