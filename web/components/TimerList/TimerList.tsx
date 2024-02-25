@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Alert, Col, Row } from 'react-bootstrap'
 import { TimerListFragment, TimerListFragmentDoc, TimerListItemFragment, useTimerListItemCreatedSubscription, useTimerListItemDeletedSubscription, useTimerListItemUpdatedSubscription } from '../../lib/generated/graphql'
 import TimerListControlBar from './TimerListControlBar'
@@ -29,11 +29,13 @@ const upsertTimerListItem = (timers: TimerListItemFragment[], timer: TimerListIt
 
 export interface TimerListProps {
   timerList: TimerListFragment
+  pinControlsToTop?: boolean
   readOnly?: boolean
 }
 
-const TimerList: React.FC<TimerListProps> = ({ timerList, readOnly }) => {
+const TimerList: React.FC<TimerListProps> = ({ timerList, pinControlsToTop, readOnly }) => {
   const client = useApolloClient()
+  const [columns, setColumns] = useState<number>(1)
 
   const onTimerCreate = (timer: TimerListItemFragment) => {
     client.cache.updateFragment<TimerListFragment>(
@@ -114,16 +116,17 @@ const TimerList: React.FC<TimerListProps> = ({ timerList, readOnly }) => {
 
   return (
     <>
-      {!readOnly && (
-        <TimerListControlBar
-          roundId={timerList.id}
-          onTimerCreate={onTimerCreate}
-        />
-      )}
+      <TimerListControlBar
+        roundId={timerList.id}
+        pinToTop={pinControlsToTop}
+        readOnly={readOnly}
+        onTimerCreate={onTimerCreate}
+        onColumnsSelect={setColumns}
+      />
       {timerList.timers.length > 0 ? (
         <Row className="justify-content-center">
           {timerList.timers.map((timer) => (
-            <Col key={timer.id} className="pb-5" md="6">
+            <Col key={timer.id} className="pb-5" md={12 / columns}>
               <TimerListItem
                 timerList={timerList}
                 timer={timer}

@@ -55,6 +55,7 @@ const EventTimersPage: NextPageWithLayout<EventTimersPageProps> = ({ slug, fulls
   return (
     <TimerList
       timerList={currentRound}
+      pinControlsToTop={fullscreen}
       readOnly={fullscreen}
     />
   )
@@ -62,7 +63,7 @@ const EventTimersPage: NextPageWithLayout<EventTimersPageProps> = ({ slug, fulls
 
 EventTimersPage.getLayout = (page: React.ReactElement<EventTimersPageProps>) => (
   page.props.fullscreen ? (
-    <Container style={{ 'minHeight': '100vh' }} className="d-flex flex-column justify-content-center">
+    <Container fluid style={{ 'minHeight': '100vh' }} className="d-flex flex-column justify-content-center">
       {page}
     </Container>
   ) : (
