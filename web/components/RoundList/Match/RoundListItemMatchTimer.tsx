@@ -1,12 +1,12 @@
-import React from 'react'
-import { RoundListItemMatchTimerFragment, RoundListItemMatchTimerFragmentDoc, useRoundListItemMatchTimerCreatedSubscription, useRoundListItemMatchTimerDeletedSubscription, useRoundListItemMatchTimerUpdatedSubscription } from '../../../lib/generated/graphql'
-import Timer from '../../Timer/Timer'
+import { faStopwatch } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPause, faPlay, faStopwatch } from '@fortawesome/free-solid-svg-icons'
+import React from 'react'
+import { RoundListItemMatchWithTimerFragment, RoundListItemMatchWithTimerFragmentDoc, useRoundListItemMatchTimerCreatedSubscription, useRoundListItemMatchTimerDeletedSubscription, useRoundListItemMatchTimerUpdatedSubscription } from '../../../lib/generated/graphql'
+import Timer from '../../Timer/Timer'
 
 export interface RoundListItemMatchTimerProps {
   round: { id: string, primaryTimer?: { id: string } | null }
-  match: RoundListItemMatchTimerFragment
+  match: RoundListItemMatchWithTimerFragment
 }
 
 const RoundListItemMatchTimer: React.FC<RoundListItemMatchTimerProps> = ({ round, match }) => {
@@ -23,10 +23,10 @@ const RoundListItemMatchTimer: React.FC<RoundListItemMatchTimerProps> = ({ round
       if (newTimer.matchId !== match.id) return
 
       // set this as the current timer
-      client.cache.updateFragment<RoundListItemMatchTimerFragment>(
+      client.cache.updateFragment<RoundListItemMatchWithTimerFragment>(
         {
           id: client.cache.identify(match),
-          fragment: RoundListItemMatchTimerFragmentDoc,
+          fragment: RoundListItemMatchWithTimerFragmentDoc,
           fragmentName: 'RoundListItemMatchTimer'
         },
         (data) => data && ({
@@ -49,10 +49,10 @@ const RoundListItemMatchTimer: React.FC<RoundListItemMatchTimerProps> = ({ round
       if (updatedTimer.matchId !== match.id) return
 
       // update the current timer
-      client.cache.updateFragment<RoundListItemMatchTimerFragment>(
+      client.cache.updateFragment<RoundListItemMatchWithTimerFragment>(
         {
           id: client.cache.identify(match),
-          fragment: RoundListItemMatchTimerFragmentDoc,
+          fragment: RoundListItemMatchWithTimerFragmentDoc,
           fragmentName: 'RoundListItemMatchTimer'
         },
         (data) => data && ({
@@ -75,10 +75,10 @@ const RoundListItemMatchTimer: React.FC<RoundListItemMatchTimerProps> = ({ round
       if (deletedTimer !== match.timer?.id) return
 
       // remove the current timer
-      client.cache.updateFragment<RoundListItemMatchTimerFragment>(
+      client.cache.updateFragment<RoundListItemMatchWithTimerFragment>(
         {
           id: client.cache.identify(match),
-          fragment: RoundListItemMatchTimerFragmentDoc,
+          fragment: RoundListItemMatchWithTimerFragmentDoc,
           fragmentName: 'RoundListItemMatchTimer'
         },
         (data) => data && ({

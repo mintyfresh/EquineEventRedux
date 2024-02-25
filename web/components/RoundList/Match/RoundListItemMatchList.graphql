@@ -2,7 +2,7 @@ fragment RoundListItemMatchList on Round {
   id
   isComplete
   matches {
-    ...RoundListItemMatchTimer
+    ...RoundListItemMatchWithTimer
     ...RoundListItemMatchListItem
   }
   primaryTimer {

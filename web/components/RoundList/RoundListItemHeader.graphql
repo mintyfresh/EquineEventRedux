@@ -1,7 +1,7 @@
 subscription RoundListItemHeaderTimerCreated($roundId: ID!) {
   timerCreated(roundId: $roundId) {
     timer {
-      ...Timer
+      ...RoundListItemHeaderTimer
     }
   }
 }
@@ -9,7 +9,7 @@ subscription RoundListItemHeaderTimerCreated($roundId: ID!) {
 subscription RoundListItemHeaderTimerUpdated($roundId: ID!) {
   timerUpdated(roundId: $roundId) {
     timer {
-      ...Timer
+      ...RoundListItemHeaderTimer
     }
   }
 }
@@ -27,6 +27,16 @@ fragment RoundListItemHeader on Round {
   isComplete
   ...RoundListItemDropdown
   primaryTimer {
-    ...Timer
+    ...RoundListItemHeaderTimer
+  }
+}
+
+fragment RoundListItemHeaderTimer on Timer {
+  matchId
+  isExpired
+  ...Timer
+  phases {
+    id
+    name
   }
 }

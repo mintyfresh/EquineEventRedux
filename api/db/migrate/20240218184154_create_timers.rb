@@ -9,6 +9,7 @@ class CreateTimers < ActiveRecord::Migration[7.1]
       t.string     :label
       t.timestamp  :expires_at
       t.timestamp  :paused_at
+      t.boolean    :primary, default: false, null: false
       t.timestamps
     end
   end

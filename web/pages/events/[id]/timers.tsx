@@ -3,7 +3,7 @@ import React from 'react'
 import { Alert, Container } from 'react-bootstrap'
 import EventLayout from '../../../components/EventLayout'
 import TimerList from '../../../components/TimerList/TimerList'
-import { EventTimersDocument, EventTimersQuery, EventTimersQueryVariables, TimerListItemFragment, useEventTimersQuery, useTimerCreatedSubscription, useTimerDeletedSubscription, useTimerUpdatedSubscription } from '../../../lib/generated/graphql'
+import { EventTimersDocument, EventTimersQuery, EventTimersQueryVariables, useEventTimersQuery } from '../../../lib/generated/graphql'
 import { initializeApolloClient } from '../../../lib/graphql/client'
 import { NextPageWithLayout } from '../../../lib/types/next-page'
 

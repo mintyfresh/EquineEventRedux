@@ -1,13 +1,15 @@
-import { faEllipsisH } from '@fortawesome/free-solid-svg-icons'
+import { faEllipsisH, IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { ComponentPropsWithoutRef, forwardRef, MouseEventHandler, PropsWithChildren } from 'react'
 import { Dropdown } from 'react-bootstrap'
 
-const ellipsis = <FontAwesomeIcon icon={faEllipsisH} />
+export type EllipsisDropdownProps = PropsWithChildren<ComponentPropsWithoutRef<typeof Dropdown>> & {
+  icon?: IconDefinition
+}
 
-export type EllipsisDropdownProps = PropsWithChildren<ComponentPropsWithoutRef<typeof Dropdown>>
+const EllipsisDropdown: React.FC<EllipsisDropdownProps> = ({ children, disabled, icon, ...props }) => {
+  const ellipsis = <FontAwesomeIcon icon={icon ?? faEllipsisH} />
 
-const EllipsisDropdown: React.FC<EllipsisDropdownProps> = ({ children, disabled, ...props }) => {
   const EllipsisToggle = forwardRef<HTMLAnchorElement, { onClick: MouseEventHandler<HTMLAnchorElement> }>(({ onClick }, ref) => {
     if (disabled) {
       return (

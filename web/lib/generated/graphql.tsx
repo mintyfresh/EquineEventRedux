@@ -766,6 +766,8 @@ export type Timer = {
   instant: Scalars['ISO8601DateTime'];
   isExpired: Scalars['Boolean'];
   isPaused: Scalars['Boolean'];
+  /** Whether this timer is the primary timer for the round */
+  isPrimary: Scalars['Boolean'];
   label?: Maybe<Scalars['String']>;
   matchId?: Maybe<Scalars['ID']>;
   pausedAt?: Maybe<Scalars['ISO8601DateTime']>;
@@ -1161,11 +1163,11 @@ export type UpdateRoundMutationVariables = Exact<{
 
 export type UpdateRoundMutation = { __typename?: 'Mutation', roundUpdate?: { __typename?: 'RoundUpdatePayload', round?: { __typename?: 'Round', id: string, eventId: string, number: number, matches: Array<{ __typename?: 'Match', id: string, table: number, winnerId?: string | null, draw: boolean, player1: { __typename?: 'Player', id: string, name: string }, player2?: { __typename?: 'Player', id: string, name: string } | null }> } | null, errors?: Array<{ __typename?: 'Error', attribute: string, message: string }> | null } | null };
 
-export type RoundListItemMatchGridFragment = { __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, table: number, winnerId?: string | null, draw: boolean, timer?: { __typename?: 'Timer', id: string, roundId: string, matchId?: string | null, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null, player1: { __typename?: 'Player', id: string, name: string, dropped: boolean }, player2?: { __typename?: 'Player', id: string, name: string, dropped: boolean } | null }>, primaryTimer?: { __typename?: 'Timer', id: string } | null };
+export type RoundListItemMatchGridFragment = { __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, table: number, winnerId?: string | null, draw: boolean, timer?: { __typename?: 'Timer', matchId?: string | null, id: string, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null, player1: { __typename?: 'Player', id: string, name: string, dropped: boolean }, player2?: { __typename?: 'Player', id: string, name: string, dropped: boolean } | null }>, primaryTimer?: { __typename?: 'Timer', id: string } | null };
 
 export type RoundListItemMatchGridCardFragment = { __typename?: 'Match', id: string, table: number, winnerId?: string | null, draw: boolean, player1: { __typename?: 'Player', id: string, name: string, dropped: boolean }, player2?: { __typename?: 'Player', id: string, name: string, dropped: boolean } | null };
 
-export type RoundListItemMatchListFragment = { __typename?: 'Round', id: string, isComplete: boolean, matches: Array<{ __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, table: number, timer?: { __typename?: 'Timer', id: string, roundId: string, matchId?: string | null, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null, player1: { __typename?: 'Player', id: string, name: string, paid: boolean, dropped: boolean, deleted: boolean }, player2?: { __typename?: 'Player', id: string, name: string, paid: boolean, dropped: boolean, deleted: boolean } | null }>, primaryTimer?: { __typename?: 'Timer', id: string } | null };
+export type RoundListItemMatchListFragment = { __typename?: 'Round', id: string, isComplete: boolean, matches: Array<{ __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, table: number, timer?: { __typename?: 'Timer', matchId?: string | null, id: string, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null, player1: { __typename?: 'Player', id: string, name: string, paid: boolean, dropped: boolean, deleted: boolean }, player2?: { __typename?: 'Player', id: string, name: string, paid: boolean, dropped: boolean, deleted: boolean } | null }>, primaryTimer?: { __typename?: 'Timer', id: string } | null };
 
 export type RoundListItemMatchListItemFragment = { __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, table: number, player1: { __typename?: 'Player', id: string, name: string, paid: boolean, dropped: boolean, deleted: boolean }, player2?: { __typename?: 'Player', id: string, name: string, paid: boolean, dropped: boolean, deleted: boolean } | null };
 
@@ -1174,14 +1176,14 @@ export type RoundListItemMatchTimerCreatedSubscriptionVariables = Exact<{
 }>;
 
 
-export type RoundListItemMatchTimerCreatedSubscription = { __typename?: 'Subscription', timerCreated: { __typename?: 'TimerCreatedPayload', timer: { __typename?: 'Timer', id: string, roundId: string, matchId?: string | null, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } } };
+export type RoundListItemMatchTimerCreatedSubscription = { __typename?: 'Subscription', timerCreated: { __typename?: 'TimerCreatedPayload', timer: { __typename?: 'Timer', matchId?: string | null, id: string, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } } };
 
 export type RoundListItemMatchTimerUpdatedSubscriptionVariables = Exact<{
   roundId: Scalars['ID'];
 }>;
 
 
-export type RoundListItemMatchTimerUpdatedSubscription = { __typename?: 'Subscription', timerUpdated: { __typename?: 'TimerUpdatedPayload', timer: { __typename?: 'Timer', id: string, roundId: string, matchId?: string | null, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } } };
+export type RoundListItemMatchTimerUpdatedSubscription = { __typename?: 'Subscription', timerUpdated: { __typename?: 'TimerUpdatedPayload', timer: { __typename?: 'Timer', matchId?: string | null, id: string, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } } };
 
 export type RoundListItemMatchTimerDeletedSubscriptionVariables = Exact<{
   roundId: Scalars['ID'];
@@ -1190,9 +1192,11 @@ export type RoundListItemMatchTimerDeletedSubscriptionVariables = Exact<{
 
 export type RoundListItemMatchTimerDeletedSubscription = { __typename?: 'Subscription', timerDeleted: { __typename?: 'TimerDeletedPayload', timerId: string } };
 
-export type RoundListItemMatchTimerFragment = { __typename?: 'Match', id: string, timer?: { __typename?: 'Timer', id: string, roundId: string, matchId?: string | null, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null };
+export type RoundListItemMatchWithTimerFragment = { __typename?: 'Match', id: string, timer?: { __typename?: 'Timer', matchId?: string | null, id: string, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null };
 
-export type RoundListItemFragment = { __typename?: 'Round', id: string, number: number, eventId: string, isComplete: boolean, primaryTimer?: { __typename?: 'Timer', id: string, roundId: string, matchId?: string | null, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null, matches: Array<{ __typename?: 'Match', id: string, table: number, winnerId?: string | null, draw: boolean, player1: { __typename?: 'Player', id: string, name: string, dropped: boolean, paid: boolean, deleted: boolean }, player2?: { __typename?: 'Player', id: string, name: string, dropped: boolean, paid: boolean, deleted: boolean } | null, timer?: { __typename?: 'Timer', id: string, roundId: string, matchId?: string | null, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null }> };
+export type RoundListItemMatchTimerFragment = { __typename?: 'Timer', matchId?: string | null, id: string, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> };
+
+export type RoundListItemFragment = { __typename?: 'Round', id: string, number: number, eventId: string, isComplete: boolean, primaryTimer?: { __typename?: 'Timer', id: string, matchId?: string | null, isExpired: boolean, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null, matches: Array<{ __typename?: 'Match', id: string, table: number, winnerId?: string | null, draw: boolean, player1: { __typename?: 'Player', id: string, name: string, dropped: boolean, paid: boolean, deleted: boolean }, player2?: { __typename?: 'Player', id: string, name: string, dropped: boolean, paid: boolean, deleted: boolean } | null, timer?: { __typename?: 'Timer', matchId?: string | null, id: string, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null }> };
 
 export type DeleteRoundMutationVariables = Exact<{
   id: Scalars['ID'];
@@ -1208,14 +1212,14 @@ export type RoundListItemHeaderTimerCreatedSubscriptionVariables = Exact<{
 }>;
 
 
-export type RoundListItemHeaderTimerCreatedSubscription = { __typename?: 'Subscription', timerCreated: { __typename?: 'TimerCreatedPayload', timer: { __typename?: 'Timer', id: string, roundId: string, matchId?: string | null, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } } };
+export type RoundListItemHeaderTimerCreatedSubscription = { __typename?: 'Subscription', timerCreated: { __typename?: 'TimerCreatedPayload', timer: { __typename?: 'Timer', matchId?: string | null, isExpired: boolean, id: string, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } } };
 
 export type RoundListItemHeaderTimerUpdatedSubscriptionVariables = Exact<{
   roundId: Scalars['ID'];
 }>;
 
 
-export type RoundListItemHeaderTimerUpdatedSubscription = { __typename?: 'Subscription', timerUpdated: { __typename?: 'TimerUpdatedPayload', timer: { __typename?: 'Timer', id: string, roundId: string, matchId?: string | null, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } } };
+export type RoundListItemHeaderTimerUpdatedSubscription = { __typename?: 'Subscription', timerUpdated: { __typename?: 'TimerUpdatedPayload', timer: { __typename?: 'Timer', matchId?: string | null, isExpired: boolean, id: string, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } } };
 
 export type RoundListItemHeaderTimerDeletedSubscriptionVariables = Exact<{
   roundId: Scalars['ID'];
@@ -1224,9 +1228,11 @@ export type RoundListItemHeaderTimerDeletedSubscriptionVariables = Exact<{
 
 export type RoundListItemHeaderTimerDeletedSubscription = { __typename?: 'Subscription', timerDeleted: { __typename?: 'TimerDeletedPayload', timerId: string } };
 
-export type RoundListItemHeaderFragment = { __typename?: 'Round', id: string, eventId: string, number: number, isComplete: boolean, primaryTimer?: { __typename?: 'Timer', id: string, roundId: string, matchId?: string | null, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null, matches: Array<{ __typename?: 'Match', id: string, table: number, winnerId?: string | null, draw: boolean, player1: { __typename?: 'Player', id: string, name: string }, player2?: { __typename?: 'Player', id: string, name: string } | null }> };
+export type RoundListItemHeaderFragment = { __typename?: 'Round', id: string, eventId: string, number: number, isComplete: boolean, primaryTimer?: { __typename?: 'Timer', matchId?: string | null, isExpired: boolean, id: string, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null, matches: Array<{ __typename?: 'Match', id: string, table: number, winnerId?: string | null, draw: boolean, player1: { __typename?: 'Player', id: string, name: string }, player2?: { __typename?: 'Player', id: string, name: string } | null }> };
 
-export type RoundListItemMatchFragment = { __typename?: 'Round', id: string, number: number, isComplete: boolean, matches: Array<{ __typename?: 'Match', id: string, table: number, winnerId?: string | null, draw: boolean, timer?: { __typename?: 'Timer', id: string, roundId: string, matchId?: string | null, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null, player1: { __typename?: 'Player', id: string, name: string, dropped: boolean, paid: boolean, deleted: boolean }, player2?: { __typename?: 'Player', id: string, name: string, dropped: boolean, paid: boolean, deleted: boolean } | null }>, primaryTimer?: { __typename?: 'Timer', id: string } | null };
+export type RoundListItemHeaderTimerFragment = { __typename?: 'Timer', matchId?: string | null, isExpired: boolean, id: string, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> };
+
+export type RoundListItemMatchFragment = { __typename?: 'Round', id: string, number: number, isComplete: boolean, matches: Array<{ __typename?: 'Match', id: string, table: number, winnerId?: string | null, draw: boolean, timer?: { __typename?: 'Timer', matchId?: string | null, id: string, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null, player1: { __typename?: 'Player', id: string, name: string, dropped: boolean, paid: boolean, deleted: boolean }, player2?: { __typename?: 'Player', id: string, name: string, dropped: boolean, paid: boolean, deleted: boolean } | null }>, primaryTimer?: { __typename?: 'Timer', id: string } | null };
 
 export type GeneratePairingsMutationVariables = Exact<{
   eventId: Scalars['ID'];
@@ -1242,23 +1248,23 @@ export type SlipRoundFragment = { __typename?: 'Round', id: string, number: numb
 
 export type SlipMatchFragment = { __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, table: number, player1: { __typename?: 'Player', id: string, name: string, score: number }, player2?: { __typename?: 'Player', id: string, name: string, score: number } | null };
 
-export type TimerFragment = { __typename?: 'Timer', id: string, roundId: string, matchId?: string | null, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> };
+export type TimerFragment = { __typename?: 'Timer', id: string, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> };
 
-export type TimerPhaseFragment = { __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null };
+export type TimerPhaseFragment = { __typename?: 'TimerPhase', id: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null };
 
 export type TimerListItemCreatedSubscriptionVariables = Exact<{
   roundId: Scalars['ID'];
 }>;
 
 
-export type TimerListItemCreatedSubscription = { __typename?: 'Subscription', timerCreated: { __typename?: 'TimerCreatedPayload', timer: { __typename?: 'Timer', id: string, roundId: string, matchId?: string | null, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } } };
+export type TimerListItemCreatedSubscription = { __typename?: 'Subscription', timerCreated: { __typename?: 'TimerCreatedPayload', timer: { __typename?: 'Timer', id: string, label?: string | null, isPrimary: boolean, isExpired: boolean, isPaused: boolean, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } } };
 
 export type TimerListItemUpdatedSubscriptionVariables = Exact<{
   roundId: Scalars['ID'];
 }>;
 
 
-export type TimerListItemUpdatedSubscription = { __typename?: 'Subscription', timerUpdated: { __typename?: 'TimerUpdatedPayload', timer: { __typename?: 'Timer', id: string, roundId: string, matchId?: string | null, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } } };
+export type TimerListItemUpdatedSubscription = { __typename?: 'Subscription', timerUpdated: { __typename?: 'TimerUpdatedPayload', timer: { __typename?: 'Timer', id: string, label?: string | null, isPrimary: boolean, isExpired: boolean, isPaused: boolean, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } } };
 
 export type TimerListItemDeletedSubscriptionVariables = Exact<{
   roundId: Scalars['ID'];
@@ -1267,21 +1273,21 @@ export type TimerListItemDeletedSubscriptionVariables = Exact<{
 
 export type TimerListItemDeletedSubscription = { __typename?: 'Subscription', timerDeleted: { __typename?: 'TimerDeletedPayload', timerId: string } };
 
-export type TimerListFragment = { __typename?: 'Round', id: string, timers: Array<{ __typename?: 'Timer', id: string, roundId: string, matchId?: string | null, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> }>, matches: Array<{ __typename?: 'Match', id: string, table: number, player1: { __typename?: 'Player', id: string, name: string }, player2?: { __typename?: 'Player', id: string, name: string } | null, timer?: { __typename?: 'Timer', id: string } | null }> };
+export type TimerListFragment = { __typename?: 'Round', id: string, timers: Array<{ __typename?: 'Timer', id: string, label?: string | null, isPrimary: boolean, isExpired: boolean, isPaused: boolean, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> }>, matches: Array<{ __typename?: 'Match', id: string, table: number, player1: { __typename?: 'Player', id: string, name: string }, player2?: { __typename?: 'Player', id: string, name: string } | null, timer?: { __typename?: 'Timer', id: string } | null }> };
 
 export type PauseAllEventTimersMutationVariables = Exact<{
   roundId: Scalars['ID'];
 }>;
 
 
-export type PauseAllEventTimersMutation = { __typename?: 'Mutation', roundPauseAllTimers?: { __typename?: 'RoundPauseAllTimersPayload', timers?: Array<{ __typename?: 'Timer', id: string, roundId: string, matchId?: string | null, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> }> | null } | null };
+export type PauseAllEventTimersMutation = { __typename?: 'Mutation', roundPauseAllTimers?: { __typename?: 'RoundPauseAllTimersPayload', timers?: Array<{ __typename?: 'Timer', id: string, label?: string | null, isPrimary: boolean, isExpired: boolean, isPaused: boolean, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> }> | null } | null };
 
 export type UnpauseAllEventTimersMutationVariables = Exact<{
   roundId: Scalars['ID'];
 }>;
 
 
-export type UnpauseAllEventTimersMutation = { __typename?: 'Mutation', roundUnpauseAllTimers?: { __typename?: 'RoundUnpauseAllTimersPayload', timers?: Array<{ __typename?: 'Timer', id: string, roundId: string, matchId?: string | null, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> }> | null } | null };
+export type UnpauseAllEventTimersMutation = { __typename?: 'Mutation', roundUnpauseAllTimers?: { __typename?: 'RoundUnpauseAllTimersPayload', timers?: Array<{ __typename?: 'Timer', id: string, label?: string | null, isPrimary: boolean, isExpired: boolean, isPaused: boolean, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> }> | null } | null };
 
 export type TimerListInlineFormPresetsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1294,7 +1300,7 @@ export type CreateTimerInlineMutationVariables = Exact<{
 }>;
 
 
-export type CreateTimerInlineMutation = { __typename?: 'Mutation', timerCreate?: { __typename?: 'TimerCreatePayload', timer?: { __typename?: 'Timer', id: string, roundId: string, matchId?: string | null, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null } | null };
+export type CreateTimerInlineMutation = { __typename?: 'Mutation', timerCreate?: { __typename?: 'TimerCreatePayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, isPrimary: boolean, isExpired: boolean, isPaused: boolean, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null } | null };
 
 export type UpdateTimerMutationVariables = Exact<{
   id: Scalars['ID'];
@@ -1302,9 +1308,11 @@ export type UpdateTimerMutationVariables = Exact<{
 }>;
 
 
-export type UpdateTimerMutation = { __typename?: 'Mutation', timerUpdate?: { __typename?: 'TimerUpdatePayload', timer?: { __typename?: 'Timer', id: string, roundId: string, matchId?: string | null, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null } | null };
+export type UpdateTimerMutation = { __typename?: 'Mutation', timerUpdate?: { __typename?: 'TimerUpdatePayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, isPrimary: boolean, isExpired: boolean, isPaused: boolean, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null } | null };
 
-export type TimerListItemFragment = { __typename?: 'Timer', id: string, roundId: string, matchId?: string | null, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> };
+export type TimerListItemFragment = { __typename?: 'Timer', id: string, label?: string | null, isPrimary: boolean, isExpired: boolean, isPaused: boolean, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> };
+
+export type TimerListItemPhaseFragment = { __typename?: 'TimerPhase', id: string, name: string };
 
 export type TimerMatchSelectFragment = { __typename?: 'Round', matches: Array<{ __typename?: 'Match', id: string, table: number, player1: { __typename?: 'Player', id: string, name: string }, player2?: { __typename?: 'Player', id: string, name: string } | null, timer?: { __typename?: 'Timer', id: string } | null }> };
 
@@ -1320,21 +1328,21 @@ export type PauseTimerMutationVariables = Exact<{
 }>;
 
 
-export type PauseTimerMutation = { __typename?: 'Mutation', timerPause?: { __typename?: 'TimerPausePayload', timer?: { __typename?: 'Timer', id: string, roundId: string, matchId?: string | null, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null } | null };
+export type PauseTimerMutation = { __typename?: 'Mutation', timerPause?: { __typename?: 'TimerPausePayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, isPrimary: boolean, isExpired: boolean, isPaused: boolean, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null } | null };
 
 export type UnpauseTimerMutationVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type UnpauseTimerMutation = { __typename?: 'Mutation', timerUnpause?: { __typename?: 'TimerUnpausePayload', timer?: { __typename?: 'Timer', id: string, roundId: string, matchId?: string | null, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null } | null };
+export type UnpauseTimerMutation = { __typename?: 'Mutation', timerUnpause?: { __typename?: 'TimerUnpausePayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, isPrimary: boolean, isExpired: boolean, isPaused: boolean, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null } | null };
 
 export type SkipTimerToNextPhaseMutationVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type SkipTimerToNextPhaseMutation = { __typename?: 'Mutation', timerSkipToNextPhase?: { __typename?: 'TimerSkipToNextPhasePayload', timer?: { __typename?: 'Timer', id: string, roundId: string, matchId?: string | null, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null } | null };
+export type SkipTimerToNextPhaseMutation = { __typename?: 'Mutation', timerSkipToNextPhase?: { __typename?: 'TimerSkipToNextPhasePayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, isPrimary: boolean, isExpired: boolean, isPaused: boolean, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null } | null };
 
 export type CloneTimerWithExtensionMutationVariables = Exact<{
   id: Scalars['ID'];
@@ -1342,14 +1350,14 @@ export type CloneTimerWithExtensionMutationVariables = Exact<{
 }>;
 
 
-export type CloneTimerWithExtensionMutation = { __typename?: 'Mutation', timerCloneWithExtension?: { __typename?: 'TimerCloneWithExtensionPayload', timer?: { __typename?: 'Timer', id: string, roundId: string, matchId?: string | null, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null } | null };
+export type CloneTimerWithExtensionMutation = { __typename?: 'Mutation', timerCloneWithExtension?: { __typename?: 'TimerCloneWithExtensionPayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, isPrimary: boolean, isExpired: boolean, isPaused: boolean, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null } | null };
 
 export type ResetTimerMutationVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type ResetTimerMutation = { __typename?: 'Mutation', timerReset?: { __typename?: 'TimerResetPayload', timer?: { __typename?: 'Timer', id: string, roundId: string, matchId?: string | null, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null } | null };
+export type ResetTimerMutation = { __typename?: 'Mutation', timerReset?: { __typename?: 'TimerResetPayload', timer?: { __typename?: 'Timer', id: string, label?: string | null, isPrimary: boolean, isExpired: boolean, isPaused: boolean, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null } | null };
 
 export type TimerPresetSelectFragment = { __typename?: 'TimerPreset', id: string, name: string, phasesCount: number, totalDurationInSeconds: number };
 
@@ -1387,7 +1395,7 @@ export type EventMatchesQueryVariables = Exact<{
 }>;
 
 
-export type EventMatchesQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, slug: string, deleted: boolean, rounds: Array<{ __typename?: 'Round', id: string, number: number, eventId: string, isComplete: boolean, primaryTimer?: { __typename?: 'Timer', id: string, roundId: string, matchId?: string | null, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null, matches: Array<{ __typename?: 'Match', id: string, table: number, winnerId?: string | null, draw: boolean, player1: { __typename?: 'Player', id: string, name: string, dropped: boolean, paid: boolean, deleted: boolean }, player2?: { __typename?: 'Player', id: string, name: string, dropped: boolean, paid: boolean, deleted: boolean } | null, timer?: { __typename?: 'Timer', id: string, roundId: string, matchId?: string | null, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null }> }>, players: { __typename?: 'PlayerConnection', totalCount: number } } };
+export type EventMatchesQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, slug: string, deleted: boolean, rounds: Array<{ __typename?: 'Round', id: string, number: number, eventId: string, isComplete: boolean, primaryTimer?: { __typename?: 'Timer', id: string, matchId?: string | null, isExpired: boolean, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null, matches: Array<{ __typename?: 'Match', id: string, table: number, winnerId?: string | null, draw: boolean, player1: { __typename?: 'Player', id: string, name: string, dropped: boolean, paid: boolean, deleted: boolean }, player2?: { __typename?: 'Player', id: string, name: string, dropped: boolean, paid: boolean, deleted: boolean } | null, timer?: { __typename?: 'Timer', matchId?: string | null, id: string, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null }> }>, players: { __typename?: 'PlayerConnection', totalCount: number } } };
 
 export type SetMatchResolutionMutationVariables = Exact<{
   id: Scalars['ID'];
@@ -1418,7 +1426,7 @@ export type EventTimersQueryVariables = Exact<{
 }>;
 
 
-export type EventTimersQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, slug: string, deleted: boolean, currentRound?: { __typename?: 'Round', id: string, timers: Array<{ __typename?: 'Timer', id: string, roundId: string, matchId?: string | null, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> }>, matches: Array<{ __typename?: 'Match', id: string, table: number, player1: { __typename?: 'Player', id: string, name: string }, player2?: { __typename?: 'Player', id: string, name: string } | null, timer?: { __typename?: 'Timer', id: string } | null }> } | null } };
+export type EventTimersQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, slug: string, deleted: boolean, currentRound?: { __typename?: 'Round', id: string, timers: Array<{ __typename?: 'Timer', id: string, label?: string | null, isPrimary: boolean, isExpired: boolean, isPaused: boolean, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> }>, matches: Array<{ __typename?: 'Match', id: string, table: number, player1: { __typename?: 'Player', id: string, name: string }, player2?: { __typename?: 'Player', id: string, name: string } | null, timer?: { __typename?: 'Timer', id: string } | null }> } | null } };
 
 export type EventsIndexQueryVariables = Exact<{
   deleted?: InputMaybe<DeletedFilter>;
@@ -1615,7 +1623,6 @@ export const RoundListItemDropdownFragmentDoc = gql`
 export const TimerPhaseFragmentDoc = gql`
     fragment TimerPhase on TimerPhase {
   id
-  name
   position
   durationInSeconds
   offsetFromStart
@@ -1629,13 +1636,8 @@ export const TimerPhaseFragmentDoc = gql`
 export const TimerFragmentDoc = gql`
     fragment Timer on Timer {
   id
-  roundId
-  matchId
-  label
   instant
-  isExpired
   expiresAt
-  isPaused
   pausedAt
   totalDurationInSeconds
   phases {
@@ -1643,6 +1645,17 @@ export const TimerFragmentDoc = gql`
   }
 }
     ${TimerPhaseFragmentDoc}`;
+export const RoundListItemHeaderTimerFragmentDoc = gql`
+    fragment RoundListItemHeaderTimer on Timer {
+  matchId
+  isExpired
+  ...Timer
+  phases {
+    id
+    name
+  }
+}
+    ${TimerFragmentDoc}`;
 export const RoundListItemHeaderFragmentDoc = gql`
     fragment RoundListItemHeader on Round {
   id
@@ -1651,19 +1664,29 @@ export const RoundListItemHeaderFragmentDoc = gql`
   isComplete
   ...RoundListItemDropdown
   primaryTimer {
-    ...Timer
+    ...RoundListItemHeaderTimer
   }
 }
     ${RoundListItemDropdownFragmentDoc}
-${TimerFragmentDoc}`;
+${RoundListItemHeaderTimerFragmentDoc}`;
 export const RoundListItemMatchTimerFragmentDoc = gql`
-    fragment RoundListItemMatchTimer on Match {
-  id
-  timer {
-    ...Timer
+    fragment RoundListItemMatchTimer on Timer {
+  matchId
+  ...Timer
+  phases {
+    id
+    name
   }
 }
     ${TimerFragmentDoc}`;
+export const RoundListItemMatchWithTimerFragmentDoc = gql`
+    fragment RoundListItemMatchWithTimer on Match {
+  id
+  timer {
+    ...RoundListItemMatchTimer
+  }
+}
+    ${RoundListItemMatchTimerFragmentDoc}`;
 export const RoundListItemMatchGridCardFragmentDoc = gql`
     fragment RoundListItemMatchGridCard on Match {
   id
@@ -1687,14 +1710,14 @@ export const RoundListItemMatchGridFragmentDoc = gql`
   id
   number
   matches {
-    ...RoundListItemMatchTimer
+    ...RoundListItemMatchWithTimer
     ...RoundListItemMatchGridCard
   }
   primaryTimer {
     id
   }
 }
-    ${RoundListItemMatchTimerFragmentDoc}
+    ${RoundListItemMatchWithTimerFragmentDoc}
 ${RoundListItemMatchGridCardFragmentDoc}`;
 export const RoundListItemMatchListItemFragmentDoc = gql`
     fragment RoundListItemMatchListItem on Match {
@@ -1717,14 +1740,14 @@ export const RoundListItemMatchListFragmentDoc = gql`
   id
   isComplete
   matches {
-    ...RoundListItemMatchTimer
+    ...RoundListItemMatchWithTimer
     ...RoundListItemMatchListItem
   }
   primaryTimer {
     id
   }
 }
-    ${RoundListItemMatchTimerFragmentDoc}
+    ${RoundListItemMatchWithTimerFragmentDoc}
 ${RoundListItemMatchListItemFragmentDoc}`;
 export const RoundListItemMatchFragmentDoc = gql`
     fragment RoundListItemMatch on Round {
@@ -1772,12 +1795,26 @@ export const SlipMatchFragmentDoc = gql`
   table
 }
     `;
+export const TimerListItemPhaseFragmentDoc = gql`
+    fragment TimerListItemPhase on TimerPhase {
+  id
+  name
+}
+    `;
 export const TimerListItemFragmentDoc = gql`
     fragment TimerListItem on Timer {
   id
+  label
+  isPrimary
+  isExpired
+  isPaused
   ...Timer
+  phases {
+    ...TimerListItemPhase
+  }
 }
-    ${TimerFragmentDoc}`;
+    ${TimerFragmentDoc}
+${TimerListItemPhaseFragmentDoc}`;
 export const TimerMatchSelectFragmentDoc = gql`
     fragment TimerMatchSelect on Round {
   matches {
@@ -2426,11 +2463,11 @@ export const RoundListItemMatchTimerCreatedDocument = gql`
     subscription RoundListItemMatchTimerCreated($roundId: ID!) {
   timerCreated(roundId: $roundId) {
     timer {
-      ...Timer
+      ...RoundListItemMatchTimer
     }
   }
 }
-    ${TimerFragmentDoc}`;
+    ${RoundListItemMatchTimerFragmentDoc}`;
 
 /**
  * __useRoundListItemMatchTimerCreatedSubscription__
@@ -2458,11 +2495,11 @@ export const RoundListItemMatchTimerUpdatedDocument = gql`
     subscription RoundListItemMatchTimerUpdated($roundId: ID!) {
   timerUpdated(roundId: $roundId) {
     timer {
-      ...Timer
+      ...RoundListItemMatchTimer
     }
   }
 }
-    ${TimerFragmentDoc}`;
+    ${RoundListItemMatchTimerFragmentDoc}`;
 
 /**
  * __useRoundListItemMatchTimerUpdatedSubscription__
@@ -2556,11 +2593,11 @@ export const RoundListItemHeaderTimerCreatedDocument = gql`
     subscription RoundListItemHeaderTimerCreated($roundId: ID!) {
   timerCreated(roundId: $roundId) {
     timer {
-      ...Timer
+      ...RoundListItemHeaderTimer
     }
   }
 }
-    ${TimerFragmentDoc}`;
+    ${RoundListItemHeaderTimerFragmentDoc}`;
 
 /**
  * __useRoundListItemHeaderTimerCreatedSubscription__
@@ -2588,11 +2625,11 @@ export const RoundListItemHeaderTimerUpdatedDocument = gql`
     subscription RoundListItemHeaderTimerUpdated($roundId: ID!) {
   timerUpdated(roundId: $roundId) {
     timer {
-      ...Timer
+      ...RoundListItemHeaderTimer
     }
   }
 }
-    ${TimerFragmentDoc}`;
+    ${RoundListItemHeaderTimerFragmentDoc}`;
 
 /**
  * __useRoundListItemHeaderTimerUpdatedSubscription__

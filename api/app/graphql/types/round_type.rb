@@ -72,7 +72,7 @@ module Types
 
     # @return [::Timer, nil]
     def primary_timer
-      timers(include_expired: false, include_match_timers: false).min_by(&:created_at)
+      dataloader.with(Sources::Record, ::Timer, :round_id, scope: ::Timer.primary).load(object.id)
     end
 
     # @param limit [Integer, nil]

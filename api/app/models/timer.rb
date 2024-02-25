@@ -11,6 +11,7 @@
 #  label      :string
 #  expires_at :datetime
 #  paused_at  :datetime
+#  primary    :boolean          default(FALSE), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
@@ -43,6 +44,8 @@ class Timer < ApplicationRecord
   validate if: -> { match.present? } do
     # Ensure the match belongs to the timer's round.
     errors.add(:match, :invalid) if match.round != round
+    # Prevent a match-specific timer from being primary.
+    errors.add(:base, :cannot_be_primary) if primary?
   end
 
   before_create do
@@ -52,6 +55,14 @@ class Timer < ApplicationRecord
 
   before_create if: -> { match.present? } do
     self.label ||= "Table #{match.table} - #{match.player1.name} vs. #{match.player2&.name || 'BYE'}"
+  end
+
+  before_save if: -> { new_record? && match.blank? } do
+    self.primary = true if Timer.where(round_id:).not_expired.none?
+  end
+
+  before_save if: -> { primary_changed?(to: true) } do
+    Timer.primary.where(round_id:).excluding(self).update_all(primary: false) # rubocop:disable Rails/SkipsModelValidations
   end
 
   before_save if: :phases_changed? do
@@ -106,6 +117,11 @@ class Timer < ApplicationRecord
     now = Arel::Nodes::NamedFunction.new('NOW', [])
     where(arel_table[:expires_at].gt(now))
   }
+
+  # @!method self.primary
+  #   Returns the primary timer for each round.
+  #   @return [Class<Timer>]
+  scope :primary, -> { where(primary: true) }
 
   # The currently active phase, if any.
   #

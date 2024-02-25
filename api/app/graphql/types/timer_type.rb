@@ -7,6 +7,9 @@ module Types
     field :match_id, ID, null: true
 
     field :label, String, null: true
+    field :is_primary, Boolean, null: false, method: :primary? do
+      description 'Whether this timer is the primary timer for the round'
+    end
     field :expires_at, GraphQL::Types::ISO8601DateTime, null: false
     field :is_expired, Boolean, null: false, resolver_method: :expired?
     field :paused_at, GraphQL::Types::ISO8601DateTime, null: true

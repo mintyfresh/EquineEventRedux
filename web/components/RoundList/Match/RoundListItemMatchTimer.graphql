@@ -1,7 +1,7 @@
 subscription RoundListItemMatchTimerCreated($roundId: ID!) {
   timerCreated(roundId: $roundId) {
     timer {
-      ...Timer
+      ...RoundListItemMatchTimer
     }
   }
 }
@@ -9,7 +9,7 @@ subscription RoundListItemMatchTimerCreated($roundId: ID!) {
 subscription RoundListItemMatchTimerUpdated($roundId: ID!) {
   timerUpdated(roundId: $roundId) {
     timer {
-      ...Timer
+      ...RoundListItemMatchTimer
     }
   }
 }
@@ -20,9 +20,18 @@ subscription RoundListItemMatchTimerDeleted($roundId: ID!) {
   }
 }
 
-fragment RoundListItemMatchTimer on Match {
+fragment RoundListItemMatchWithTimer on Match {
   id
   timer {
-    ...Timer
+    ...RoundListItemMatchTimer
+  }
+}
+
+fragment RoundListItemMatchTimer on Timer {
+  matchId
+  ...Timer
+  phases {
+    id
+    name
   }
 }

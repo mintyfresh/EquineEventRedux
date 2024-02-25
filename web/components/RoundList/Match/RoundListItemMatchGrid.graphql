@@ -2,7 +2,7 @@ fragment RoundListItemMatchGrid on Round {
   id
   number
   matches {
-    ...RoundListItemMatchTimer
+    ...RoundListItemMatchWithTimer
     ...RoundListItemMatchGridCard
   }
   primaryTimer {

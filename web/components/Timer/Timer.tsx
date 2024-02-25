@@ -8,13 +8,13 @@ const SECONDS_PER_MINUTE = 60
 const MINUTES_PER_HOUR = 60
 const SECONDS_PER_HOUR = SECONDS_PER_MINUTE * MINUTES_PER_HOUR
 
-const calculateTimeRemaining = (expiresAt: Date, pausedAt: Date | null, latency: number) => {
+function calculateTimeRemaining(expiresAt: Date, pausedAt: Date | null, latency: number): number {
   const now = pausedAt ? pausedAt.getTime() : Date.now() - latency
 
   return Math.max(0, (expiresAt.getTime() - now) / MILLIS_PER_SECOND)
 }
 
-const calculateCurrentPhase = (phases: TimerPhaseFragment[], timeElapsed: number) => {
+function calculateCurrentPhase<Phase extends TimerPhaseFragment>(phases: Phase[], timeElapsed: number): Phase | null {
   return phases.find((phase) => {
     const phaseStart = phase.offsetFromStart
     const phaseEnd   = phaseStart + phase.durationInSeconds
@@ -23,7 +23,7 @@ const calculateCurrentPhase = (phases: TimerPhaseFragment[], timeElapsed: number
   }) ?? null
 }
 
-const calculateTimeRemainingInPhase = (timeRemaining: number, currentPhase: TimerPhaseFragment | null) => {
+function calculateTimeRemainingInPhase<Phase extends TimerPhaseFragment>(timeRemaining: number, currentPhase: Phase | null): number {
   if (!currentPhase) {
     return 0
   }
@@ -31,14 +31,14 @@ const calculateTimeRemainingInPhase = (timeRemaining: number, currentPhase: Time
   return Math.max(0, timeRemaining - currentPhase.offsetFromEnd)
 }
 
-export interface TimerProps extends React.HTMLAttributes<HTMLSpanElement> {
-  timer: TimerFragment
+export interface TimerProps<Timer extends TimerFragment, Phase extends TimerPhaseFragment = Timer['phases'][0]> extends React.HTMLAttributes<HTMLSpanElement> {
+  timer: Timer
   audioEnabled?: boolean
-  formatter(hours: number, minutes: number, seconds: number, phase: TimerPhaseFragment | null, timer: TimerFragment): React.ReactNode | string
+  formatter(hours: number, minutes: number, seconds: number, phase: Phase | null, timer: Timer): React.ReactNode | string
 }
 
-const Timer: React.FC<TimerProps> = ({ timer, audioEnabled, formatter, ...props }) => {
-  const [phase, setPhase] = useState<TimerPhaseFragment | null>(null)
+function Timer<Timer extends TimerFragment & { phases: Phase[] }, Phase extends TimerPhaseFragment = Timer['phases'][0]>({ timer, audioEnabled, formatter, ...props }: TimerProps<Timer, Phase>) {
+  const [phase, setPhase] = useState<Phase | null>(null)
   const [hours, setHours] = useState(0)
   const [minutes, setMinutes] = useState(0)
   const [seconds, setSeconds] = useState(0)
@@ -60,8 +60,8 @@ const Timer: React.FC<TimerProps> = ({ timer, audioEnabled, formatter, ...props 
     const interval = setInterval(() => {
       const timeRemaining = calculateTimeRemaining(expiresAt, pausedAt, latency)
       const timeElapsed = timer.totalDurationInSeconds - timeRemaining
-      const currentPhase = calculateCurrentPhase(timer.phases, timeElapsed)
-      const timeRemainingInPhase = calculateTimeRemainingInPhase(timeRemaining, currentPhase)
+      const currentPhase = calculateCurrentPhase<Phase>(timer.phases, timeElapsed)
+      const timeRemainingInPhase = calculateTimeRemainingInPhase<Phase>(timeRemaining, currentPhase)
 
       setHours(Math.floor(timeRemainingInPhase / SECONDS_PER_HOUR))
       setMinutes(Math.floor((timeRemainingInPhase % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE))

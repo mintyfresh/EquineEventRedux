@@ -167,6 +167,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_23_024122) do
     t.string "label"
     t.datetime "expires_at", precision: nil
     t.datetime "paused_at", precision: nil
+    t.boolean "primary", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["match_id"], name: "index_timers_on_match_id", unique: true

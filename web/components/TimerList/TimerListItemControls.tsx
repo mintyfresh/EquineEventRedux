@@ -2,19 +2,21 @@ import { IconDefinition, faBackwardFast, faCircle, faCirclePause, faFastForward,
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React, { useState } from 'react'
 import { Button, Card, Col, Collapse, Form, Row } from 'react-bootstrap'
-import { TimerListFragment, TimerListItemFragment, TimerMatchSelectFragment, useCloneTimerWithExtensionMutation, useDeleteTimerMutation, usePauseTimerMutation, useResetTimerMutation, useSkipTimerToNextPhaseMutation, useUnpauseTimerMutation } from '../../lib/generated/graphql'
+import { TimerListFragment, TimerListItemFragment, useCloneTimerWithExtensionMutation, useDeleteTimerMutation, usePauseTimerMutation, useResetTimerMutation, useSkipTimerToNextPhaseMutation, useUnpauseTimerMutation } from '../../lib/generated/graphql'
 
 interface TimerControlsButtonProps extends React.ComponentProps<typeof Button> {
   icon: IconDefinition
   color?: string
+  ref?: React.ForwardedRef<HTMLButtonElement>
 }
 
-const TimerControlsButton: React.FC<TimerControlsButtonProps> = ({ icon, color, ...props }) => (
+const TimerControlsButton: React.FC<TimerControlsButtonProps> = ({ icon, color, ref, ...props }) => (
   <Button
     variant="outline-secondary"
     className="mx-1"
     style={{ 'borderWidth': '2px' }}
     {...props}
+    ref={ref}
   >
     <FontAwesomeIcon icon={icon} color={color ?? 'black'} />
   </Button>

@@ -8,5 +8,17 @@ mutation UpdateTimer($id: ID!, $input: TimerUpdateInput!) {
 
 fragment TimerListItem on Timer {
   id
+  label
+  isPrimary
+  isExpired
+  isPaused
   ...Timer
+  phases {
+    ...TimerListItemPhase
+  }
+}
+
+fragment TimerListItemPhase on TimerPhase {
+  id
+  name
 }
