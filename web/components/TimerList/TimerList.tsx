@@ -17,7 +17,7 @@ const upsertTimerListItem = (timers: TimerListItemFragment[], timer: TimerListIt
   // the `Timer` embeds an `instant` field, which indicates when the timer was served to the client
   // hence, we can use this to prevent overwriting newer timer data with older data
   const latestTimer = new Date(timer.instant).getTime() > new Date(timers[index].instant).getTime()
-    ? timer // if the new timer object is most recent, use it
+    ? { ... timers[index], ...timer } // if the new timer object is most recent, use it
     : timers[index] // otherwise, keep the existing one
 
   return [

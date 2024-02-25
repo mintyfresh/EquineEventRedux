@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { TimerListFragment, TimerListItemFragment, useUpdateTimerMutation } from '../../lib/generated/graphql'
 import Timer from '../Timer/Timer'
 import TimerListItemControls from './TimerListItemControls'
@@ -13,6 +13,8 @@ export interface TimerListItemProps {
 }
 
 const TimerListItem: React.FC<TimerListItemProps> = ({ timerList, timer, readOnly, onCreate, onUpdate, onDelete }) => {
+  const [label, setLabel] = useState(timer.label)
+
   const [updateTimer, {}] = useUpdateTimerMutation({
     onCompleted({ timerUpdate }) {
       if (timerUpdate?.timer) {
@@ -20,6 +22,10 @@ const TimerListItem: React.FC<TimerListItemProps> = ({ timerList, timer, readOnl
       }
     }
   })
+
+  useEffect(() => {
+    setLabel(timer.label)
+  }, [timer.label])
 
   return (
     <div className="text-center mb-5">
@@ -44,7 +50,8 @@ const TimerListItem: React.FC<TimerListItemProps> = ({ timerList, timer, readOnl
         <div className="mb-3">
           <input
             type="text"
-            defaultValue={timer.label ?? ''}
+            value={label ?? ''}
+            onChange={(event) => setLabel(event.currentTarget.value)}
             placeholder="Click to add label"
             readOnly={readOnly}
             style={{ 'fontSize': '36px', 'fontWeight': 'lighter', 'textAlign': 'center', 'border': 'none', 'borderBottom': readOnly ? 'none' : '1px solid #000' }}
