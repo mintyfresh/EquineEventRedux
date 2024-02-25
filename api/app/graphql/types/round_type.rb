@@ -19,6 +19,10 @@ module Types
       extension Extensions::Players::ActiveOnlyExtension
     end
 
+    field :primary_timer, Types::TimerType, null: true do
+      description 'The primary timer for the round'
+    end
+
     field :timers, [Types::TimerType], null: false do
       argument :limit, Integer, required: false do
         description 'The maximum number of timers to return (default: no limit)'
@@ -64,6 +68,11 @@ module Types
       players = players.where.not(id: player_ids)
 
       dataloader.with(Sources::RecordList, ::Player, :event_id, scope: players).load(object.event_id)
+    end
+
+    # @return [::Timer, nil]
+    def primary_timer
+      timers(include_expired: false, include_match_timers: false).min_by(&:created_at)
     end
 
     # @param limit [Integer, nil]
