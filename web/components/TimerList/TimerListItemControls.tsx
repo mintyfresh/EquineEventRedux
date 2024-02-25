@@ -158,7 +158,6 @@ const TimerListItemControls: React.FC<TimerListItemControlsProps> = ({ timerList
               <Form.Select
                 title="Assign extension to a table"
                 className="mt-2"
-                placeholder="Assign extension to a table"
                 value={matchId ?? ''}
                 onChange={(event) => setMatchId(event.currentTarget.value || null)}
               >

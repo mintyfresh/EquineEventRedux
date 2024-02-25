@@ -35,5 +35,13 @@ FactoryBot.define do
 
       matches { build_list(:match, matches_count, event:, round: instance) }
     end
+
+    trait :with_timers do
+      transient do
+        timers_count { 3 }
+      end
+
+      timers { build_list(:timer, timers_count, round: instance) }
+    end
   end
 end

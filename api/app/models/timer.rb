@@ -80,17 +80,7 @@ class Timer < ApplicationRecord
     Timer.active.primary.where(round_id:).excluding(self).first&.update!(primary: true)
   end
 
-  after_create_commit do
-    EquineEventApiSchema.subscriptions.trigger(:timer_created, { round_id: }, { timer: self })
-  end
-
-  after_update_commit if: :saved_changes? do
-    EquineEventApiSchema.subscriptions.trigger(:timer_updated, { round_id: }, { timer: self })
-  end
-
-  after_destroy_commit do
-    EquineEventApiSchema.subscriptions.trigger(:timer_deleted, { round_id: }, { timer_id: id })
-  end
+  publishes_messages_on :create, :update, :destroy
 
   # @!method self.active
   #   Returns active timers.
@@ -172,7 +162,7 @@ class Timer < ApplicationRecord
   # @param at [Time] the time at which to check for expiration
   # @return [Boolean]
   def expired?(at = Time.current)
-    expires_at <= at && !paused?
+    expires_at.present? && expires_at <= at && !paused?
   end
 
   # Checks if the timer is paused.

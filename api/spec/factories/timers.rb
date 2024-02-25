@@ -32,6 +32,10 @@ FactoryBot.define do
     round
     preset factory: :timer_preset
 
+    trait :primary do
+      primary { true }
+    end
+
     trait :paused do
       paused_at { Time.current }
     end

@@ -71,9 +71,63 @@ RSpec.describe Timer do
     expect(timer.phases.map(&:preset_phase)).to eq(timer.preset.phases)
   end
 
-  it 'starts at teh first phase' do
+  it 'starts at the first phase' do
     timer.save!
     expect(timer.current_phase).to eq(timer.phases.first)
+  end
+
+  it 'marks itself as primary if no other timers are active for the round' do
+    timer.save!
+    expect(timer).to be_primary
+  end
+
+  context 'when a primary timer already exists for the round' do
+    subject(:timer) { build(:timer, round:) }
+
+    let!(:round) { create(:round, :with_timers, timers_count: 1) }
+    let(:primary_timer) { round.timers.first }
+
+    it 'does not mark itself as primary' do
+      timer.save!
+      expect(timer).not_to be_primary
+    end
+
+    it 'replaces the primary timer if it is expired', :aggregate_failures do
+      primary_timer.update!(expires_at: 1.second.ago)
+      timer.save!
+      expect(primary_timer.reload).not_to be_primary
+      expect(timer).to be_primary
+    end
+
+    it 'replaces the primary timer if manually set to primary', :aggregate_failures do
+      timer.primary = true
+      timer.save!
+      expect(primary_timer.reload).not_to be_primary
+      expect(timer).to be_primary
+    end
+  end
+
+  it 'publishes a message on create' do
+    expect { timer.save! }.to have_published(described_class, :create)
+      .with(timer:)
+  end
+
+  it 'publishes a message on update' do
+    timer.save!
+    timer.label = 'New label'
+    expect { timer.save! }.to have_published(described_class, :update)
+      .with(timer:, changes: a_hash_including('label' => [nil, 'New label']))
+  end
+
+  it 'does not publish a message on update if there are no changes' do
+    timer.save!
+    expect { timer.save! }.not_to have_published(described_class, :update)
+  end
+
+  it 'publishes a message on destroy' do
+    timer.save!
+    expect { timer.destroy! }.to have_published(described_class, :destroy)
+      .with(timer:, changes: {})
   end
 
   describe '#pause!' do
@@ -140,6 +194,14 @@ RSpec.describe Timer do
     it 'adds the extension to the total duration of the new timer' do
       dup_with_extension.save!
       expect(dup_with_extension.total_duration).to eq(timer.total_duration + extension_in_seconds.seconds)
+    end
+
+    context 'when the source timer is the primary timer' do
+      let(:timer) { create(:timer, :primary) }
+
+      it 'does not mark the new timer as primary' do
+        expect(dup_with_extension).not_to be_primary
+      end
     end
   end
 end
