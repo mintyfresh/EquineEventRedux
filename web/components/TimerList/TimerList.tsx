@@ -3,6 +3,7 @@ import { Alert, Col, Row } from 'react-bootstrap'
 import { TimerListFragment, TimerListFragmentDoc, TimerListItemFragment, useTimerListItemCreatedSubscription, useTimerListItemDeletedSubscription, useTimerListItemUpdatedSubscription } from '../../lib/generated/graphql'
 import TimerListControlBar from './TimerListControlBar'
 import TimerListItem from './TimerListItem'
+import { useApolloClient } from '../../lib/graphql/client'
 
 const upsertTimerListItem = (timers: TimerListItemFragment[], timer: TimerListItemFragment) => {
   const index = timers.findIndex((t) => t.id === timer.id)
@@ -28,33 +29,63 @@ const upsertTimerListItem = (timers: TimerListItemFragment[], timer: TimerListIt
 
 export interface TimerListProps {
   timerList: TimerListFragment
-  onTimerCreate?(timer: TimerListItemFragment): void
-  onTimerUpdate?(timer: TimerListItemFragment): void
-  onTimerDelete?(timer: TimerListItemFragment): void
   readOnly?: boolean
 }
 
-const TimerList: React.FC<TimerListProps> = ({ timerList, onTimerCreate, onTimerUpdate, onTimerDelete, readOnly }) => {
+const TimerList: React.FC<TimerListProps> = ({ timerList, readOnly }) => {
+  const client = useApolloClient()
+
+  const onTimerCreate = (timer: TimerListItemFragment) => {
+    client.cache.updateFragment<TimerListFragment>(
+      {
+        id: client.cache.identify(timerList),
+        fragment: TimerListFragmentDoc,
+        fragmentName: 'TimerList'
+      },
+      (data) => ({
+        ...data ?? timerList,
+        timers: upsertTimerListItem((data ?? timerList).timers, timer)
+      })
+    )
+  }
+
+  const onTimerUpdate = (timer: TimerListItemFragment) => {
+    client.cache.updateFragment<TimerListFragment>(
+      {
+        id: client.cache.identify(timerList),
+        fragment: TimerListFragmentDoc,
+        fragmentName: 'TimerList'
+      },
+      (data) => ({
+        ...data ?? timerList,
+        timers: upsertTimerListItem((data ?? timerList).timers, timer)
+      })
+    )
+  }
+
+  const onTimerDelete = (timerId: string) => {
+    client.cache.updateFragment<TimerListFragment>(
+      {
+        id: client.cache.identify(timerList),
+        fragment: TimerListFragmentDoc,
+        fragmentName: 'TimerList',
+        overwrite: true
+      },
+      (data) => ({
+        ...data ?? timerList,
+        timers: (data ?? timerList).timers.filter((timer) => timer.id !== timerId)
+      })
+    )
+  }
+
   useTimerListItemCreatedSubscription({
     variables: { roundId: timerList.id },
     fetchPolicy: 'no-cache', // manage cache manually
-    onData({ client, data: { data } }) {
-      if (!data?.timerCreated?.timer) return
-
-      const timer = data.timerCreated.timer
-
-      // add the new timer to the list
-      client.cache.updateFragment<TimerListFragment>(
-        {
-          id: client.cache.identify(timerList),
-          fragment: TimerListFragmentDoc,
-          fragmentName: 'TimerList'
-        },
-        (data) => ({
-          ...data ?? timerList,
-          timers: upsertTimerListItem((data ?? timerList).timers, timer)
-        })
-      )
+    onData({ data: { data } }) {
+      if (data?.timerCreated?.timer) {
+        // add the new timer to the list
+        onTimerCreate(data.timerCreated.timer)
+      }
     }
   })
 
@@ -62,22 +93,10 @@ const TimerList: React.FC<TimerListProps> = ({ timerList, onTimerCreate, onTimer
     variables: { roundId: timerList.id },
     fetchPolicy: 'no-cache', // manage cache manually
     onData({ client, data: { data } }) {
-      if (!data?.timerUpdated?.timer) return
-
-      const timer = data.timerUpdated.timer
-
-      // update the current timer
-      client.cache.updateFragment<TimerListFragment>(
-        {
-          id: client.cache.identify(timerList),
-          fragment: TimerListFragmentDoc,
-          fragmentName: 'TimerList'
-        },
-        (data) => ({
-          ...data ?? timerList,
-          timers: upsertTimerListItem((data ?? timerList).timers, timer)
-        })
-      )
+      if (data?.timerUpdated?.timer) {
+        // update the current timer
+        onTimerUpdate(data.timerUpdated.timer)
+      }
     }
   })
 
@@ -85,23 +104,10 @@ const TimerList: React.FC<TimerListProps> = ({ timerList, onTimerCreate, onTimer
     variables: { roundId: timerList.id },
     fetchPolicy: 'no-cache', // manage cache manually
     onData({ client, data: { data } }) {
-      if (!data?.timerDeleted?.timerId) return
-
-      const id = data.timerDeleted.timerId
-
-      // remove the timer from the list
-      client.cache.updateFragment<TimerListFragment>(
-        {
-          id: client.cache.identify(timerList),
-          fragment: TimerListFragmentDoc,
-          fragmentName: 'TimerList',
-          overwrite: true
-        },
-        (data) => ({
-          ...data ?? timerList,
-          timers: (data ?? timerList).timers.filter((timer) => timer.id !== id)
-        })
-      )
+      if (data?.timerDeleted?.timerId) {
+        // remove the timer from the list
+        onTimerDelete(data.timerDeleted.timerId)
+      }
     }
   
   })
@@ -124,7 +130,7 @@ const TimerList: React.FC<TimerListProps> = ({ timerList, onTimerCreate, onTimer
                 readOnly={readOnly}
                 onCreate={onTimerCreate}
                 onUpdate={onTimerUpdate}
-                onDelete={onTimerDelete}
+                onDelete={({ id }) => onTimerDelete(id)}
               />
             </Col>
           ))}
