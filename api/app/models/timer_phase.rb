@@ -45,6 +45,7 @@ class TimerPhase < ApplicationRecord
   def self.build_from_preset_phase(phase)
     new(
       preset_phase:      phase,
+      audio_clip:        phase.audio_clip,
       name:              phase.name,
       position:          phase.position,
       duration_amount:   phase.duration_amount,
