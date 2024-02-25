@@ -32,102 +32,17 @@ export const getServerSideProps: GetServerSideProps = async ({ params, query }) 
   }
 }
 
-const upsertTimer = (newTimer: TimerListItemFragment, timers: TimerListItemFragment[]): TimerListItemFragment[] => {
-  const index = timers.findIndex(({ id }) => id === newTimer.id)
-
-  // no existing timer, append it to the end
-  if (index === -1) {
-    return [...timers, newTimer]
-  }
-
-  // we may have a data-race between the subscription and the query
-  // the `Timer` embeds an `instant` field, which indicates when the timer was served to the client
-  // hence, we can use this to prevent overwriting newer timer data with older data
-  const updatedTimer =
-    new Date(newTimer.instant).getTime() > new Date(timers[index].instant).getTime()
-      ? newTimer // if the new timer object is most recent, use it
-      : timers[index] // otherwise, keep the existing one
-
-  return [
-    ...timers.slice(0, index),
-    updatedTimer,
-    ...timers.slice(index + 1)
-  ]
-}
-
 type EventTimersPageProps = EventTimersQuery & {
   slug: string
   fullscreen: boolean
 }
 
 const EventTimersPage: NextPageWithLayout<EventTimersPageProps> = ({ slug, fullscreen, event }) => {
-  const eventId = event.id
-  
-  const { data, client } = useEventTimersQuery({
+  const { data } = useEventTimersQuery({
     variables: { eventId: slug }
   })
 
   const currentRound = data ? data.event.currentRound : event.currentRound
-  const roundId = currentRound?.id
-  const roundTimers = currentRound?.timers ?? []
-
-  const onTimerCreate = (timer: TimerListItemFragment) => {
-    data && client.writeQuery<EventTimersQuery, EventTimersQueryVariables>({
-      query: EventTimersDocument,
-      variables: { eventId },
-      data: {
-        ...data,
-        event: {
-          ...data.event,
-          currentRound: data.event.currentRound && {
-            ...data.event.currentRound,
-            timers: upsertTimer(timer, roundTimers)
-          }
-        }
-      }
-    })
-  }
-
-  const onTimerDelete = (id: string) => {
-    data && client.writeQuery<EventTimersQuery, EventTimersQueryVariables>({
-      query: EventTimersDocument,
-      variables: { eventId },
-      overwrite: true,
-      data: {
-        ...data,
-        event: {
-          ...data.event,
-          currentRound: data.event.currentRound && {
-            ...data.event.currentRound,
-            timers: roundTimers.filter((timer) => timer.id !== id)
-          }
-        }
-      }
-    })
-  }
-
-  useTimerCreatedSubscription({
-    skip: !roundId,
-    fetchPolicy: 'no-cache', // we manually add the element to the cache
-    variables: { roundId: roundId! },
-    onData: ({ data: { data: subscription } }) => {
-      subscription?.timerCreated && onTimerCreate(subscription.timerCreated.timer)
-    }
-  })
-
-  useTimerUpdatedSubscription({
-    skip: !roundId,
-    variables: { roundId: roundId! } // apollo will automatically handle these events
-  })
-
-  useTimerDeletedSubscription({
-    skip: !roundId,
-    fetchPolicy: 'no-cache', // we manually remove the element from the cache
-    variables: { roundId: roundId! },
-    onData: ({ data: { data: subscription } }) => {
-      subscription?.timerDeleted && onTimerDelete(subscription.timerDeleted.timerId)
-    }
-  })
 
   if (!currentRound) {
     return (
@@ -140,8 +55,6 @@ const EventTimersPage: NextPageWithLayout<EventTimersPageProps> = ({ slug, fulls
   return (
     <TimerList
       timerList={currentRound}
-      onTimerCreate={onTimerCreate}
-      onTimerDelete={({ id }) => onTimerDelete(id)}
       readOnly={fullscreen}
     />
   )

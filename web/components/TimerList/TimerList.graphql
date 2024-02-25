@@ -1,3 +1,25 @@
+subscription TimerListItemCreated($roundId: ID!) {
+  timerCreated(roundId: $roundId) {
+    timer {
+      ...TimerListItem
+    }
+  }
+}
+
+subscription TimerListItemUpdated($roundId: ID!) {
+  timerUpdated(roundId: $roundId) {
+    timer {
+      ...TimerListItem
+    }
+  }
+}
+
+subscription TimerListItemDeleted($roundId: ID!) {
+  timerDeleted(roundId: $roundId) {
+    timerId
+  }
+}
+
 fragment TimerList on Round {
   id
   timers {

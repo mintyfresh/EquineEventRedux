@@ -1246,6 +1246,27 @@ export type TimerFragment = { __typename?: 'Timer', id: string, roundId: string,
 
 export type TimerPhaseFragment = { __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null };
 
+export type TimerListItemCreatedSubscriptionVariables = Exact<{
+  roundId: Scalars['ID'];
+}>;
+
+
+export type TimerListItemCreatedSubscription = { __typename?: 'Subscription', timerCreated: { __typename?: 'TimerCreatedPayload', timer: { __typename?: 'Timer', id: string, roundId: string, matchId?: string | null, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } } };
+
+export type TimerListItemUpdatedSubscriptionVariables = Exact<{
+  roundId: Scalars['ID'];
+}>;
+
+
+export type TimerListItemUpdatedSubscription = { __typename?: 'Subscription', timerUpdated: { __typename?: 'TimerUpdatedPayload', timer: { __typename?: 'Timer', id: string, roundId: string, matchId?: string | null, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } } };
+
+export type TimerListItemDeletedSubscriptionVariables = Exact<{
+  roundId: Scalars['ID'];
+}>;
+
+
+export type TimerListItemDeletedSubscription = { __typename?: 'Subscription', timerDeleted: { __typename?: 'TimerDeletedPayload', timerId: string } };
+
 export type TimerListFragment = { __typename?: 'Round', id: string, timers: Array<{ __typename?: 'Timer', id: string, roundId: string, matchId?: string | null, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> }>, matches: Array<{ __typename?: 'Match', id: string, table: number, player1: { __typename?: 'Player', id: string, name: string }, player2?: { __typename?: 'Player', id: string, name: string } | null, timer?: { __typename?: 'Timer', id: string } | null }> };
 
 export type PauseAllEventTimersMutationVariables = Exact<{
@@ -1398,27 +1419,6 @@ export type EventTimersQueryVariables = Exact<{
 
 
 export type EventTimersQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, slug: string, deleted: boolean, currentRound?: { __typename?: 'Round', id: string, timers: Array<{ __typename?: 'Timer', id: string, roundId: string, matchId?: string | null, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> }>, matches: Array<{ __typename?: 'Match', id: string, table: number, player1: { __typename?: 'Player', id: string, name: string }, player2?: { __typename?: 'Player', id: string, name: string } | null, timer?: { __typename?: 'Timer', id: string } | null }> } | null } };
-
-export type TimerCreatedSubscriptionVariables = Exact<{
-  roundId: Scalars['ID'];
-}>;
-
-
-export type TimerCreatedSubscription = { __typename?: 'Subscription', timerCreated: { __typename?: 'TimerCreatedPayload', timer: { __typename?: 'Timer', id: string, roundId: string, matchId?: string | null, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } } };
-
-export type TimerUpdatedSubscriptionVariables = Exact<{
-  roundId: Scalars['ID'];
-}>;
-
-
-export type TimerUpdatedSubscription = { __typename?: 'Subscription', timerUpdated: { __typename?: 'TimerUpdatedPayload', timer: { __typename?: 'Timer', id: string, roundId: string, matchId?: string | null, label?: string | null, instant: string, isExpired: boolean, expiresAt: string, isPaused: boolean, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } } };
-
-export type TimerDeletedSubscriptionVariables = Exact<{
-  roundId: Scalars['ID'];
-}>;
-
-
-export type TimerDeletedSubscription = { __typename?: 'Subscription', timerDeleted: { __typename?: 'TimerDeletedPayload', timerId: string } };
 
 export type EventsIndexQueryVariables = Exact<{
   deleted?: InputMaybe<DeletedFilter>;
@@ -2689,6 +2689,100 @@ export function useGeneratePairingsMutation(baseOptions?: Apollo.MutationHookOpt
 export type GeneratePairingsMutationHookResult = ReturnType<typeof useGeneratePairingsMutation>;
 export type GeneratePairingsMutationResult = Apollo.MutationResult<GeneratePairingsMutation>;
 export type GeneratePairingsMutationOptions = Apollo.BaseMutationOptions<GeneratePairingsMutation, GeneratePairingsMutationVariables>;
+export const TimerListItemCreatedDocument = gql`
+    subscription TimerListItemCreated($roundId: ID!) {
+  timerCreated(roundId: $roundId) {
+    timer {
+      ...TimerListItem
+    }
+  }
+}
+    ${TimerListItemFragmentDoc}`;
+
+/**
+ * __useTimerListItemCreatedSubscription__
+ *
+ * To run a query within a React component, call `useTimerListItemCreatedSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useTimerListItemCreatedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTimerListItemCreatedSubscription({
+ *   variables: {
+ *      roundId: // value for 'roundId'
+ *   },
+ * });
+ */
+export function useTimerListItemCreatedSubscription(baseOptions: Apollo.SubscriptionHookOptions<TimerListItemCreatedSubscription, TimerListItemCreatedSubscriptionVariables> & ({ variables: TimerListItemCreatedSubscriptionVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<TimerListItemCreatedSubscription, TimerListItemCreatedSubscriptionVariables>(TimerListItemCreatedDocument, options);
+      }
+export type TimerListItemCreatedSubscriptionHookResult = ReturnType<typeof useTimerListItemCreatedSubscription>;
+export type TimerListItemCreatedSubscriptionResult = Apollo.SubscriptionResult<TimerListItemCreatedSubscription>;
+export const TimerListItemUpdatedDocument = gql`
+    subscription TimerListItemUpdated($roundId: ID!) {
+  timerUpdated(roundId: $roundId) {
+    timer {
+      ...TimerListItem
+    }
+  }
+}
+    ${TimerListItemFragmentDoc}`;
+
+/**
+ * __useTimerListItemUpdatedSubscription__
+ *
+ * To run a query within a React component, call `useTimerListItemUpdatedSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useTimerListItemUpdatedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTimerListItemUpdatedSubscription({
+ *   variables: {
+ *      roundId: // value for 'roundId'
+ *   },
+ * });
+ */
+export function useTimerListItemUpdatedSubscription(baseOptions: Apollo.SubscriptionHookOptions<TimerListItemUpdatedSubscription, TimerListItemUpdatedSubscriptionVariables> & ({ variables: TimerListItemUpdatedSubscriptionVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<TimerListItemUpdatedSubscription, TimerListItemUpdatedSubscriptionVariables>(TimerListItemUpdatedDocument, options);
+      }
+export type TimerListItemUpdatedSubscriptionHookResult = ReturnType<typeof useTimerListItemUpdatedSubscription>;
+export type TimerListItemUpdatedSubscriptionResult = Apollo.SubscriptionResult<TimerListItemUpdatedSubscription>;
+export const TimerListItemDeletedDocument = gql`
+    subscription TimerListItemDeleted($roundId: ID!) {
+  timerDeleted(roundId: $roundId) {
+    timerId
+  }
+}
+    `;
+
+/**
+ * __useTimerListItemDeletedSubscription__
+ *
+ * To run a query within a React component, call `useTimerListItemDeletedSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useTimerListItemDeletedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTimerListItemDeletedSubscription({
+ *   variables: {
+ *      roundId: // value for 'roundId'
+ *   },
+ * });
+ */
+export function useTimerListItemDeletedSubscription(baseOptions: Apollo.SubscriptionHookOptions<TimerListItemDeletedSubscription, TimerListItemDeletedSubscriptionVariables> & ({ variables: TimerListItemDeletedSubscriptionVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<TimerListItemDeletedSubscription, TimerListItemDeletedSubscriptionVariables>(TimerListItemDeletedDocument, options);
+      }
+export type TimerListItemDeletedSubscriptionHookResult = ReturnType<typeof useTimerListItemDeletedSubscription>;
+export type TimerListItemDeletedSubscriptionResult = Apollo.SubscriptionResult<TimerListItemDeletedSubscription>;
 export const PauseAllEventTimersDocument = gql`
     mutation PauseAllEventTimers($roundId: ID!) {
   roundPauseAllTimers(roundId: $roundId) {
@@ -3527,100 +3621,6 @@ export type EventTimersQueryHookResult = ReturnType<typeof useEventTimersQuery>;
 export type EventTimersLazyQueryHookResult = ReturnType<typeof useEventTimersLazyQuery>;
 export type EventTimersSuspenseQueryHookResult = ReturnType<typeof useEventTimersSuspenseQuery>;
 export type EventTimersQueryResult = Apollo.QueryResult<EventTimersQuery, EventTimersQueryVariables>;
-export const TimerCreatedDocument = gql`
-    subscription TimerCreated($roundId: ID!) {
-  timerCreated(roundId: $roundId) {
-    timer {
-      ...TimerListItem
-    }
-  }
-}
-    ${TimerListItemFragmentDoc}`;
-
-/**
- * __useTimerCreatedSubscription__
- *
- * To run a query within a React component, call `useTimerCreatedSubscription` and pass it any options that fit your needs.
- * When your component renders, `useTimerCreatedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useTimerCreatedSubscription({
- *   variables: {
- *      roundId: // value for 'roundId'
- *   },
- * });
- */
-export function useTimerCreatedSubscription(baseOptions: Apollo.SubscriptionHookOptions<TimerCreatedSubscription, TimerCreatedSubscriptionVariables> & ({ variables: TimerCreatedSubscriptionVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useSubscription<TimerCreatedSubscription, TimerCreatedSubscriptionVariables>(TimerCreatedDocument, options);
-      }
-export type TimerCreatedSubscriptionHookResult = ReturnType<typeof useTimerCreatedSubscription>;
-export type TimerCreatedSubscriptionResult = Apollo.SubscriptionResult<TimerCreatedSubscription>;
-export const TimerUpdatedDocument = gql`
-    subscription TimerUpdated($roundId: ID!) {
-  timerUpdated(roundId: $roundId) {
-    timer {
-      ...TimerListItem
-    }
-  }
-}
-    ${TimerListItemFragmentDoc}`;
-
-/**
- * __useTimerUpdatedSubscription__
- *
- * To run a query within a React component, call `useTimerUpdatedSubscription` and pass it any options that fit your needs.
- * When your component renders, `useTimerUpdatedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useTimerUpdatedSubscription({
- *   variables: {
- *      roundId: // value for 'roundId'
- *   },
- * });
- */
-export function useTimerUpdatedSubscription(baseOptions: Apollo.SubscriptionHookOptions<TimerUpdatedSubscription, TimerUpdatedSubscriptionVariables> & ({ variables: TimerUpdatedSubscriptionVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useSubscription<TimerUpdatedSubscription, TimerUpdatedSubscriptionVariables>(TimerUpdatedDocument, options);
-      }
-export type TimerUpdatedSubscriptionHookResult = ReturnType<typeof useTimerUpdatedSubscription>;
-export type TimerUpdatedSubscriptionResult = Apollo.SubscriptionResult<TimerUpdatedSubscription>;
-export const TimerDeletedDocument = gql`
-    subscription TimerDeleted($roundId: ID!) {
-  timerDeleted(roundId: $roundId) {
-    timerId
-  }
-}
-    `;
-
-/**
- * __useTimerDeletedSubscription__
- *
- * To run a query within a React component, call `useTimerDeletedSubscription` and pass it any options that fit your needs.
- * When your component renders, `useTimerDeletedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useTimerDeletedSubscription({
- *   variables: {
- *      roundId: // value for 'roundId'
- *   },
- * });
- */
-export function useTimerDeletedSubscription(baseOptions: Apollo.SubscriptionHookOptions<TimerDeletedSubscription, TimerDeletedSubscriptionVariables> & ({ variables: TimerDeletedSubscriptionVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useSubscription<TimerDeletedSubscription, TimerDeletedSubscriptionVariables>(TimerDeletedDocument, options);
-      }
-export type TimerDeletedSubscriptionHookResult = ReturnType<typeof useTimerDeletedSubscription>;
-export type TimerDeletedSubscriptionResult = Apollo.SubscriptionResult<TimerDeletedSubscription>;
 export const EventsIndexDocument = gql`
     query EventsIndex($deleted: DeletedFilter) {
   events(deleted: $deleted) {

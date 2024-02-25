@@ -9,25 +9,3 @@ query EventTimers($eventId: ID!) {
     }
   }
 }
-
-subscription TimerCreated($roundId: ID!) {
-  timerCreated(roundId: $roundId) {
-    timer {
-      ...TimerListItem
-    }
-  }
-}
-
-subscription TimerUpdated($roundId: ID!) {
-  timerUpdated(roundId: $roundId) {
-    timer {
-      ...TimerListItem
-    }
-  }
-}
-
-subscription TimerDeleted($roundId: ID!) {
-  timerDeleted(roundId: $roundId) {
-    timerId
-  }
-}
