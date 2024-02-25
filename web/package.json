@@ -22,9 +22,9 @@
     "graphql-ruby-client": "^1.13.0",
     "next": "12.1.5",
     "next-http-proxy-middleware": "^1.2.4",
-    "react": "17.0.2",
+    "react": "18.2.0",
     "react-bootstrap": "^2.4.0",
-    "react-dom": "17.0.2",
+    "react-dom": "18.2.0",
     "react-number-format": "^4.9.3"
   },
   "devDependencies": {
@@ -37,8 +37,8 @@
     "@types/apollo-upload-client": "^18.0.0",
     "@types/node": "17.0.30",
     "@types/rails__actioncable": "^6.1.10",
-    "@types/react": "17.0.2",
-    "@types/react-dom": "17.0.2",
+    "@types/react": "18.2.58",
+    "@types/react-dom": "18.2.19",
     "@typescript-eslint/eslint-plugin": "^7.0.1",
     "@typescript-eslint/parser": "^7.0.1",
     "eslint": "8.56.0",

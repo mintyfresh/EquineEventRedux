@@ -1,7 +1,6 @@
 import { ApolloProvider } from '@apollo/client'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import type { AppProps } from 'next/app'
-import { SSRProvider } from 'react-bootstrap'
 import Layout from '../components/Layout'
 import { useApolloClient } from '../lib/graphql/client'
 import { NextPageWithLayout } from '../lib/types/next-page'
@@ -19,9 +18,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
 
   return (
     <ApolloProvider client={apolloClient}>
-      <SSRProvider>
-        {getLayout(<Component {...pageProps} />)}
-      </SSRProvider>
+      {getLayout(<Component {...pageProps} />)}
     </ApolloProvider>
   )
 }

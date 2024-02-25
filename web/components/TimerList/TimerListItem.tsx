@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { flushSync } from 'react-dom'
 import { TimerListFragment, TimerListItemFragment, useUpdateTimerMutation } from '../../lib/generated/graphql'
 import Timer from '../Timer/Timer'
 import TimerListItemControls from './TimerListItemControls'
@@ -55,8 +56,19 @@ const TimerListItem: React.FC<TimerListItemProps> = ({ timerList, timer, readOnl
             placeholder="Click to add label"
             readOnly={readOnly}
             style={{ 'fontSize': '36px', 'fontWeight': 'lighter', 'textAlign': 'center', 'border': 'none', 'borderBottom': readOnly ? 'none' : '1px solid #000' }}
-            onBlur={(event) => updateTimer({ variables: { id: timer.id, input: { label: event.currentTarget.value } } })}
-            onKeyPress={(event) => event.key === 'Enter' && event.currentTarget.blur()}
+            onBlur={(event) => {
+              if (event.currentTarget.value !== timer.label) {
+                updateTimer({ variables: { id: timer.id, input: { label: event.currentTarget.value } } })
+              }
+            }}
+            onKeyUp={(event) => {
+              if(event.key === 'Enter') {
+                event.currentTarget.blur()
+              } else if (event.key === 'Escape') {
+                flushSync(() => setLabel(timer.label))
+                event.currentTarget.blur()
+              }
+            }}
           />
         </div>
       )}
