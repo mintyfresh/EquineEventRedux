@@ -8,23 +8,5 @@ mutation UpdateTimer($id: ID!, $input: TimerUpdateInput!) {
 
 fragment TimerListItem on Timer {
   id
-  label
-  instant
-  isExpired
-  expiresAt
-  isPaused
-  pausedAt
-  totalDurationInSeconds
-  phases {
-    id
-    name
-    position
-    durationInSeconds
-    offsetFromStart
-    offsetFromEnd
-    audioClip {
-      id
-      fileUrl
-    }
-  }
+  ...Timer
 }

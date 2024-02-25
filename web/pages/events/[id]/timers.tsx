@@ -59,7 +59,6 @@ type EventTimersPageProps = EventTimersQuery & {
   slug: string
   fullscreen: boolean
 }
-
 const EventTimersPage: NextPageWithLayout<EventTimersPageProps> = ({ slug, fullscreen, event }) => {
   const eventId = event.id
   

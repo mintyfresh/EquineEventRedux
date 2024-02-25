@@ -1,7 +1,32 @@
+subscription RoundListItemHeaderTimerCreated($roundId: ID!) {
+  timerCreated(roundId: $roundId) {
+    timer {
+      ...Timer
+    }
+  }
+}
+
+subscription RoundListItemHeaderTimerUpdated($roundId: ID!) {
+  timerUpdated(roundId: $roundId) {
+    timer {
+      ...Timer
+    }
+  }
+}
+
+subscription RoundListItemHeaderTimerDeleted($roundId: ID!) {
+  timerDeleted(roundId: $roundId) {
+    timerId
+  }
+}
+
 fragment RoundListItemHeader on Round {
   id
   eventId
   number
   isComplete
   ...RoundListItemDropdown
+  timers(limit: 1, includeExpired: false, includeMatchTimers: false) {
+    ...Timer
+  }
 }

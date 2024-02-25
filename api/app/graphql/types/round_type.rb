@@ -19,7 +19,17 @@ module Types
       extension Extensions::Players::ActiveOnlyExtension
     end
 
-    field :timers, [Types::TimerType], null: false
+    field :timers, [Types::TimerType], null: false do
+      argument :limit, Integer, required: false do
+        description 'The maximum number of timers to return (default: no limit)'
+      end
+      argument :include_expired, Boolean, required: false, default_value: true do
+        description 'Whether to include expired timers'
+      end
+      argument :include_match_timers, Boolean, required: false, default_value: true do
+        description 'Whether to include match-specific timers'
+      end
+    end
 
     # @return [Boolean]
     def complete?
@@ -56,9 +66,19 @@ module Types
       dataloader.with(Sources::RecordList, ::Player, :event_id, scope: players).load(object.event_id)
     end
 
+    # @param limit [Integer, nil]
+    # @param include_expired [Boolean]
+    # @param include_match_timers [Boolean]
     # @return [Array<::Timer>]
-    def timers
-      dataloader.with(Sources::RecordList, ::Timer, :round_id).load(object.id)
+    def timers(limit: nil, include_expired: true, include_match_timers: true)
+      scope = ::Timer.all
+      scope = scope.not_expired unless include_expired
+      scope = scope.where(match: nil) unless include_match_timers
+
+      timers = dataloader.with(Sources::RecordList, ::Timer, :round_id, scope:).load(object.id)
+      timers = timers.first(limit) if limit
+
+      timers
     end
 
   private

@@ -1,0 +1,28 @@
+fragment Timer on Timer {
+  id
+  roundId
+  matchId
+  label
+  instant
+  isExpired
+  expiresAt
+  isPaused
+  pausedAt
+  totalDurationInSeconds
+  phases {
+    ...TimerPhase
+  }
+}
+
+fragment TimerPhase on TimerPhase {
+  id
+  name
+  position
+  durationInSeconds
+  offsetFromStart
+  offsetFromEnd
+  audioClip {
+    id
+    fileUrl
+  }
+}

@@ -95,14 +95,16 @@ class Timer < ApplicationRecord
   #   Returns timers that have expired.
   #   @return [Class<Timer>]
   scope :expired, lambda {
-    where(arel_table[:expires_at].lteq(bind_param('expires_at', Time.current)))
+    now = Arel::Nodes::NamedFunction.new('NOW', [])
+    where(arel_table[:expires_at].lteq(now))
   }
 
   # @!method self.not_expired
   #   Returns timers that have not expired.
   #   @return [Class<Timer>]
   scope :not_expired, lambda {
-    where(arel_table[:expires_at].gt(bind_param('expires_at', Time.current)))
+    now = Arel::Nodes::NamedFunction.new('NOW', [])
+    where(arel_table[:expires_at].gt(now))
   }
 
   # The currently active phase, if any.
