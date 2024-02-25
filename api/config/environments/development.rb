@@ -32,6 +32,9 @@ Rails.application.configure do
     config.cache_store = :null_store
   end
 
+  # Configure asset host for development
+  config.asset_host = "http://#{ENV.fetch('HOST', 'localhost')}:#{ENV.fetch('PORT', 3000)}"
+
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
 
@@ -54,6 +57,6 @@ Rails.application.configure do
   config.active_storage.service = :local
 
   # Allow Action Cable access from any origin.
-  config.action_cable.disable_request_forgery_protection = true
-  config.action_cable.url = 'ws://localhost:3000/cable'
+  # config.action_cable.disable_request_forgery_protection = true
+  # config.action_cable.url = 'ws://localhost:3000/cable'
 end

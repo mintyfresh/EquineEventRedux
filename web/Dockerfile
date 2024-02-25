@@ -1,4 +1,4 @@
-ARG NODE_VERSION=17.2.0
+ARG NODE_VERSION=21.6.2
 
 # Dependencies step
 FROM node:${NODE_VERSION}-alpine AS deps
@@ -13,11 +13,6 @@ WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-
-ARG COUCHDB_HOST
-ARG COUCHDB_PORT
-ARG PAIRING_HOST
-ARG PAIRING_PORT
 
 ENV NEXT_TELEMETRY_DISABLED 1
 RUN npm run build

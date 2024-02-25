@@ -11,7 +11,7 @@ const handler: NextApiHandler = (req, res) => {
   switch (req.method) {
     case 'POST':
       return httpProxyMiddleware(req, res, {
-        target: process.env.API_URL,
+        target: process.env.GRAPHQL_API_URL,
         ignorePath: true,
         onProxyInit: (proxy) => {
           proxy.on('proxyReq', (proxyReq, req) => {

@@ -13,7 +13,7 @@ if (!isSSR) {
 }
 
 const createHttpLink = () => {
-  const httpUri = isSSR ? process.env.API_URL : '/api/graphql'
+  const httpUri = isSSR ? process.env.GRAPHQL_API_URL : '/api/graphql'
 
   return createUploadLink({
     uri: httpUri

@@ -25,8 +25,8 @@ Rails.application.configure do
   # Apache or NGINX already handles this.
   config.public_file_server.enabled = ENV['RAILS_SERVE_STATIC_FILES'].present?
 
-  # Enable serving of images, stylesheets, and JavaScripts from an asset server.
-  # config.asset_host = "http://assets.example.com"
+  # Enable serving of uploaded files from an asset server.
+  config.asset_host = ENV.fetch('RAILS_ASSET_HOST', nil)
 
   # Specifies the header that your server uses for sending files.
   # config.action_dispatch.x_sendfile_header = "X-Sendfile" # for Apache
@@ -71,4 +71,6 @@ Rails.application.configure do
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
+
+  config.active_storage.service = ENV.fetch('RAILS_ACTIVE_STORAGE_SERVICE', :local).to_sym
 end

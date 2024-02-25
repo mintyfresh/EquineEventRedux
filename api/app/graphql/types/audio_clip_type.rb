@@ -47,7 +47,7 @@ module Types
 
     # @return [String]
     def file_url
-      Rails.application.routes.url_helpers.rails_blob_url(blob, host: context[:host])
+      Rails.application.routes.url_helpers.rails_blob_url(blob)
     end
 
     # @return [Boolean]

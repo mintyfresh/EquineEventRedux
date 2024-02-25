@@ -43,5 +43,7 @@ module EquineEventApi
     config.active_record.index_nested_attribute_errors = true
 
     config.active_model.i18n_customize_full_message = true
+
+    config.active_storage.routes_prefix = '/files'
   end
 end

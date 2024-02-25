@@ -17,6 +17,7 @@ gem 'moonfire', github: 'mintyfresh/moonfire'
 gem 'oj'
 gem 'pg', '~> 1.1'
 gem 'puma', '~> 6.0'
+gem 'rack-cors'
 gem 'rails', '~> 7.1'
 gem 'scenic'
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
