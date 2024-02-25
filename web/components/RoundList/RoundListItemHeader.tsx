@@ -7,12 +7,13 @@ import RoundListItemDropdown from './RoundListItemDropdown'
 
 export interface RoundListItemHeaderProps extends React.ComponentProps<typeof Card.Header> {
   round: RoundListItemHeaderFragment
+  disabled?: boolean
   expanded?: boolean
   onExpand?(expanded: boolean): void
   onDelete?(round: RoundListItemHeaderFragment): void
 }
 
-const RoundListItemHeader: React.FC<RoundListItemHeaderProps> = ({ round, expanded, onExpand, onDelete, style, ...props }) => {
+const RoundListItemHeader: React.FC<RoundListItemHeaderProps> = ({ round, disabled, expanded, onExpand, onDelete, style, ...props }) => {
   return (
     <Card.Header
       {...props}
@@ -28,6 +29,7 @@ const RoundListItemHeader: React.FC<RoundListItemHeaderProps> = ({ round, expand
       />
       <RoundListItemDropdown
         round={round}
+        disabled={disabled}
         onDelete={() => onDelete?.(round)}
       />
     </Card.Header>

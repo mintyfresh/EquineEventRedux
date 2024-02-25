@@ -104,7 +104,7 @@ const EventMatchesPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
       <RoundList
         rounds={data.event.rounds}
         viewMode={view}
-        disabled={settingResolution}
+        disabled={settingResolution || deleted}
         onSetWinner={onSetWinner}
         onSetDraw={onSetDraw}
         onDelete={() => refetch()}

@@ -26,7 +26,7 @@ const MatchCardPlayer: React.FC<MatchCardPlayerProps> = ({ match, player, disabl
   return (
     <Card.Text
       className={'h5 px-1 py-2 ' + className}
-      role="button"
+      role={disabled ? undefined : 'button'}
       aria-disabled={disabled}
       onClick={() => !disabled && onSetWinner?.(match.id, player.id)}
     >
@@ -57,7 +57,7 @@ const MatchCardDivider: React.FC<MatchCardDividerProps> = ({ match, disabled, on
 
   return (
     <Row
-      role="button"
+      role={disabled ? undefined : 'button'}
       aria-disabled={disabled}
       onClick={() => !disabled && onSetDraw?.(match.id)}
     >

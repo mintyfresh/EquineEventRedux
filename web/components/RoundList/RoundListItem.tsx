@@ -25,6 +25,7 @@ const RoundListItem: React.FC<RoundListItemProps> = ({ round, viewMode, disabled
     <Card className="mb-3" style={{ breakInside: 'avoid' }}>
       <RoundListItemHeader
         round={round}
+        disabled={disabled}
         expanded={expanded}
         onExpand={setExpanded}
         onDelete={onDelete}
