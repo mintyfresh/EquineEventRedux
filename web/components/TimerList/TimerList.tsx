@@ -92,7 +92,7 @@ const TimerList: React.FC<TimerListProps> = ({ timerList, readOnly }) => {
   useTimerListItemUpdatedSubscription({
     variables: { roundId: timerList.id },
     fetchPolicy: 'no-cache', // manage cache manually
-    onData({ client, data: { data } }) {
+    onData({ data: { data } }) {
       if (data?.timerUpdated?.timer) {
         // update the current timer
         onTimerUpdate(data.timerUpdated.timer)
@@ -103,7 +103,7 @@ const TimerList: React.FC<TimerListProps> = ({ timerList, readOnly }) => {
   useTimerListItemDeletedSubscription({
     variables: { roundId: timerList.id },
     fetchPolicy: 'no-cache', // manage cache manually
-    onData({ client, data: { data } }) {
+    onData({ data: { data } }) {
       if (data?.timerDeleted?.timerId) {
         // remove the timer from the list
         onTimerDelete(data.timerDeleted.timerId)

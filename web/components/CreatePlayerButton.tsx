@@ -42,6 +42,7 @@ const CreatePlayerButton: React.FC<CreatePlayerButtonProps> = ({ event, onCreate
   const [createPlayer, { loading }] = useCreatePlayerMutation({
     variables: { eventID: event.id, input },
     onCompleted: ({ playerCreate }) => {
+      focus()
       setErrors(playerCreate?.errors)
 
       if (playerCreate?.player?.id) {
@@ -51,19 +52,6 @@ const CreatePlayerButton: React.FC<CreatePlayerButtonProps> = ({ event, onCreate
       }
     }
   })
-
-  const onSubmit = async (createAnother: boolean, focus: () => void) => {
-    createPlayer({
-      onCompleted: ({ playerCreate }) => {
-        focus()
-
-        if (playerCreate?.player?.id) {
-          // Close modal unless we want to create another
-          setShowModal(createAnother)
-        }
-      }
-    })
-  }
 
   return (
     <>
@@ -79,7 +67,14 @@ const CreatePlayerButton: React.FC<CreatePlayerButtonProps> = ({ event, onCreate
         onChange={setInput}
         errors={errors}
         disabled={loading}
-        onSubmit={onSubmit}
+        onSubmit={(createAnother, focus) => {
+          focus()
+          createPlayer().then((result) => {
+            if (result.data?.playerCreate?.player?.id) {
+              setShowModal(createAnother)
+            }
+          })
+        }}
       />
     </>
   )
