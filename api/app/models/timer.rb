@@ -61,7 +61,8 @@ class Timer < ApplicationRecord
     self.primary = true if Timer.where(round_id:).not_expired.none?
   end
 
-  before_save if: -> { primary_changed?(to: true) } do
+  before_save if: -> { primary_changed?(to: true) && !expired? } do
+    # If the timer is being set as the primary timer, unset the primary flag on all other timers.
     Timer.primary.where(round_id:).excluding(self).update_all(primary: false) # rubocop:disable Rails/SkipsModelValidations
   end
 
@@ -72,6 +73,11 @@ class Timer < ApplicationRecord
 
   after_create do
     preset.update!(last_used_at: Time.current)
+  end
+
+  after_destroy if: -> { primary? && !expired? } do
+    # If the primary timer is destroyed, select a new primary timer.
+    Timer.active.primary.where(round_id:).excluding(self).first&.update!(primary: true)
   end
 
   after_create_commit do
