@@ -23,7 +23,7 @@ Rails.application.configure do
 
   # Disable serving static files from the `/public` folder by default since
   # Apache or NGINX already handles this.
-  config.public_file_server.enabled = ENV['RAILS_SERVE_STATIC_FILES'].present?
+  config.public_file_server.enabled = ENV.enabled?('RAILS_SERVE_STATIC_FILES')
 
   # Enable serving of uploaded files from an asset server.
   config.asset_host = ENV.fetch('RAILS_ASSET_HOST', nil)
@@ -59,14 +59,20 @@ Rails.application.configure do
   # Use default logging formatter so that PID and timestamp are not suppressed.
   config.log_formatter = Logger::Formatter.new
 
-  # Use a different logger for distributed setups.
-  # require "syslog/logger"
-  # config.logger = ActiveSupport::TaggedLogging.new(Syslog::Logger.new "app-name")
-
-  if ENV['RAILS_LOG_TO_STDOUT'].present?
-    logger           = ActiveSupport::Logger.new($stdout)
+  # If not set, the default is to log to file.
+  if ENV.enabled?('RAILS_LOG_TO_STDOUT')
+    logger = ActiveSupport::Logger.new($stdout)
     logger.formatter = config.log_formatter
-    config.logger    = ActiveSupport::TaggedLogging.new(logger)
+
+    # File logging is the default, this flag just opts into both file and stdout.
+    if ENV.enabled?('RAILS_LOG_TO_FILE')
+      # Broadcast to both loggers.
+      file_logger = ActiveSupport::Logger.new(Rails.root.join('log/production.log'))
+      file_logger.formatter = config.log_formatter
+      logger = ActiveSupport::BroadcastLogger.new(logger, file_logger)
+    end
+
+    config.logger = ActiveSupport::TaggedLogging.new(logger)
   end
 
   # Do not dump schema after migrations.
