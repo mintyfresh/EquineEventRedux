@@ -21,6 +21,8 @@ services:
       - "3000:3000"
     command:
       sh -c "bin/rails db:migrate && bin/rails db:seed && bin/rails server"
+    tmpfs:
+      - /app/tmp/pids
     volumes:
       - ./log:/app/log
       - storage:/app/storage

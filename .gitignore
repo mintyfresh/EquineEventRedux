@@ -1,6 +1,7 @@
 # Don't commit credentials
 .env
 
-# Ignore log files but not log directory
+# Ignore all logfiles.
 /log/*
-!log/.keep
+!/log/
+!/log/.keep
