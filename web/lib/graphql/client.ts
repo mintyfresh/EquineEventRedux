@@ -4,6 +4,7 @@ import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
 import ActionCableLink from "graphql-ruby-client/subscriptions/ActionCableLink"
 import { useMemo } from 'react'
 import result from '../generated/graphql'
+import getConfig from 'next/config'
 
 const isSSR = typeof window === 'undefined'
 let apolloClient: ApolloClient<NormalizedCacheObject> | null = null
@@ -25,8 +26,10 @@ const createWSLink = () => {
     return () => null // no web-sockets during SSR
   }
 
+  const { publicRuntimeConfig } = getConfig()
+
   return new ActionCableLink({
-    cable: window.ActionCable.createConsumer(process.env.NEXT_PUBLIC_CABLE_URL)
+    cable: window.ActionCable.createConsumer(publicRuntimeConfig.ACTION_CABLE_URL)
   })
 }
 

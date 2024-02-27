@@ -79,4 +79,7 @@ Rails.application.configure do
   config.active_record.dump_schema_after_migration = false
 
   config.active_storage.service = ENV.fetch('RAILS_ACTIVE_STORAGE_SERVICE', :local).to_sym
+
+  # Allow ActionCable access from the web app.
+  config.action_cable.allowed_request_origins = [ENV.fetch('WEB_APP_HOST', 'http://localhost:4500')]
 end

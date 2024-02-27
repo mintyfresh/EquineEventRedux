@@ -28,16 +28,16 @@ erb -r securerandom .env.template.erb > .env
 
 ### Access from another device
 
-By default, the configuration assumes that EER will be accessed from the same machine that it is hosted on. If external access is required, the `PUBLIC_API_HOST` environment variable should be set in the `.env` file to the domain or address of the machine that will run the server.
+By default, the configuration assumes that EER will be accessed from the same machine that it is hosted on. If external access is required, the `HOST` environment variable should be set in the `.env` file to the domain or address of the machine that will run the server.
 
-If your server should be used over a network, the `PUBLIC_API_HOST` should be set to the address of the machine running the server on that network.
+If your server should be used over a network, the `HOST` should be set to the address of the machine running the server on that network.
 ```bash
-PUBLIC_API_HOST=192.168.0.120 # for access from a local network
+HOST=192.168.0.120 # for access from a local network
 ```
 
-If your server will be accessible over the internet, the `PUBLIC_API_HOST` should be set to the domain name or IP address of the server.
+If your server will be accessible over the internet, the `HOST` should be set to the domain name or IP address of the server.
 ```bash
-PUBLIC_API_HOST=eer.example.com # for access over the internet
+HOST=eer.example.com # for access over the internet
 ```
 
 This host is required for the user's browser to be able to establish a websocket connection to the server. It is also used for distributing the audio files used by timers.

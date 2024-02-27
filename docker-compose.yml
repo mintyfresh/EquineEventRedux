@@ -12,7 +12,8 @@ services:
       - postgres
     environment:
       SECRET_KEY_BASE: ${SECRET_KEY_BASE}
-      HOST: ${PUBLIC_API_HOST:-localhost}
+      HOST: ${HOST:-localhost}
+      WEB_APP_HOST: http://${HOST:-localhost}:4500
       RAILS_ENV: production
       RAILS_LOG_TO_FILE: ${RAILS_LOG_TO_FILE:-false}
       RAILS_LOG_TO_STDOUT: ${RAILS_LOG_TO_STDOUT:-true}
@@ -34,7 +35,7 @@ services:
     restart: unless-stopped
     environment:
       GRAPHQL_API_URL: http://api:3000/graphql # the URL of the GraphQL API
-      NEXT_PUBLIC_CABLE_URL: ws://${PUBLIC_API_HOST:-localhost}:3000/cable # the URL of the ActionCable (websocket) server
+      ACTION_CABLE_URL: ws://${HOST:-localhost}:3000/cable # the URL of the ActionCable (websocket) server
     ports:
       - "4500:4500"
 
