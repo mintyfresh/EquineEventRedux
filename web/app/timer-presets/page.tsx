@@ -1,11 +1,12 @@
+'use client'
+
 import { gql } from '@apollo/client'
+import { useQuery } from '@apollo/experimental-nextjs-app-support/ssr'
 import { faVolumeUp } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { GetServerSideProps } from 'next'
 import Link from 'next/link'
 import { Alert, Button, Card, Col, Row } from 'react-bootstrap'
-import { TimerPresetsQuery, useDeleteTimerPresetMutation, useTimerPresetsQuery } from '../lib/generated/graphql'
-import { initializeApolloClient } from '../lib/graphql/client'
+import { TimerPresetsQuery, useDeleteTimerPresetMutation } from '../../lib/generated/graphql'
 
 const TIMER_PRESETS_QUERY = gql`
   query TimerPresets {
@@ -37,22 +38,8 @@ gql`
   }
 `
 
-export const getServerSideProps: GetServerSideProps = async () => {
-  const apolloClient = initializeApolloClient()
-
-  await apolloClient.query<TimerPresetsQuery>({
-    query: TIMER_PRESETS_QUERY
-  })
-
-  return {
-    props: {
-      initialApolloState: apolloClient.cache.extract()
-    }
-  }
-}
-
-const TimerPresetsPage = () => {
-  const { data, refetch } = useTimerPresetsQuery()
+export default function TimerPresetsPage() {
+  const { data, refetch } = useQuery<TimerPresetsQuery>(TIMER_PRESETS_QUERY)
 
   const [deleteTimerPreset, {}] = useDeleteTimerPresetMutation({
     onCompleted: ({ timerPresetDelete }) => {
@@ -67,7 +54,7 @@ const TimerPresetsPage = () => {
       <h1 className="mb-3">Timer Presets</h1>
       <Row className="mb-3">
         <Col>
-          <Link href="/timer-presets/new" passHref>
+          <Link href="/timer-presets/new" passHref legacyBehavior>
             <Button as="a" variant="primary">Create new preset</Button>
           </Link>
         </Col>
@@ -92,7 +79,7 @@ const TimerPresetsPage = () => {
               <Card.Title><h4>{preset.name}</h4></Card.Title>
             </Col>
             <Col xs="auto">
-              <Link href="/timer-presets/[id]/edit" as={`/timer-presets/${preset.id}/edit`} passHref>
+              <Link href={`/timer-presets/${preset.id}/edit`} passHref legacyBehavior>
                 <Button as="a" variant="outline-secondary">Edit</Button>
               </Link>
               {!preset.isSystem && (
@@ -145,5 +132,3 @@ const TimerPresetsPage = () => {
     </>
   )
 }
-
-export default TimerPresetsPage

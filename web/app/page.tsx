@@ -1,6 +1,4 @@
-import type { NextPage } from 'next'
-
-const Home: NextPage = () => {
+export default function HomePage() {
   return (
     <section>
       <h1>Homepage</h1>
@@ -10,5 +8,3 @@ const Home: NextPage = () => {
     </section>
   )
 }
-
-export default Home

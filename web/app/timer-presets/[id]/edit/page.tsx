@@ -1,12 +1,12 @@
+'use client'
+
 import { gql } from '@apollo/client'
-import { GetServerSideProps, NextPage } from 'next'
-import { useRouter } from 'next/router'
+import { useQuery } from '@apollo/experimental-nextjs-app-support/ssr'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import TimerPresetForm from '../../../components/TimerPreset/TimerPresetForm'
-import { ERRORS_FRAGMENT, useErrors } from '../../../lib/errors'
-import { EditTimerPresetQuery, EditTimerPresetQueryVariables, TimerPresetUpdateInput, useEditTimerPresetQuery, useUpdateTimerPresetMutation } from '../../../lib/generated/graphql'
-import { initializeApolloClient } from '../../../lib/graphql/client'
-import { Badge } from 'react-bootstrap'
+import TimerPresetForm from '../../../../components/TimerPreset/TimerPresetForm'
+import { ERRORS_FRAGMENT, useErrors } from '../../../../lib/errors'
+import { EditTimerPresetQuery, EditTimerPresetQueryVariables, TimerPresetUpdateInput, useUpdateTimerPresetMutation } from '../../../../lib/generated/graphql'
 
 const EDIT_TIMER_PRESET_QUERY = gql`
   query EditTimerPreset($id: ID!) {
@@ -39,32 +39,11 @@ gql`
   ${ERRORS_FRAGMENT}
 `
 
-export const getServerSideProps: GetServerSideProps = async ({ params }) => {
-  const apolloClient = initializeApolloClient()
-
-  if (!params || !params.id) {
-    return { notFound: true }
-  }
-
-  await apolloClient.query<EditTimerPresetQuery, EditTimerPresetQueryVariables>({
-    query: EDIT_TIMER_PRESET_QUERY,
-    variables: { id: params.id as string },
-    fetchPolicy: 'network-only'
-  })
-
-  return {
-    props: {
-      initialApolloState: apolloClient.cache.extract(),
-      id: params.id
-    }
-  }
-}
-
-const EditTimerPresetPage: NextPage<{ id: string } & EditTimerPresetQuery> = ({ id }) => {
+export default function EditTimerPresetPage({ params: { id } }: { params: { id: string } }) {
   const [errors, setErrors] = useErrors()
   const [input, setInput] = useState<TimerPresetUpdateInput | null>(null)
 
-  const { data } = useEditTimerPresetQuery({
+  const { data } = useQuery<EditTimerPresetQuery, EditTimerPresetQueryVariables>(EDIT_TIMER_PRESET_QUERY, {
     variables: { id },
     onCompleted: (data) => {
       setInput({
@@ -112,5 +91,3 @@ const EditTimerPresetPage: NextPage<{ id: string } & EditTimerPresetQuery> = ({ 
     </>
   )
 }
-
-export default EditTimerPresetPage

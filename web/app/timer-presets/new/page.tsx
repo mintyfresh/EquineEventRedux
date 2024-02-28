@@ -1,9 +1,11 @@
+'use client'
+
 import { gql } from '@apollo/client'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import TimerPresetForm from '../../components/TimerPreset/TimerPresetForm'
-import { ERRORS_FRAGMENT, useErrors } from '../../lib/errors'
-import { TimerPhaseDurationUnit, TimerPresetCreateInput, useCreateTimerPresetMutation } from '../../lib/generated/graphql'
+import TimerPresetForm from '../../../components/TimerPreset/TimerPresetForm'
+import { ERRORS_FRAGMENT, useErrors } from '../../../lib/errors'
+import { TimerPhaseDurationUnit, TimerPresetCreateInput, useCreateTimerPresetMutation } from '../../../lib/generated/graphql'
 
 gql`
   mutation CreateTimerPreset($input: TimerPresetCreateInput!) {
@@ -19,7 +21,7 @@ gql`
   ${ERRORS_FRAGMENT}
 `
 
-const NewTimerPresetPage = () => {
+export default function NewTimerPresetPage() {
   const [errors, setErrors] = useErrors()
 
   const [input, setInput] = useState<TimerPresetCreateInput>({
@@ -59,5 +61,3 @@ const NewTimerPresetPage = () => {
     </>
   )
 }
-
-export default NewTimerPresetPage
