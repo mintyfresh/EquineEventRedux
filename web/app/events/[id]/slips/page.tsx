@@ -1,12 +1,12 @@
+'use client'
+
 import { gql } from '@apollo/client'
-import { GetServerSideProps } from 'next'
+import { useQuery } from '@apollo/experimental-nextjs-app-support/ssr'
 import { useState } from 'react'
 import { Button, ButtonToolbar, Card, Col, Form, Row } from 'react-bootstrap'
-import EventLayout, { EVENT_LAYOUT_FRAGMENT } from '../../../components/EventLayout'
-import Slip, { SLIP_EVENT_FRAGMENT, SLIP_MATCH_FRAGMENT, SLIP_ROUND_FRAGMENT } from '../../../components/Slip'
-import { EventSlipsQuery, EventSlipsQueryVariables, useEventSlipsQuery } from '../../../lib/generated/graphql'
-import { initializeApolloClient } from '../../../lib/graphql/client'
-import { NextPageWithLayout } from '../../../lib/types/next-page'
+import EventLayout, { EVENT_LAYOUT_FRAGMENT } from '../../../../components/EventLayout'
+import Slip, { SLIP_EVENT_FRAGMENT, SLIP_MATCH_FRAGMENT, SLIP_ROUND_FRAGMENT } from '../../../../components/Slip'
+import { EventSlipsQuery, EventSlipsQueryVariables } from '../../../../lib/generated/graphql'
 
 const EVENT_SLIPS_QUERY = gql`
   query EventSlips($id: ID!) {
@@ -30,32 +30,10 @@ const EVENT_SLIPS_QUERY = gql`
   ${SLIP_MATCH_FRAGMENT}
 `
 
-export const getServerSideProps: GetServerSideProps = async ({ params }) => {
-  const apolloClient = initializeApolloClient()
-
-  if (!params || !params.id) {
-    return { notFound: true }
-  }
-
-  const { data } = await apolloClient.query<EventSlipsQuery, EventSlipsQueryVariables>({
-    query: EVENT_SLIPS_QUERY,
-    variables: { id: params.id as string },
-    fetchPolicy: 'network-only'
-  })
-
-  return {
-    props: {
-      initialApolloState: apolloClient.cache.extract(),
-      id: params.id,
-      event: data.event
-    }
-  }
-}
-
-const EventSlipsPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
+export default function EventSlipsPage({ params: { id } }: { params: { id: string } }) {
   const [round, setRound] = useState<EventSlipsQuery['event']['rounds'][0] | null>(null)
 
-  const { data } = useEventSlipsQuery({
+  const { data } = useQuery<EventSlipsQuery, EventSlipsQueryVariables>(EVENT_SLIPS_QUERY, {
     variables: { id },
     onCompleted: ({ event }) => {
       setRound(event.rounds[0])
@@ -117,10 +95,8 @@ const EventSlipsPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
   )
 }
 
-EventSlipsPage.getLayout = (page: React.ReactElement<EventSlipsQuery>) => (
-  <EventLayout event={page.props.event}>
-    {page}
-  </EventLayout>
-)
-
-export default EventSlipsPage
+// EventSlipsPage.getLayout = (page: React.ReactElement<EventSlipsQuery>) => (
+//   <EventLayout event={page.props.event}>
+//     {page}
+//   </EventLayout>
+// )

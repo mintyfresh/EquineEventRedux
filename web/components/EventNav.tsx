@@ -1,3 +1,5 @@
+'use client'
+
 import { gql } from '@apollo/client'
 import { Nav } from 'react-bootstrap'
 import { EventNavFragment } from '../lib/generated/graphql'

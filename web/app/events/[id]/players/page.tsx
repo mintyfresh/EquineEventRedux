@@ -1,14 +1,14 @@
+'use client'
+
 import { gql } from '@apollo/client'
-import { GetServerSideProps } from 'next'
+import { useQuery } from '@apollo/experimental-nextjs-app-support/ssr'
 import { useState } from 'react'
 import { Button, ButtonToolbar, Card } from 'react-bootstrap'
-import CreatePlayerButton, { CREATE_PLAYER_BUTTON_FRAGMENT } from '../../../components/CreatePlayerButton'
-import EventLayout, { EVENT_LAYOUT_FRAGMENT } from '../../../components/EventLayout'
-import ImportPlayersButton, { IMPORT_PLAYERS_BUTTON_FRAGMENT } from '../../../components/ImportPlayersButton'
-import PlayerTable, { PLAYER_TABLE_FRAGMENT } from '../../../components/PlayerTable'
-import { DeletedFilter, EventPlayersQuery, EventPlayersQueryVariables, useEventPlayersQuery } from '../../../lib/generated/graphql'
-import { initializeApolloClient } from '../../../lib/graphql/client'
-import { NextPageWithLayout } from '../../../lib/types/next-page'
+import CreatePlayerButton, { CREATE_PLAYER_BUTTON_FRAGMENT } from '../../../../components/CreatePlayerButton'
+import { EVENT_LAYOUT_FRAGMENT } from '../../../../components/EventLayout'
+import ImportPlayersButton, { IMPORT_PLAYERS_BUTTON_FRAGMENT } from '../../../../components/ImportPlayersButton'
+import PlayerTable, { PLAYER_TABLE_FRAGMENT } from '../../../../components/PlayerTable'
+import { DeletedFilter, EventPlayersQuery, EventPlayersQueryVariables } from '../../../../lib/generated/graphql'
 
 const EVENT_PLAYERS_QUERY = gql`
   query EventPlayers($id: ID!, $deleted: DeletedFilter) {
@@ -31,32 +31,10 @@ const EVENT_PLAYERS_QUERY = gql`
   ${PLAYER_TABLE_FRAGMENT}
 `
 
-export const getServerSideProps: GetServerSideProps = async ({ params }) => {
-  const apolloClient = initializeApolloClient()
-
-  if (!params || !params.id) {
-    return { notFound: true }
-  }
-
-  const { data } = await apolloClient.query<EventPlayersQuery, EventPlayersQueryVariables>({
-    query: EVENT_PLAYERS_QUERY,
-    variables: { id: params.id as string },
-    fetchPolicy: 'network-only'
-  })
-
-  return {
-    props: {
-      initialApolloState: apolloClient.cache.extract(),
-      id: params.id,
-      event: data.event
-    }
-  }
-}
-
-const EventPlayersPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
+export default function EventPlayersPage({ params: { id } }: { params: { id: string } }) {
   const [deleted, setDeleted] = useState<boolean>(false)
 
-  const { data, refetch } = useEventPlayersQuery({
+  const { data, refetch } = useQuery<EventPlayersQuery, EventPlayersQueryVariables>(EVENT_PLAYERS_QUERY, {
     variables: { id, deleted: deleted ? DeletedFilter.Deleted : undefined }
   })
 
@@ -97,11 +75,3 @@ const EventPlayersPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
     </>
   )
 }
-
-EventPlayersPage.getLayout = (page: React.ReactElement<EventPlayersQuery>) => (
-  <EventLayout event={page.props.event}>
-    {page}
-  </EventLayout>
-)
-
-export default EventPlayersPage

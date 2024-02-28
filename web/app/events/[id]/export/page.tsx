@@ -1,12 +1,12 @@
+'use client'
+
 import { gql } from '@apollo/client'
+import { useQuery } from '@apollo/experimental-nextjs-app-support/ssr'
 import { faCopy } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { GetServerSideProps } from 'next'
 import { Button, Card } from 'react-bootstrap'
-import EventLayout, { EVENT_LAYOUT_FRAGMENT } from '../../../components/EventLayout'
-import { EventExportQuery, EventExportQueryVariables } from '../../../lib/generated/graphql'
-import { initializeApolloClient } from '../../../lib/graphql/client'
-import { NextPageWithLayout } from '../../../lib/types/next-page'
+import { EventExportQuery, EventExportQueryVariables } from '../../../../lib/generated/graphql'
+import { EVENT_LAYOUT_FRAGMENT } from '../../../../components/EventLayout'
 
 const copyToClipboard = (value: string) => {
   if (navigator.clipboard) {
@@ -34,19 +34,21 @@ const copyToClipboard = (value: string) => {
   }
 }
 
-const CopyableTextBlock: React.FC<{ value: string }> = ({ value }) => (
-  <Card body>
-    <Button
-      variant="outline-secondary"
-      className="float-end"
-      onClick={() => copyToClipboard(value)}
-    >
-      <FontAwesomeIcon icon={faCopy} />
-      <span className="visually-hidden">Copy to clipboard</span>
-    </Button>
-    <pre className="mb-0">{value}</pre>
-  </Card>
-)
+const CopyableTextBlock: React.FC<{ value: string }> = ({ value }) => {  
+  return (
+    <Card body>
+      <Button
+        variant="outline-secondary"
+        className="float-end"
+        onClick={() => copyToClipboard(value)}
+      >
+        <FontAwesomeIcon icon={faCopy} />
+        <span className="visually-hidden">Copy to clipboard</span>
+      </Button>
+      <pre className="mb-0">{value}</pre>
+    </Card>
+  )
+}
 
 const EventStandingsExport: React.FC<EventExportQuery> = ({ event }) => {
   const players = event.players.nodes
@@ -149,51 +151,29 @@ const EVENT_EXPORT_QUERY = gql`
   ${EVENT_LAYOUT_FRAGMENT}
 `
 
-export const getServerSideProps: GetServerSideProps = async ({ params }) => {
-  const apolloClient = initializeApolloClient()
-
-  if (!params || !params.id) {
-    return { notFound: true }
-  }
-
-  const { data } = await apolloClient.query<EventExportQuery, EventExportQueryVariables>({
-    query: EVENT_EXPORT_QUERY,
-    variables: { id: params.id as string },
-    fetchPolicy: 'network-only'
+export default function EventExportPage({ params: { id } }: { params: { id: string } }) {
+  const { data } = useQuery<EventExportQuery, EventExportQueryVariables>(EVENT_EXPORT_QUERY, {
+    variables: { id }
   })
 
-  return {
-    props: {
-      initialApolloState: apolloClient.cache.extract(),
-      id: params.id,
-      event: data.event
-    }
+  if (!data?.event) {
+    return null
   }
-}
 
-const EventExportPage: NextPageWithLayout<EventExportQuery> = ({ event }) => {
   return (
     <>
       <div className="mb-3">
         <h2>Standings</h2>
-        <EventStandingsExport event={event} />
+        <EventStandingsExport event={data.event} />
       </div>
       <div className="mb-3">
         <h2>Matches</h2>
-        <EventMatchesExport event={event} />
+        <EventMatchesExport event={data.event} />
       </div>
       <div className="mb-3">
         <h2>Challonge formatted table</h2>
-        <EventChallongeExport event={event} />
+        <EventChallongeExport event={data.event} />
       </div>
     </>
   )
 }
-
-EventExportPage.getLayout = (page: React.ReactElement<EventExportQuery>) => (
-  <EventLayout event={page.props.event}>
-    {page}
-  </EventLayout>
-)
-
-export default EventExportPage

@@ -1,41 +1,18 @@
-import { GetServerSideProps } from 'next'
+'use client'
+
+import { useQuery } from '@apollo/experimental-nextjs-app-support/ssr'
 import { useEffect, useState } from 'react'
 import { Alert, Button, ButtonToolbar, Card, OverlayTrigger, Tooltip } from 'react-bootstrap'
-import CreateRoundButton from '../../../components/CreateRoundButton'
-import EventLayout from '../../../components/EventLayout'
-import RoundList from '../../../components/RoundList'
-import { RoundViewMode } from '../../../components/RoundList/RoundListItem'
-import { DeletedFilter, EventMatchesDocument, EventMatchesQuery, EventMatchesQueryVariables, useEventMatchesQuery, useSetMatchResolutionMutation } from '../../../lib/generated/graphql'
-import { initializeApolloClient } from '../../../lib/graphql/client'
-import { NextPageWithLayout } from '../../../lib/types/next-page'
+import CreateRoundButton from '../../../../components/CreateRoundButton'
+import RoundList from '../../../../components/RoundList'
+import { RoundViewMode } from '../../../../components/RoundList/RoundListItem'
+import { DeletedFilter, EventMatchesDocument, EventMatchesQuery, EventMatchesQueryVariables, useSetMatchResolutionMutation } from '../../../../lib/generated/graphql'
 
-export const getServerSideProps: GetServerSideProps = async ({ params }) => {
-  const apolloClient = initializeApolloClient()
-
-  if (!params || !params.id) {
-    return { notFound: true }
-  }
-
-  const { data } = await apolloClient.query<EventMatchesQuery, EventMatchesQueryVariables>({
-    query: EventMatchesDocument,
-    variables: { id: params.id as string, deleted: undefined },
-    fetchPolicy: 'network-only'
-  })
-
-  return {
-    props: {
-      initialApolloState: apolloClient.cache.extract(),
-      id: params.id,
-      event: data.event
-    }
-  }
-}
-
-const EventMatchesPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
+export default function EventMatchesPage({ params: { id } }: { params: { id: string } }) {
   const [view, setView] = useState<RoundViewMode>(RoundViewMode.Grid)
   const [deleted, setDeleted] = useState<boolean>(false)
 
-  const { data, refetch } = useEventMatchesQuery({
+  const { data, refetch } = useQuery<EventMatchesQuery, EventMatchesQueryVariables>(EventMatchesDocument, {
     variables: { id, deleted: deleted ? DeletedFilter.Deleted : undefined }
   })
 
@@ -123,11 +100,3 @@ const EventMatchesPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
     </>
   )
 }
-
-EventMatchesPage.getLayout = (page: React.ReactElement<EventMatchesQuery>) => (
-  <EventLayout event={page.props.event}>
-    {page}
-  </EventLayout>
-)
-
-export default EventMatchesPage
