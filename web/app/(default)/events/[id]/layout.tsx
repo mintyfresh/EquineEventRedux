@@ -1,25 +1,7 @@
-import { gql } from '@apollo/client'
 import { redirect } from 'next/navigation'
-import EventNav from '../../../components/EventNav'
-import { getClient } from '../../../lib/graphql/apollo-client'
-
-export const EVENT_LAYOUT_FRAGMENT = gql`
-  fragment EventLayout on Event {
-    id
-    name
-    slug
-    deleted
-  }
-`
-
-const EVENT_LAYOUT_QUERY = gql`
-  query EventLayout($id: ID!) {
-    event(id: $id) {
-      ...EventLayout
-    }
-  }
-  ${EVENT_LAYOUT_FRAGMENT}
-`
+import EventNav from '../../../../components/EventNav'
+import { EventLayoutDocument } from '../../../../lib/generated/graphql'
+import { getClient } from '../../../../lib/graphql/apollo-client'
 
 export type EventLayoutProps = React.PropsWithChildren<{ params: { id: string } }>
 
@@ -28,7 +10,7 @@ export async function generateMetadata({ params: { id } }: EventLayoutProps) {
 
   try {
     const { data } = await client.query({
-      query: EVENT_LAYOUT_QUERY,
+      query: EventLayoutDocument,
       variables: { id }
     })
 
@@ -50,7 +32,7 @@ export default async function EventLayout({ children, params: { id } }: EventLay
 
   try {
     const { data } = await client.query({
-      query: EVENT_LAYOUT_QUERY,
+      query: EventLayoutDocument,
       variables: { id }
     })
 

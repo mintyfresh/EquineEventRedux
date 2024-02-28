@@ -13,7 +13,7 @@ export interface TimerListControlBarProps {
 
 const TimerListControlBar: React.FC<TimerListControlBarProps> = ({ roundId, pinToTop, readOnly, onColumnsSelect, onTimerCreate }) => {
   const showFullscreenView = () => {
-    window.open('?fullscreen=true', 'Timers', 'menubar=no,toolbar=no,location=no,status=no,directories=no')
+    window.open('timers/fullscreen', 'Timers', 'menubar=no,toolbar=no,location=no,status=no,directories=no')
   }
 
   const [pauseAllTimers, {}] = usePauseAllEventTimersMutation({ variables: { roundId } })

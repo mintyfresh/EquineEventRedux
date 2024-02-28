@@ -1,6 +1,6 @@
 'use client'
 
-import { ApolloLink, split } from '@apollo/client'
+import { ApolloLink, createHttpLink, split } from '@apollo/client'
 import { getMainDefinition } from '@apollo/client/utilities'
 import { ApolloNextAppProvider, NextSSRApolloClient, NextSSRInMemoryCache, SSRMultipartLink } from '@apollo/experimental-nextjs-app-support/ssr'
 import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
@@ -25,7 +25,7 @@ const createActionCableLink = (url: string) => {
 }
 
 const createApolloClient = (actionCableUrl: string) => () => {
-  const httpLink = createUploadLink({
+  const httpLink = createHttpLink({
     uri: isSSR ? process.env.GRAPHQL_API_URL : '/api/graphql'
   })
 
@@ -50,7 +50,6 @@ const createApolloClient = (actionCableUrl: string) => () => {
   }
 
   return new NextSSRApolloClient({
-    ssrMode: isSSR,
     link,
     cache: new NextSSRInMemoryCache({ possibleTypes: result.possibleTypes })
   })

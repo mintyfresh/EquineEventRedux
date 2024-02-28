@@ -1,40 +1,17 @@
 'use client'
 
-import { gql } from '@apollo/client'
-import { useQuery } from '@apollo/experimental-nextjs-app-support/ssr'
+import { useSuspenseQuery } from '@apollo/experimental-nextjs-app-support/ssr'
 import { useState } from 'react'
 import { Button, ButtonToolbar, Card } from 'react-bootstrap'
-import CreatePlayerButton, { CREATE_PLAYER_BUTTON_FRAGMENT } from '../../../../components/CreatePlayerButton'
-import { EVENT_LAYOUT_FRAGMENT } from '../../../../components/EventLayout'
-import ImportPlayersButton, { IMPORT_PLAYERS_BUTTON_FRAGMENT } from '../../../../components/ImportPlayersButton'
-import PlayerTable, { PLAYER_TABLE_FRAGMENT } from '../../../../components/PlayerTable'
-import { DeletedFilter, EventPlayersQuery, EventPlayersQueryVariables } from '../../../../lib/generated/graphql'
-
-const EVENT_PLAYERS_QUERY = gql`
-  query EventPlayers($id: ID!, $deleted: DeletedFilter) {
-    event(id: $id) {
-      id
-      name
-      ...EventLayout
-      ...CreatePlayerButton
-      ...ImportPlayersButton
-      players(deleted: $deleted) {
-        nodes {
-          ...PlayerTable
-        }
-      }
-    }
-  }
-  ${EVENT_LAYOUT_FRAGMENT}
-  ${CREATE_PLAYER_BUTTON_FRAGMENT}
-  ${IMPORT_PLAYERS_BUTTON_FRAGMENT}
-  ${PLAYER_TABLE_FRAGMENT}
-`
+import CreatePlayerButton from '../../../../../components/CreatePlayerButton'
+import ImportPlayersButton from '../../../../../components/ImportPlayersButton'
+import PlayerTable from '../../../../../components/PlayerTable'
+import { DeletedFilter, EventPlayersDocument, EventPlayersQuery, EventPlayersQueryVariables } from '../../../../../lib/generated/graphql'
 
 export default function EventPlayersPage({ params: { id } }: { params: { id: string } }) {
   const [deleted, setDeleted] = useState<boolean>(false)
 
-  const { data, refetch } = useQuery<EventPlayersQuery, EventPlayersQueryVariables>(EVENT_PLAYERS_QUERY, {
+  const { data, refetch } = useSuspenseQuery<EventPlayersQuery, EventPlayersQueryVariables>(EventPlayersDocument, {
     variables: { id, deleted: deleted ? DeletedFilter.Deleted : undefined }
   })
 

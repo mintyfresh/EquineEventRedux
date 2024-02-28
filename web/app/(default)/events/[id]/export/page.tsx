@@ -1,12 +1,10 @@
 'use client'
 
-import { gql } from '@apollo/client'
-import { useQuery } from '@apollo/experimental-nextjs-app-support/ssr'
+import { useSuspenseQuery } from '@apollo/experimental-nextjs-app-support/ssr'
 import { faCopy } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button, Card } from 'react-bootstrap'
-import { EventExportQuery, EventExportQueryVariables } from '../../../../lib/generated/graphql'
-import { EVENT_LAYOUT_FRAGMENT } from '../../../../components/EventLayout'
+import { EventExportDocument, EventExportQuery, EventExportQueryVariables } from '../../../../../lib/generated/graphql'
 
 const copyToClipboard = (value: string) => {
   if (navigator.clipboard) {
@@ -108,51 +106,8 @@ const EventChallongeExport: React.FC<EventExportQuery> = ({ event }) => {
   )
 }
 
-const EVENT_EXPORT_QUERY = gql`
-  query EventExport($id: ID!) {
-    event(id: $id) {
-      id
-      ...EventLayout
-      players(orderBy: SCORE, orderByDirection: DESC) {
-        nodes {
-          id
-          name
-          score
-          winsCount
-          lossesCount
-          drawsCount
-          opponentWinRate
-        }
-      }
-      rounds(orderBy: NUMBER, orderByDirection: DESC) {
-        id
-        number
-        matches {
-          id
-          table
-          player1 {
-            id
-            name
-            winsCount
-            lossesCount
-            drawsCount
-          }
-          player2 {
-            id
-            name
-            winsCount
-            lossesCount
-            drawsCount
-          }
-        }
-      }
-    }
-  }
-  ${EVENT_LAYOUT_FRAGMENT}
-`
-
 export default function EventExportPage({ params: { id } }: { params: { id: string } }) {
-  const { data } = useQuery<EventExportQuery, EventExportQueryVariables>(EVENT_EXPORT_QUERY, {
+  const { data } = useSuspenseQuery<EventExportQuery, EventExportQueryVariables>(EventExportDocument, {
     variables: { id }
   })
 

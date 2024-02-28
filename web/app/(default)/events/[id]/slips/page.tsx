@@ -1,44 +1,23 @@
 'use client'
 
-import { gql } from '@apollo/client'
-import { useQuery } from '@apollo/experimental-nextjs-app-support/ssr'
-import { useState } from 'react'
+import { useSuspenseQuery } from '@apollo/experimental-nextjs-app-support/ssr'
+import { useEffect, useState } from 'react'
 import { Button, ButtonToolbar, Card, Col, Form, Row } from 'react-bootstrap'
-import EventLayout, { EVENT_LAYOUT_FRAGMENT } from '../../../../components/EventLayout'
-import Slip, { SLIP_EVENT_FRAGMENT, SLIP_MATCH_FRAGMENT, SLIP_ROUND_FRAGMENT } from '../../../../components/Slip'
-import { EventSlipsQuery, EventSlipsQueryVariables } from '../../../../lib/generated/graphql'
-
-const EVENT_SLIPS_QUERY = gql`
-  query EventSlips($id: ID!) {
-    event(id: $id) {
-      id
-      name
-      ...EventLayout
-      ...SlipEvent
-      rounds(orderBy: NUMBER, orderByDirection: DESC) {
-        id
-        ...SlipRound
-        matches {
-          ...SlipMatch
-        }
-      }
-    }
-  }
-  ${EVENT_LAYOUT_FRAGMENT}
-  ${SLIP_EVENT_FRAGMENT}
-  ${SLIP_ROUND_FRAGMENT}
-  ${SLIP_MATCH_FRAGMENT}
-`
+import Slip from '../../../../../components/Slip'
+import { EventSlipsDocument, EventSlipsQuery, EventSlipsQueryVariables } from '../../../../../lib/generated/graphql'
 
 export default function EventSlipsPage({ params: { id } }: { params: { id: string } }) {
   const [round, setRound] = useState<EventSlipsQuery['event']['rounds'][0] | null>(null)
 
-  const { data } = useQuery<EventSlipsQuery, EventSlipsQueryVariables>(EVENT_SLIPS_QUERY, {
-    variables: { id },
-    onCompleted: ({ event }) => {
-      setRound(event.rounds[0])
-    }
+  const { data } = useSuspenseQuery<EventSlipsQuery, EventSlipsQueryVariables>(EventSlipsDocument, {
+    variables: { id }
   })
+
+  useEffect(() => {
+    if (data?.event) {
+      setRound(data.event.rounds[0])
+    }
+  }, [data.event.rounds])
 
   if (!data?.event) {
     return null
@@ -94,9 +73,3 @@ export default function EventSlipsPage({ params: { id } }: { params: { id: strin
     </>
   )
 }
-
-// EventSlipsPage.getLayout = (page: React.ReactElement<EventSlipsQuery>) => (
-//   <EventLayout event={page.props.event}>
-//     {page}
-//   </EventLayout>
-// )

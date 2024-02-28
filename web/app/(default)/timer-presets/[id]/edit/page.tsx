@@ -1,12 +1,12 @@
 'use client'
 
 import { gql } from '@apollo/client'
-import { useQuery } from '@apollo/experimental-nextjs-app-support/ssr'
+import { useSuspenseQuery } from '@apollo/experimental-nextjs-app-support/ssr'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
-import TimerPresetForm from '../../../../components/TimerPreset/TimerPresetForm'
-import { ERRORS_FRAGMENT, useErrors } from '../../../../lib/errors'
-import { EditTimerPresetQuery, EditTimerPresetQueryVariables, TimerPresetUpdateInput, useUpdateTimerPresetMutation } from '../../../../lib/generated/graphql'
+import { useEffect, useState } from 'react'
+import TimerPresetForm from '../../../../../components/TimerPreset/TimerPresetForm'
+import { ERRORS_FRAGMENT, useErrors } from '../../../../../lib/errors'
+import { EditTimerPresetQuery, EditTimerPresetQueryVariables, TimerPresetUpdateInput, useUpdateTimerPresetMutation } from '../../../../../lib/generated/graphql'
 
 const EDIT_TIMER_PRESET_QUERY = gql`
   query EditTimerPreset($id: ID!) {
@@ -43,21 +43,22 @@ export default function EditTimerPresetPage({ params: { id } }: { params: { id: 
   const [errors, setErrors] = useErrors()
   const [input, setInput] = useState<TimerPresetUpdateInput | null>(null)
 
-  const { data } = useQuery<EditTimerPresetQuery, EditTimerPresetQueryVariables>(EDIT_TIMER_PRESET_QUERY, {
-    variables: { id },
-    onCompleted: (data) => {
-      setInput({
-        name: data.timerPreset.name,
-        phases: data.timerPreset.phases.map((phase) => ({
-          id: phase.id,
-          name: phase.name,
-          position: phase.position,
-          durationAmount: phase.durationAmount,
-          durationUnit: phase.durationUnit
-        }))
-      })
-    }
+  const { data } = useSuspenseQuery<EditTimerPresetQuery, EditTimerPresetQueryVariables>(EDIT_TIMER_PRESET_QUERY, {
+    variables: { id }
   })
+
+  useEffect(() => {
+    setInput({
+      name: data.timerPreset.name,
+      phases: data.timerPreset.phases.map((phase) => ({
+        id: phase.id,
+        name: phase.name,
+        position: phase.position,
+        durationAmount: phase.durationAmount,
+        durationUnit: phase.durationUnit
+      }))
+    })
+  }, [data?.timerPreset])
 
   const router = useRouter()
   const [updateTimerPreset, { loading }] = useUpdateTimerPresetMutation({

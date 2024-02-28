@@ -1,0 +1,15 @@
+query EventSlips($id: ID!) {
+  event(id: $id) {
+    id
+    name
+    ...EventLayout
+    ...SlipEvent
+    rounds(orderBy: NUMBER, orderByDirection: DESC) {
+      id
+      ...SlipRound
+      matches {
+        ...SlipMatch
+      }
+    }
+  }
+}

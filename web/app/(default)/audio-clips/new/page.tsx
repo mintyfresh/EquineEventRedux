@@ -4,10 +4,10 @@ import { gql } from '@apollo/client'
 import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
 import { Button, Form } from 'react-bootstrap'
-import FormBaseErrors from '../../../components/Form/FormBaseErrors'
-import FormControlErrors from '../../../components/Form/FormControlErrors'
-import { ERRORS_FRAGMENT, useErrors } from '../../../lib/errors'
-import { AudioClipCreateInput, useUploadAudioClipMutation } from '../../../lib/generated/graphql'
+import FormBaseErrors from '../../../../components/Form/FormBaseErrors'
+import FormControlErrors from '../../../../components/Form/FormControlErrors'
+import { ERRORS_FRAGMENT, useErrors } from '../../../../lib/errors'
+import { AudioClipCreateInput, useUploadAudioClipMutation } from '../../../../lib/generated/graphql'
 
 gql`
   mutation UploadAudioClip($input: AudioClipCreateInput!) {

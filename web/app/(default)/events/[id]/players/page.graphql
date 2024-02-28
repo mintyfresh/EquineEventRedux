@@ -1,0 +1,14 @@
+query EventPlayers($id: ID!, $deleted: DeletedFilter) {
+  event(id: $id) {
+    id
+    name
+    ...EventLayout
+    ...CreatePlayerButton
+    ...ImportPlayersButton
+    players(deleted: $deleted) {
+      nodes {
+        ...PlayerTable
+      }
+    }
+  }
+}

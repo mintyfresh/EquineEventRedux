@@ -1,11 +1,11 @@
 'use client'
 
 import { gql } from '@apollo/client'
-import { useQuery } from '@apollo/experimental-nextjs-app-support/ssr'
+import { useSuspenseQuery } from '@apollo/experimental-nextjs-app-support/ssr'
 import Link from 'next/link'
 import { Badge, Button, Card, Col, Dropdown, Row } from 'react-bootstrap'
-import EllipsisDropdown from '../../components/EllipsisDropdown'
-import { IndexAudioClipsQuery, IndexAudioClipsQueryVariables, useDeleteAudioClipMutation } from '../../lib/generated/graphql'
+import EllipsisDropdown from '../../../components/EllipsisDropdown'
+import { IndexAudioClipsQuery, IndexAudioClipsQueryVariables, useDeleteAudioClipMutation } from '../../../lib/generated/graphql'
 
 const INDEX_AUDIO_CLIPS_QUERY = gql`
   query IndexAudioClips {
@@ -35,7 +35,7 @@ gql`
 `
 
 export default function IndexAudioClipsPage() {
-  const { data, refetch } = useQuery<IndexAudioClipsQuery, IndexAudioClipsQueryVariables>(INDEX_AUDIO_CLIPS_QUERY)
+  const { data, refetch } = useSuspenseQuery<IndexAudioClipsQuery, IndexAudioClipsQueryVariables>(INDEX_AUDIO_CLIPS_QUERY)
 
   const [deleteAudioClip, {}] = useDeleteAudioClipMutation({
     onCompleted: ({ audioClipDelete }) => {

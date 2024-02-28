@@ -1,12 +1,12 @@
 'use client'
 
 import { gql } from '@apollo/client'
-import { useQuery } from '@apollo/experimental-nextjs-app-support/ssr'
+import { useSuspenseQuery } from '@apollo/experimental-nextjs-app-support/ssr'
 import { faVolumeUp } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Link from 'next/link'
 import { Alert, Button, Card, Col, Row } from 'react-bootstrap'
-import { TimerPresetsQuery, useDeleteTimerPresetMutation } from '../../lib/generated/graphql'
+import { TimerPresetsQuery, useDeleteTimerPresetMutation } from '../../../lib/generated/graphql'
 
 const TIMER_PRESETS_QUERY = gql`
   query TimerPresets {
@@ -39,7 +39,7 @@ gql`
 `
 
 export default function TimerPresetsPage() {
-  const { data, refetch } = useQuery<TimerPresetsQuery>(TIMER_PRESETS_QUERY)
+  const { data, refetch } = useSuspenseQuery<TimerPresetsQuery>(TIMER_PRESETS_QUERY)
 
   const [deleteTimerPreset, {}] = useDeleteTimerPresetMutation({
     onCompleted: ({ timerPresetDelete }) => {

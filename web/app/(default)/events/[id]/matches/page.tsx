@@ -1,18 +1,18 @@
 'use client'
 
-import { useQuery } from '@apollo/experimental-nextjs-app-support/ssr'
+import { useSuspenseQuery } from '@apollo/experimental-nextjs-app-support/ssr'
 import { useEffect, useState } from 'react'
 import { Alert, Button, ButtonToolbar, Card, OverlayTrigger, Tooltip } from 'react-bootstrap'
-import CreateRoundButton from '../../../../components/CreateRoundButton'
-import RoundList from '../../../../components/RoundList'
-import { RoundViewMode } from '../../../../components/RoundList/RoundListItem'
-import { DeletedFilter, EventMatchesDocument, EventMatchesQuery, EventMatchesQueryVariables, useSetMatchResolutionMutation } from '../../../../lib/generated/graphql'
+import CreateRoundButton from '../../../../../components/CreateRoundButton'
+import RoundList from '../../../../../components/RoundList'
+import { RoundViewMode } from '../../../../../components/RoundList/RoundListItem'
+import { DeletedFilter, EventMatchesDocument, EventMatchesQuery, EventMatchesQueryVariables, useSetMatchResolutionMutation } from '../../../../../lib/generated/graphql'
 
 export default function EventMatchesPage({ params: { id } }: { params: { id: string } }) {
   const [view, setView] = useState<RoundViewMode>(RoundViewMode.Grid)
   const [deleted, setDeleted] = useState<boolean>(false)
 
-  const { data, refetch } = useQuery<EventMatchesQuery, EventMatchesQueryVariables>(EventMatchesDocument, {
+  const { data, refetch } = useSuspenseQuery<EventMatchesQuery, EventMatchesQueryVariables>(EventMatchesDocument, {
     variables: { id, deleted: deleted ? DeletedFilter.Deleted : undefined }
   })
 
