@@ -17,27 +17,27 @@ const EventNav: React.FC<{ event: EventNavFragment }> = ({ event }) => {
   return (
     <Nav variant="tabs" className="mb-3">
       <Nav.Item>
-        <ActiveLink href="/events/[id]/players" as={`/events/${id}/players`} passHref>
+        <ActiveLink href="/events/[id]/players" as={`/events/${id}/players`} passHref legacyBehavior>
           <Nav.Link accessKey="y">Pla<u>y</u>ers</Nav.Link>
         </ActiveLink>
       </Nav.Item>
       <Nav.Item>
-        <ActiveLink href="/events/[id]/matches" as={`/events/${id}/matches`} passHref>
+        <ActiveLink href="/events/[id]/matches" as={`/events/${id}/matches`} passHref legacyBehavior>
           <Nav.Link accessKey="m"><u>M</u>atches</Nav.Link>
         </ActiveLink>
       </Nav.Item>
       <Nav.Item>
-        <ActiveLink href="/events/[id]/slips" as={`/events/${id}/slips`} passHref>
+        <ActiveLink href="/events/[id]/slips" as={`/events/${id}/slips`} passHref legacyBehavior>
           <Nav.Link accessKey="s"><u>S</u>lips</Nav.Link>
         </ActiveLink>
       </Nav.Item>
       <Nav.Item>
-        <ActiveLink href="/events/[id]/export" as={`/events/${id}/export`} passHref>
+        <ActiveLink href="/events/[id]/export" as={`/events/${id}/export`} passHref legacyBehavior>
           <Nav.Link accessKey="x">E<u>x</u>port</Nav.Link>
         </ActiveLink>
       </Nav.Item>
       <Nav.Item>
-        <ActiveLink href="/events/[id]/timers" as={`/events/${id}/timers`} passHref>
+        <ActiveLink href="/events/[id]/timers" as={`/events/${id}/timers`} passHref legacyBehavior>
           <Nav.Link accessKey="t"><u>T</u>imers</Nav.Link>
         </ActiveLink>
       </Nav.Item>
