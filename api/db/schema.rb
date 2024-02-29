@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_23_024122) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_29_024535) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pgcrypto"
@@ -58,6 +58,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_23_024122) do
     t.datetime "updated_at", null: false
     t.datetime "deleted_at", precision: nil
     t.string "slug", null: false
+    t.uuid "deleted_in"
     t.index ["name"], name: "index_events_on_name", unique: true, where: "(deleted_at IS NULL)"
     t.index ["slug"], name: "index_events_on_slug", unique: true, where: "(deleted_at IS NULL)"
   end

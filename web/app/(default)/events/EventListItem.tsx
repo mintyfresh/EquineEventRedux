@@ -1,59 +1,29 @@
-import { gql } from '@apollo/client'
 import Link from 'next/link'
 import { Dropdown, ListGroup } from 'react-bootstrap'
-import { EventListItemFragment, useDeleteEventMutation, useRestoreEventMutation } from '../../lib/generated/graphql'
-import EllipsisDropdown from '../EllipsisDropdown'
-
-export const EVENT_LIST_ITEM_FRAGMENT = gql`
-  fragment EventListItem on Event {
-    id
-    name
-    slug
-    deleted
-  }
-`
-
-gql`
-  mutation DeleteEvent($id: ID!) {
-    eventDelete(id: $id) {
-      success
-    }
-  }
-`
-
-gql`
-  mutation RestoreEvent($id: ID!) {
-    eventRestore(id: $id) {
-      event {
-        id
-        ...EventListItem
-      }
-    }
-  }
-  ${EVENT_LIST_ITEM_FRAGMENT}
-`
+import EllipsisDropdown from '../../../components/EllipsisDropdown'
+import { EventListItemFragment, useDeleteEventMutation, useRestoreEventMutation } from '../../../lib/generated/graphql'
 
 export interface EventListItemProps {
   event: EventListItemFragment
-  onDelete?: () => void
-  onRestore?: () => void
+  onDelete?(event: EventListItemFragment): void
+  onRestore?(event: EventListItemFragment): void
 }
 
-const EventListItem: React.FC<EventListItemProps> = ({ event, onDelete, onRestore }) => {
+export default function EventListItem({ event, onDelete, onRestore }: EventListItemProps) {
   const [deleteEvent, {}] = useDeleteEventMutation({
     variables: { id: event.id },
-    onCompleted: async ({ eventDelete }) => {
+    onCompleted: ({ eventDelete }) => {
       if (eventDelete?.success) {
-        onDelete?.()
+        onDelete?.(event)
       }
     }
   })
 
   const [restoreEvent, {}] = useRestoreEventMutation({
     variables: { id: event.id },
-    onCompleted: async ({ eventRestore }) => {
+    onCompleted: ({ eventRestore }) => {
       if (eventRestore?.event) {
-        onRestore?.()
+        onRestore?.(eventRestore.event)
       }
     }
   })
@@ -79,5 +49,3 @@ const EventListItem: React.FC<EventListItemProps> = ({ event, onDelete, onRestor
     </ListGroup.Item>
   )
 }
-
-export default EventListItem

@@ -1,0 +1,7 @@
+fragment EventList on EventConnection {
+  nodes {
+    id
+    slug
+    ...EventListItem
+  }
+}

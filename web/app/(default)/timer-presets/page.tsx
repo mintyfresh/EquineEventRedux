@@ -50,7 +50,7 @@ export default function TimerPresetsPage() {
           </Link>
         </Col>
       </Row>
-      {data?.timerPresets?.nodes?.every((preset) => preset.isSystem) && (
+      {data.timerPresets.nodes.every((preset) => preset.isSystem) && (
         <Alert variant="info">
           <p>
             Timer presets define reusable configurations for timers.

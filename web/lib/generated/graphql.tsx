@@ -1048,6 +1048,24 @@ export type IndexAudioClipsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type IndexAudioClipsQuery = { __typename?: 'Query', audioClips: { __typename?: 'AudioClipConnection', nodes: Array<{ __typename?: 'AudioClip', id: string, name: string, contentType: string, contentTypeHuman: string, fileSizeHuman: string, fileUrl: string, timerPresets: Array<{ __typename?: 'TimerPreset', id: string, name: string }> }> } };
 
+export type EventListFragment = { __typename?: 'EventConnection', nodes: Array<{ __typename?: 'Event', id: string, slug: string, name: string, deleted: boolean, createdAt: string }> };
+
+export type DeleteEventMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type DeleteEventMutation = { __typename?: 'Mutation', eventDelete?: { __typename?: 'EventDeletePayload', success?: boolean | null } | null };
+
+export type RestoreEventMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type RestoreEventMutation = { __typename?: 'Mutation', eventRestore?: { __typename?: 'EventRestorePayload', event?: { __typename?: 'Event', id: string, name: string, slug: string, deleted: boolean, createdAt: string } | null } | null };
+
+export type EventListItemFragment = { __typename?: 'Event', id: string, name: string, slug: string, deleted: boolean, createdAt: string };
+
 export type EventExportQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
@@ -1108,7 +1126,7 @@ export type EventsIndexQueryVariables = Exact<{
 }>;
 
 
-export type EventsIndexQuery = { __typename?: 'Query', events: { __typename?: 'EventConnection', nodes: Array<{ __typename?: 'Event', id: string, slug: string, name: string, deleted: boolean }> } };
+export type EventsIndexQuery = { __typename?: 'Query', events: { __typename?: 'EventConnection', nodes: Array<{ __typename?: 'Event', id: string, slug: string, name: string, deleted: boolean, createdAt: string }> } };
 
 export type DeleteTimerPresetMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -1186,24 +1204,6 @@ export type CreateRoundMutationVariables = Exact<{
 
 
 export type CreateRoundMutation = { __typename?: 'Mutation', roundCreate?: { __typename?: 'RoundCreatePayload', round?: { __typename?: 'Round', id: string } | null, errors?: Array<{ __typename?: 'Error', attribute: string, message: string }> | null } | null };
-
-export type EventListFragment = { __typename?: 'EventConnection', nodes: Array<{ __typename?: 'Event', id: string, slug: string, name: string, deleted: boolean }> };
-
-export type EventListItemFragment = { __typename?: 'Event', id: string, name: string, slug: string, deleted: boolean };
-
-export type DeleteEventMutationVariables = Exact<{
-  id: Scalars['ID']['input'];
-}>;
-
-
-export type DeleteEventMutation = { __typename?: 'Mutation', eventDelete?: { __typename?: 'EventDeletePayload', success?: boolean | null } | null };
-
-export type RestoreEventMutationVariables = Exact<{
-  id: Scalars['ID']['input'];
-}>;
-
-
-export type RestoreEventMutation = { __typename?: 'Mutation', eventRestore?: { __typename?: 'EventRestorePayload', event?: { __typename?: 'Event', id: string, name: string, slug: string, deleted: boolean } | null } | null };
 
 export type EventNavFragment = { __typename?: 'Event', id: string, slug: string, deleted: boolean };
 
@@ -1496,6 +1496,24 @@ export const AudioClipListItemFragmentDoc = gql`
   }
 }
     `;
+export const EventListItemFragmentDoc = gql`
+    fragment EventListItem on Event {
+  id
+  name
+  slug
+  deleted
+  createdAt
+}
+    `;
+export const EventListFragmentDoc = gql`
+    fragment EventList on EventConnection {
+  nodes {
+    id
+    slug
+    ...EventListItem
+  }
+}
+    ${EventListItemFragmentDoc}`;
 export const EventLayoutFragmentDoc = gql`
     fragment EventLayout on Event {
   id
@@ -1538,23 +1556,6 @@ export const CreateRoundButtonFragmentDoc = gql`
   id
 }
     `;
-export const EventListItemFragmentDoc = gql`
-    fragment EventListItem on Event {
-  id
-  name
-  slug
-  deleted
-}
-    `;
-export const EventListFragmentDoc = gql`
-    fragment EventList on EventConnection {
-  nodes {
-    id
-    slug
-    ...EventListItem
-  }
-}
-    ${EventListItemFragmentDoc}`;
 export const EventNavFragmentDoc = gql`
     fragment EventNav on Event {
   id
@@ -2018,6 +2019,75 @@ export type IndexAudioClipsQueryHookResult = ReturnType<typeof useIndexAudioClip
 export type IndexAudioClipsLazyQueryHookResult = ReturnType<typeof useIndexAudioClipsLazyQuery>;
 export type IndexAudioClipsSuspenseQueryHookResult = ReturnType<typeof useIndexAudioClipsSuspenseQuery>;
 export type IndexAudioClipsQueryResult = Apollo.QueryResult<IndexAudioClipsQuery, IndexAudioClipsQueryVariables>;
+export const DeleteEventDocument = gql`
+    mutation DeleteEvent($id: ID!) {
+  eventDelete(id: $id) {
+    success
+  }
+}
+    `;
+export type DeleteEventMutationFn = Apollo.MutationFunction<DeleteEventMutation, DeleteEventMutationVariables>;
+
+/**
+ * __useDeleteEventMutation__
+ *
+ * To run a mutation, you first call `useDeleteEventMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteEventMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteEventMutation, { data, loading, error }] = useDeleteEventMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteEventMutation(baseOptions?: Apollo.MutationHookOptions<DeleteEventMutation, DeleteEventMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteEventMutation, DeleteEventMutationVariables>(DeleteEventDocument, options);
+      }
+export type DeleteEventMutationHookResult = ReturnType<typeof useDeleteEventMutation>;
+export type DeleteEventMutationResult = Apollo.MutationResult<DeleteEventMutation>;
+export type DeleteEventMutationOptions = Apollo.BaseMutationOptions<DeleteEventMutation, DeleteEventMutationVariables>;
+export const RestoreEventDocument = gql`
+    mutation RestoreEvent($id: ID!) {
+  eventRestore(id: $id) {
+    event {
+      id
+      ...EventListItem
+    }
+  }
+}
+    ${EventListItemFragmentDoc}`;
+export type RestoreEventMutationFn = Apollo.MutationFunction<RestoreEventMutation, RestoreEventMutationVariables>;
+
+/**
+ * __useRestoreEventMutation__
+ *
+ * To run a mutation, you first call `useRestoreEventMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRestoreEventMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [restoreEventMutation, { data, loading, error }] = useRestoreEventMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useRestoreEventMutation(baseOptions?: Apollo.MutationHookOptions<RestoreEventMutation, RestoreEventMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RestoreEventMutation, RestoreEventMutationVariables>(RestoreEventDocument, options);
+      }
+export type RestoreEventMutationHookResult = ReturnType<typeof useRestoreEventMutation>;
+export type RestoreEventMutationResult = Apollo.MutationResult<RestoreEventMutation>;
+export type RestoreEventMutationOptions = Apollo.BaseMutationOptions<RestoreEventMutation, RestoreEventMutationVariables>;
 export const EventExportDocument = gql`
     query EventExport($id: ID!) {
   event(id: $id) {
@@ -2836,75 +2906,6 @@ export function useCreateRoundMutation(baseOptions?: Apollo.MutationHookOptions<
 export type CreateRoundMutationHookResult = ReturnType<typeof useCreateRoundMutation>;
 export type CreateRoundMutationResult = Apollo.MutationResult<CreateRoundMutation>;
 export type CreateRoundMutationOptions = Apollo.BaseMutationOptions<CreateRoundMutation, CreateRoundMutationVariables>;
-export const DeleteEventDocument = gql`
-    mutation DeleteEvent($id: ID!) {
-  eventDelete(id: $id) {
-    success
-  }
-}
-    `;
-export type DeleteEventMutationFn = Apollo.MutationFunction<DeleteEventMutation, DeleteEventMutationVariables>;
-
-/**
- * __useDeleteEventMutation__
- *
- * To run a mutation, you first call `useDeleteEventMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useDeleteEventMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [deleteEventMutation, { data, loading, error }] = useDeleteEventMutation({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useDeleteEventMutation(baseOptions?: Apollo.MutationHookOptions<DeleteEventMutation, DeleteEventMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<DeleteEventMutation, DeleteEventMutationVariables>(DeleteEventDocument, options);
-      }
-export type DeleteEventMutationHookResult = ReturnType<typeof useDeleteEventMutation>;
-export type DeleteEventMutationResult = Apollo.MutationResult<DeleteEventMutation>;
-export type DeleteEventMutationOptions = Apollo.BaseMutationOptions<DeleteEventMutation, DeleteEventMutationVariables>;
-export const RestoreEventDocument = gql`
-    mutation RestoreEvent($id: ID!) {
-  eventRestore(id: $id) {
-    event {
-      id
-      ...EventListItem
-    }
-  }
-}
-    ${EventListItemFragmentDoc}`;
-export type RestoreEventMutationFn = Apollo.MutationFunction<RestoreEventMutation, RestoreEventMutationVariables>;
-
-/**
- * __useRestoreEventMutation__
- *
- * To run a mutation, you first call `useRestoreEventMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useRestoreEventMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [restoreEventMutation, { data, loading, error }] = useRestoreEventMutation({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useRestoreEventMutation(baseOptions?: Apollo.MutationHookOptions<RestoreEventMutation, RestoreEventMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<RestoreEventMutation, RestoreEventMutationVariables>(RestoreEventDocument, options);
-      }
-export type RestoreEventMutationHookResult = ReturnType<typeof useRestoreEventMutation>;
-export type RestoreEventMutationResult = Apollo.MutationResult<RestoreEventMutation>;
-export type RestoreEventMutationOptions = Apollo.BaseMutationOptions<RestoreEventMutation, RestoreEventMutationVariables>;
 export const SourceEventsForImportDocument = gql`
     query SourceEventsForImport {
   events {
