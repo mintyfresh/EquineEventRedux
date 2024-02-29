@@ -65,7 +65,7 @@ export default function TimerPresetsPage() {
       )}
       {data?.timerPresets && (
         <TimerPresetList
-          presetList={data.timerPresets}
+          timerPresets={data.timerPresets.nodes}
           onDelete={(preset) => onTimerPresetDelete(preset, client)}
         />
       )}

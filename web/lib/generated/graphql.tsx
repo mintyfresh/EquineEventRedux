@@ -1110,8 +1110,6 @@ export type EventsIndexQueryVariables = Exact<{
 
 export type EventsIndexQuery = { __typename?: 'Query', events: { __typename?: 'EventConnection', nodes: Array<{ __typename?: 'Event', id: string, slug: string, name: string, deleted: boolean }> } };
 
-export type TimerPresetListFragment = { __typename?: 'TimerPresetConnection', nodes: Array<{ __typename?: 'TimerPreset', id: string, name: string, isSystem: boolean, phasesCount: number, totalDurationHumanized: string, phases: Array<{ __typename?: 'TimerPresetPhase', id: string, name: string, durationHumanized: string, audioClip?: { __typename?: 'AudioClip', id: string } | null }> }> };
-
 export type DeleteTimerPresetMutationVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
@@ -1523,14 +1521,6 @@ export const TimerPresetListItemFragmentDoc = gql`
   }
 }
     `;
-export const TimerPresetListFragmentDoc = gql`
-    fragment TimerPresetList on TimerPresetConnection {
-  nodes {
-    id
-    ...TimerPresetListItem
-  }
-}
-    ${TimerPresetListItemFragmentDoc}`;
 export const CreateEventFragmentDoc = gql`
     fragment CreateEvent on Event {
   id
@@ -2599,14 +2589,14 @@ export type CreateTimerPresetMutationOptions = Apollo.BaseMutationOptions<Create
 export const TimerPresetsDocument = gql`
     query TimerPresets {
   timerPresets {
-    ...TimerPresetList
     nodes {
       id
       isSystem
+      ...TimerPresetListItem
     }
   }
 }
-    ${TimerPresetListFragmentDoc}`;
+    ${TimerPresetListItemFragmentDoc}`;
 
 /**
  * __useTimerPresetsQuery__

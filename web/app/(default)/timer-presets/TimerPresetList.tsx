@@ -1,17 +1,17 @@
 'use client'
 
-import { TimerPresetListFragment, TimerPresetListItemFragment } from '../../../lib/generated/graphql'
+import { TimerPresetListItemFragment } from '../../../lib/generated/graphql'
 import TimerPresetListItem from './TimerPresetListItem'
 
 export interface TimerPresetListProps {
-  presetList: TimerPresetListFragment
+  timerPresets: TimerPresetListItemFragment[]
   onDelete?(preset: TimerPresetListItemFragment): void
 }
 
-export default function TimerPresetList({ presetList, onDelete }: TimerPresetListProps) {
+export default function TimerPresetList({ timerPresets, onDelete }: TimerPresetListProps) {
   return (
     <>
-      {presetList.nodes?.map((preset) => (
+      {timerPresets.map((preset) => (
         <TimerPresetListItem
           key={preset.id}
           preset={preset}
