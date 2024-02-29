@@ -28,7 +28,7 @@ const PlayerModal: React.FC<PlayerModalProps> = ({ title, mode, show, disabled, 
       nameRef.current?.focus()
       setFocusName(false)
     }
-  }, [nameRef.current, focusName])
+  }, [focusName])
 
   return (
     <Modal

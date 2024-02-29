@@ -14,6 +14,20 @@ export interface TimerPresetListItemProps {
 export default function TimerPresetListItem({ preset, onDelete }: TimerPresetListItemProps) {
   const [deleteTimerPreset] = useDeleteTimerPresetMutation({
     variables: { id: preset.id },
+    update(cache, { data }) {
+      data?.timerPresetDelete?.success && cache.modify({
+        fields: {
+          timerPresets(timerPresets = { nodes: [] }, { readField }) {
+            return {
+              ...timerPresets,
+              nodes: timerPresets.nodes.filter((ref: any) => (
+                readField('id', ref) !== preset.id
+              ))
+            }
+          }
+        }
+      })
+    },
     onCompleted({ timerPresetDelete }) {
       if (timerPresetDelete?.success) {
         onDelete?.(preset)

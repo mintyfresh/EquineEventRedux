@@ -3,42 +3,11 @@
 import { useSuspenseQuery } from '@apollo/experimental-nextjs-app-support/ssr'
 import Link from 'next/link'
 import { Alert, Button, Col, Row } from 'react-bootstrap'
-import { TimerPresetListItemFragment, TimerPresetsDocument, TimerPresetsQuery } from '../../../lib/generated/graphql'
+import { TimerPresetsDocument, TimerPresetsQuery } from '../../../lib/generated/graphql'
 import TimerPresetList from './TimerPresetList'
-import { ApolloClient } from '@apollo/client'
-
-export function onTimerPresetCreate<T>(preset: TimerPresetListItemFragment, client: ApolloClient<T>) {
-  client.cache.updateQuery<TimerPresetsQuery>(
-    {
-      query: TimerPresetsDocument,
-    },
-    (data) => (data && {
-      ...data,
-      timerPresets: {
-        ...data.timerPresets,
-        nodes: [...data.timerPresets.nodes, preset],
-      },
-    })
-  )
-}
-
-export function onTimerPresetDelete<T>(preset: TimerPresetListItemFragment, client: ApolloClient<T>) {
-  client.cache.updateQuery<TimerPresetsQuery>(
-    {
-      query: TimerPresetsDocument,
-    },
-    (data) => (data && {
-      ...data,
-      timerPresets: {
-        ...data.timerPresets,
-        nodes: data.timerPresets.nodes.filter(({ id }) => id !== preset.id),
-      },
-    })
-  )
-}
 
 export default function TimerPresetsPage() {
-  const { data, client } = useSuspenseQuery<TimerPresetsQuery>(TimerPresetsDocument)
+  const { data: { timerPresets } } = useSuspenseQuery<TimerPresetsQuery>(TimerPresetsDocument)
 
   return (
     <>
@@ -50,7 +19,7 @@ export default function TimerPresetsPage() {
           </Link>
         </Col>
       </Row>
-      {data.timerPresets.nodes.every((preset) => preset.isSystem) && (
+      {timerPresets.nodes.every((preset) => preset.isSystem) && (
         <Alert variant="info">
           <p>
             Timer presets define reusable configurations for timers.
@@ -63,12 +32,9 @@ export default function TimerPresetsPage() {
           </p>
         </Alert>
       )}
-      {data?.timerPresets && (
-        <TimerPresetList
-          timerPresets={data.timerPresets.nodes}
-          onDelete={(preset) => onTimerPresetDelete(preset, client)}
-        />
-      )}
+      <TimerPresetList
+        timerPresets={timerPresets.nodes}
+      />
     </>
   )
 }

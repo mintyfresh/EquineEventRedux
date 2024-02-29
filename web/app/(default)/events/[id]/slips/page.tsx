@@ -9,19 +9,15 @@ import { EventSlipsDocument, EventSlipsQuery, EventSlipsQueryVariables } from '.
 export default function EventSlipsPage({ params: { id } }: { params: { id: string } }) {
   const [round, setRound] = useState<EventSlipsQuery['event']['rounds'][0] | null>(null)
 
-  const { data } = useSuspenseQuery<EventSlipsQuery, EventSlipsQueryVariables>(EventSlipsDocument, {
+  const { data: { event } } = useSuspenseQuery<EventSlipsQuery, EventSlipsQueryVariables>(EventSlipsDocument, {
     variables: { id }
   })
 
   useEffect(() => {
-    if (data?.event) {
-      setRound(data.event.rounds[0])
+    if (event) {
+      setRound(event.rounds[0])
     }
-  }, [data.event.rounds])
-
-  if (!data?.event) {
-    return null
-  }
+  }, [event])
 
   if (!round) {
     return (
@@ -39,9 +35,9 @@ export default function EventSlipsPage({ params: { id } }: { params: { id: strin
         <Col xs="auto">
           <Form.Select
             title="Round"
-            onChange={(event) => setRound(data.event.rounds.find(({ id }) => id === event.target.value) || null)}
+            onChange={({ target }) => setRound(event.rounds.find(({ id }) => id === target.value) || null)}
           >
-            {data.event.rounds.map((round) => (
+            {event.rounds.map((round) => (
               <option key={round.id} value={round.id}>
                 Round {round.number}
               </option>
@@ -58,7 +54,7 @@ export default function EventSlipsPage({ params: { id } }: { params: { id: strin
         round.matches.map((match) => (
           <Slip
             key={match.id}
-            event={data.event}
+            event={event}
             round={round}
             match={match}
           />

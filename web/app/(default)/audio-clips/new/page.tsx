@@ -6,8 +6,7 @@ import { Button, Form } from 'react-bootstrap'
 import FormBaseErrors from '../../../../components/Form/FormBaseErrors'
 import FormControlErrors from '../../../../components/Form/FormControlErrors'
 import { useErrors } from '../../../../lib/errors'
-import { AudioClipCreateInput, useUploadAudioClipMutation } from '../../../../lib/generated/graphql'
-import { onAudioClipCreate } from '../page'
+import { AudioClipCreateInput, AudioClipListItemFragment, AudioClipListItemFragmentDoc, useUploadAudioClipMutation } from '../../../../lib/generated/graphql'
 
 export default function NewAudioClipPage() {
   const [errors, setErrors] = useErrors()
@@ -15,12 +14,30 @@ export default function NewAudioClipPage() {
   const [input, setInput] = useState<AudioClipCreateInput>({ name: '', file: null })
 
   const router = useRouter()
-  const [uploadAudioClip, { client, loading }] = useUploadAudioClipMutation({
-    onCompleted: ({ audioClipCreate }) => {
+  const [uploadAudioClip, { loading }] = useUploadAudioClipMutation({
+    update(cache, { data }) {
+      const audioClip = data?.audioClipCreate?.audioClip
+
+      audioClip && cache.modify({
+        fields: {
+          audioClips(existingAudioClips = { nodes: [] }) {
+            const ref = cache.writeFragment<AudioClipListItemFragment>({
+              fragment: AudioClipListItemFragmentDoc,
+              data: audioClip
+            })
+
+            return {
+              ...existingAudioClips,
+              nodes: [...existingAudioClips.nodes, ref]
+            }
+          }
+        }
+      })
+    },
+    onCompleted({ audioClipCreate }) {
       setErrors(audioClipCreate?.errors)
 
       if (audioClipCreate?.audioClip) {
-        onAudioClipCreate(audioClipCreate.audioClip, client)
         router.push(`/audio-clips`)
       }
     }

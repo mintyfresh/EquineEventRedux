@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { Dropdown, ListGroup } from 'react-bootstrap'
 import EllipsisDropdown from '../../../components/EllipsisDropdown'
-import { EventListItemFragment, useDeleteEventMutation, useRestoreEventMutation } from '../../../lib/generated/graphql'
+import { DeletedFilter, EventListItemFragment, EventsIndexDocument, useDeleteEventMutation, useRestoreEventMutation } from '../../../lib/generated/graphql'
 
 export interface EventListItemProps {
   event: EventListItemFragment
@@ -12,7 +12,11 @@ export interface EventListItemProps {
 export default function EventListItem({ event, onDelete, onRestore }: EventListItemProps) {
   const [deleteEvent, {}] = useDeleteEventMutation({
     variables: { id: event.id },
-    onCompleted: ({ eventDelete }) => {
+    refetchQueries: [
+      { query: EventsIndexDocument },
+      { query: EventsIndexDocument, variables: { deleted: DeletedFilter.Deleted } }
+    ],
+    onCompleted({ eventDelete }) {
       if (eventDelete?.success) {
         onDelete?.(event)
       }
@@ -21,7 +25,11 @@ export default function EventListItem({ event, onDelete, onRestore }: EventListI
 
   const [restoreEvent, {}] = useRestoreEventMutation({
     variables: { id: event.id },
-    onCompleted: ({ eventRestore }) => {
+    refetchQueries: [
+      { query: EventsIndexDocument },
+      { query: EventsIndexDocument, variables: { deleted: DeletedFilter.Deleted } }
+    ],
+    onCompleted({ eventRestore }) {
       if (eventRestore?.event) {
         onRestore?.(eventRestore.event)
       }

@@ -4,8 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import TimerPresetForm from '../../../../components/TimerPreset/TimerPresetForm'
 import { useErrors } from '../../../../lib/errors'
-import { TimerPhaseDurationUnit, TimerPresetCreateInput, useCreateTimerPresetMutation } from '../../../../lib/generated/graphql'
-import { onTimerPresetCreate } from '../page'
+import { TimerPhaseDurationUnit, TimerPresetCreateInput, TimerPresetListItemFragment, TimerPresetListItemFragmentDoc, useCreateTimerPresetMutation } from '../../../../lib/generated/graphql'
 
 export default function NewTimerPresetPage() {
   const [errors, setErrors] = useErrors()
@@ -22,14 +21,30 @@ export default function NewTimerPresetPage() {
   })
 
   const router = useRouter()
-  const [createTimerPreset, { client, loading }] = useCreateTimerPresetMutation({
-    onCompleted: (data) => {
-      setErrors(data?.timerPresetCreate?.errors)
-
+  const [createTimerPreset, { loading }] = useCreateTimerPresetMutation({
+    update(cache, { data }) {
       const preset = data?.timerPresetCreate?.timerPreset
 
-      if (preset) {
-        onTimerPresetCreate(preset, client)
+      preset && cache.modify({
+        fields: {
+          timerPresets(existingTimerPresets = { nodes: [] }) {
+            const ref = cache.writeFragment<TimerPresetListItemFragment>({
+              fragment: TimerPresetListItemFragmentDoc,
+              data: preset
+            })
+
+            return {
+              ...existingTimerPresets,
+              nodes: [...existingTimerPresets.nodes, ref]
+            }
+          }
+        }
+      })
+    },
+    onCompleted({ timerPresetCreate }) {
+      setErrors(timerPresetCreate?.errors)
+
+      if (timerPresetCreate?.timerPreset) {
         router.push('/timer-presets')
       }
     }

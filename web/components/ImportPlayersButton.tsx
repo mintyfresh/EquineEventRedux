@@ -74,7 +74,7 @@ const ImportPlayersButton: React.FC<ImportPlayersButtonProps> = ({ event, onImpo
   const [markAsPaid, setMarkAsPaid] = useState(true)
 
   const [loadSourceEvents, { data, loading: loadingEvents }] = useSourceEventsForImportLazyQuery()
-  const [importPlayers, { data: result, loading: importing }] = useImportPlayersMutation({
+  const [importPlayers] = useImportPlayersMutation({
     variables: {
       input: {
         eventId: event.id,
@@ -95,7 +95,7 @@ const ImportPlayersButton: React.FC<ImportPlayersButtonProps> = ({ event, onImpo
       setSourceEvent(null)
       setSelectedPlayers([])
     }
-  }, [show])
+  }, [show, loadSourceEvents])
 
   const sourceEvents = data ? data.events.nodes : []
   const activeSourceEvents = sourceEvents.filter(({ deleted }) => !deleted)

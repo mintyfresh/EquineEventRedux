@@ -10,6 +10,20 @@ export interface AudioClipListItemProps {
 export default function AudioClipListItem({ audioClip, onDelete }: AudioClipListItemProps) {
   const [deleteAudioClip] = useDeleteAudioClipMutation({
     variables: { id: audioClip.id },
+    update(cache, { data }) {
+      data?.audioClipDelete?.success && cache.modify({
+        fields: {
+          audioClips(audioClips = { nodes: [] }, { readField }) {
+            return {
+              ...audioClips,
+              nodes: audioClips.nodes.filter((ref: any) => (
+                readField('id', ref) !== audioClip.id
+              ))
+            }
+          }
+        }
+      })
+    },
     onCompleted({ audioClipDelete }) {
       if (audioClipDelete?.success) {
         onDelete?.(audioClip)
