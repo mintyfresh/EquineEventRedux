@@ -1,0 +1,21 @@
+mutation DeleteTimerPreset($id: ID!) {
+  timerPresetDelete(id: $id) {
+    success
+  }
+}
+
+fragment TimerPresetListItem on TimerPreset {
+  id
+  name
+  isSystem
+  phasesCount
+  totalDurationHumanized
+  phases(limit: 3) {
+    id
+    name
+    durationHumanized
+    audioClip {
+      id
+    }
+  }
+}

@@ -1,0 +1,11 @@
+mutation CreateTimerPreset($input: TimerPresetCreateInput!) {
+  timerPresetCreate(input: $input) {
+    timerPreset {
+      id
+      ...TimerPresetListItem
+    }
+    errors {
+      ...Errors
+    }
+  }
+}

@@ -1,0 +1,26 @@
+query EditTimerPreset($id: ID!) {
+  timerPreset(id: $id) {
+    id
+    name
+    isSystem
+    phases {
+      id
+      name
+      position
+      durationAmount
+      durationUnit
+    }
+  }
+}
+
+mutation UpdateTimerPreset($id: ID!, $input: TimerPresetUpdateInput!) {
+  timerPresetUpdate(id: $id, input: $input) {
+    timerPreset {
+      id
+      ...TimerPresetListItem
+    }
+    errors {
+      ...Errors
+    }
+  }
+}

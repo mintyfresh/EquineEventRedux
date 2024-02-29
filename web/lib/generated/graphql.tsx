@@ -1108,6 +1108,17 @@ export type EventsIndexQueryVariables = Exact<{
 
 export type EventsIndexQuery = { __typename?: 'Query', events: { __typename?: 'EventConnection', nodes: Array<{ __typename?: 'Event', id: string, slug: string, name: string, deleted: boolean }> } };
 
+export type TimerPresetListFragment = { __typename?: 'TimerPresetConnection', nodes: Array<{ __typename?: 'TimerPreset', id: string, name: string, isSystem: boolean, phasesCount: number, totalDurationHumanized: string, phases: Array<{ __typename?: 'TimerPresetPhase', id: string, name: string, durationHumanized: string, audioClip?: { __typename?: 'AudioClip', id: string } | null }> }> };
+
+export type DeleteTimerPresetMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type DeleteTimerPresetMutation = { __typename?: 'Mutation', timerPresetDelete?: { __typename?: 'TimerPresetDeletePayload', success?: boolean | null } | null };
+
+export type TimerPresetListItemFragment = { __typename?: 'TimerPreset', id: string, name: string, isSystem: boolean, phasesCount: number, totalDurationHumanized: string, phases: Array<{ __typename?: 'TimerPresetPhase', id: string, name: string, durationHumanized: string, audioClip?: { __typename?: 'AudioClip', id: string } | null }> };
+
 export type EditTimerPresetQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
@@ -1121,26 +1132,19 @@ export type UpdateTimerPresetMutationVariables = Exact<{
 }>;
 
 
-export type UpdateTimerPresetMutation = { __typename?: 'Mutation', timerPresetUpdate?: { __typename?: 'TimerPresetUpdatePayload', timerPreset?: { __typename?: 'TimerPreset', id: string } | null, errors?: Array<{ __typename?: 'Error', attribute: string, message: string }> | null } | null };
+export type UpdateTimerPresetMutation = { __typename?: 'Mutation', timerPresetUpdate?: { __typename?: 'TimerPresetUpdatePayload', timerPreset?: { __typename?: 'TimerPreset', id: string, name: string, isSystem: boolean, phasesCount: number, totalDurationHumanized: string, phases: Array<{ __typename?: 'TimerPresetPhase', id: string, name: string, durationHumanized: string, audioClip?: { __typename?: 'AudioClip', id: string } | null }> } | null, errors?: Array<{ __typename?: 'Error', attribute: string, message: string }> | null } | null };
 
 export type CreateTimerPresetMutationVariables = Exact<{
   input: TimerPresetCreateInput;
 }>;
 
 
-export type CreateTimerPresetMutation = { __typename?: 'Mutation', timerPresetCreate?: { __typename?: 'TimerPresetCreatePayload', timerPreset?: { __typename?: 'TimerPreset', id: string } | null, errors?: Array<{ __typename?: 'Error', attribute: string, message: string }> | null } | null };
+export type CreateTimerPresetMutation = { __typename?: 'Mutation', timerPresetCreate?: { __typename?: 'TimerPresetCreatePayload', timerPreset?: { __typename?: 'TimerPreset', id: string, name: string, isSystem: boolean, phasesCount: number, totalDurationHumanized: string, phases: Array<{ __typename?: 'TimerPresetPhase', id: string, name: string, durationHumanized: string, audioClip?: { __typename?: 'AudioClip', id: string } | null }> } | null, errors?: Array<{ __typename?: 'Error', attribute: string, message: string }> | null } | null };
 
 export type TimerPresetsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type TimerPresetsQuery = { __typename?: 'Query', timerPresets: { __typename?: 'TimerPresetConnection', nodes: Array<{ __typename?: 'TimerPreset', id: string, name: string, isSystem: boolean, phasesCount: number, totalDurationHumanized: string, phases: Array<{ __typename?: 'TimerPresetPhase', id: string, name: string, durationHumanized: string, audioClip?: { __typename?: 'AudioClip', id: string } | null }> }> } };
-
-export type DeleteTimerPresetMutationVariables = Exact<{
-  id: Scalars['ID']['input'];
-}>;
-
-
-export type DeleteTimerPresetMutation = { __typename?: 'Mutation', timerPresetDelete?: { __typename?: 'TimerPresetDeletePayload', success?: boolean | null } | null };
+export type TimerPresetsQuery = { __typename?: 'Query', timerPresets: { __typename?: 'TimerPresetConnection', nodes: Array<{ __typename?: 'TimerPreset', id: string, isSystem: boolean, name: string, phasesCount: number, totalDurationHumanized: string, phases: Array<{ __typename?: 'TimerPresetPhase', id: string, name: string, durationHumanized: string, audioClip?: { __typename?: 'AudioClip', id: string } | null }> }> } };
 
 export type AudioClipSelectQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1486,6 +1490,31 @@ export const EventLayoutFragmentDoc = gql`
   deleted
 }
     `;
+export const TimerPresetListItemFragmentDoc = gql`
+    fragment TimerPresetListItem on TimerPreset {
+  id
+  name
+  isSystem
+  phasesCount
+  totalDurationHumanized
+  phases(limit: 3) {
+    id
+    name
+    durationHumanized
+    audioClip {
+      id
+    }
+  }
+}
+    `;
+export const TimerPresetListFragmentDoc = gql`
+    fragment TimerPresetList on TimerPresetConnection {
+  nodes {
+    id
+    ...TimerPresetListItem
+  }
+}
+    ${TimerPresetListItemFragmentDoc}`;
 export const CreateEventFragmentDoc = gql`
     fragment CreateEvent on Event {
   id
@@ -2395,6 +2424,39 @@ export type EventsIndexQueryHookResult = ReturnType<typeof useEventsIndexQuery>;
 export type EventsIndexLazyQueryHookResult = ReturnType<typeof useEventsIndexLazyQuery>;
 export type EventsIndexSuspenseQueryHookResult = ReturnType<typeof useEventsIndexSuspenseQuery>;
 export type EventsIndexQueryResult = Apollo.QueryResult<EventsIndexQuery, EventsIndexQueryVariables>;
+export const DeleteTimerPresetDocument = gql`
+    mutation DeleteTimerPreset($id: ID!) {
+  timerPresetDelete(id: $id) {
+    success
+  }
+}
+    `;
+export type DeleteTimerPresetMutationFn = Apollo.MutationFunction<DeleteTimerPresetMutation, DeleteTimerPresetMutationVariables>;
+
+/**
+ * __useDeleteTimerPresetMutation__
+ *
+ * To run a mutation, you first call `useDeleteTimerPresetMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteTimerPresetMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteTimerPresetMutation, { data, loading, error }] = useDeleteTimerPresetMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteTimerPresetMutation(baseOptions?: Apollo.MutationHookOptions<DeleteTimerPresetMutation, DeleteTimerPresetMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteTimerPresetMutation, DeleteTimerPresetMutationVariables>(DeleteTimerPresetDocument, options);
+      }
+export type DeleteTimerPresetMutationHookResult = ReturnType<typeof useDeleteTimerPresetMutation>;
+export type DeleteTimerPresetMutationResult = Apollo.MutationResult<DeleteTimerPresetMutation>;
+export type DeleteTimerPresetMutationOptions = Apollo.BaseMutationOptions<DeleteTimerPresetMutation, DeleteTimerPresetMutationVariables>;
 export const EditTimerPresetDocument = gql`
     query EditTimerPreset($id: ID!) {
   timerPreset(id: $id) {
@@ -2449,13 +2511,15 @@ export const UpdateTimerPresetDocument = gql`
   timerPresetUpdate(id: $id, input: $input) {
     timerPreset {
       id
+      ...TimerPresetListItem
     }
     errors {
       ...Errors
     }
   }
 }
-    ${ErrorsFragmentDoc}`;
+    ${TimerPresetListItemFragmentDoc}
+${ErrorsFragmentDoc}`;
 export type UpdateTimerPresetMutationFn = Apollo.MutationFunction<UpdateTimerPresetMutation, UpdateTimerPresetMutationVariables>;
 
 /**
@@ -2488,13 +2552,15 @@ export const CreateTimerPresetDocument = gql`
   timerPresetCreate(input: $input) {
     timerPreset {
       id
+      ...TimerPresetListItem
     }
     errors {
       ...Errors
     }
   }
 }
-    ${ErrorsFragmentDoc}`;
+    ${TimerPresetListItemFragmentDoc}
+${ErrorsFragmentDoc}`;
 export type CreateTimerPresetMutationFn = Apollo.MutationFunction<CreateTimerPresetMutation, CreateTimerPresetMutationVariables>;
 
 /**
@@ -2524,24 +2590,14 @@ export type CreateTimerPresetMutationOptions = Apollo.BaseMutationOptions<Create
 export const TimerPresetsDocument = gql`
     query TimerPresets {
   timerPresets {
+    ...TimerPresetList
     nodes {
       id
-      name
       isSystem
-      phasesCount
-      totalDurationHumanized
-      phases(limit: 3) {
-        id
-        name
-        durationHumanized
-        audioClip {
-          id
-        }
-      }
     }
   }
 }
-    `;
+    ${TimerPresetListFragmentDoc}`;
 
 /**
  * __useTimerPresetsQuery__
@@ -2574,39 +2630,6 @@ export type TimerPresetsQueryHookResult = ReturnType<typeof useTimerPresetsQuery
 export type TimerPresetsLazyQueryHookResult = ReturnType<typeof useTimerPresetsLazyQuery>;
 export type TimerPresetsSuspenseQueryHookResult = ReturnType<typeof useTimerPresetsSuspenseQuery>;
 export type TimerPresetsQueryResult = Apollo.QueryResult<TimerPresetsQuery, TimerPresetsQueryVariables>;
-export const DeleteTimerPresetDocument = gql`
-    mutation DeleteTimerPreset($id: ID!) {
-  timerPresetDelete(id: $id) {
-    success
-  }
-}
-    `;
-export type DeleteTimerPresetMutationFn = Apollo.MutationFunction<DeleteTimerPresetMutation, DeleteTimerPresetMutationVariables>;
-
-/**
- * __useDeleteTimerPresetMutation__
- *
- * To run a mutation, you first call `useDeleteTimerPresetMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useDeleteTimerPresetMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [deleteTimerPresetMutation, { data, loading, error }] = useDeleteTimerPresetMutation({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useDeleteTimerPresetMutation(baseOptions?: Apollo.MutationHookOptions<DeleteTimerPresetMutation, DeleteTimerPresetMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<DeleteTimerPresetMutation, DeleteTimerPresetMutationVariables>(DeleteTimerPresetDocument, options);
-      }
-export type DeleteTimerPresetMutationHookResult = ReturnType<typeof useDeleteTimerPresetMutation>;
-export type DeleteTimerPresetMutationResult = Apollo.MutationResult<DeleteTimerPresetMutation>;
-export type DeleteTimerPresetMutationOptions = Apollo.BaseMutationOptions<DeleteTimerPresetMutation, DeleteTimerPresetMutationVariables>;
 export const AudioClipSelectDocument = gql`
     query AudioClipSelect {
   audioClips {

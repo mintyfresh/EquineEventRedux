@@ -25,8 +25,9 @@ const createActionCableLink = (url: string) => {
 }
 
 const createApolloClient = (actionCableUrl: string) => () => {
-  const httpLink = createHttpLink({
-    uri: isSSR ? process.env.GRAPHQL_API_URL : '/api/graphql'
+  const httpLink = createUploadLink({
+    uri: isSSR ? process.env.GRAPHQL_API_URL : '/api/graphql',
+    fetchOptions: { cache: 'no-store' }
   })
 
   let link = split(

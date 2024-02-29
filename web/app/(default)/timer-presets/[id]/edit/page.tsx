@@ -1,49 +1,17 @@
 'use client'
 
-import { gql } from '@apollo/client'
 import { useSuspenseQuery } from '@apollo/experimental-nextjs-app-support/ssr'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import TimerPresetForm from '../../../../../components/TimerPreset/TimerPresetForm'
-import { ERRORS_FRAGMENT, useErrors } from '../../../../../lib/errors'
-import { EditTimerPresetQuery, EditTimerPresetQueryVariables, TimerPresetUpdateInput, useUpdateTimerPresetMutation } from '../../../../../lib/generated/graphql'
-
-const EDIT_TIMER_PRESET_QUERY = gql`
-  query EditTimerPreset($id: ID!) {
-    timerPreset(id: $id) {
-      id
-      name
-      isSystem
-      phases {
-        id
-        name
-        position
-        durationAmount
-        durationUnit
-      }
-    }
-  }
-`
-
-gql`
-  mutation UpdateTimerPreset($id: ID!, $input: TimerPresetUpdateInput!) {
-    timerPresetUpdate(id: $id, input: $input) {
-      timerPreset {
-        id
-      }
-      errors {
-        ...Errors
-      }
-    }
-  }
-  ${ERRORS_FRAGMENT}
-`
+import { useErrors } from '../../../../../lib/errors'
+import { EditTimerPresetDocument, EditTimerPresetQuery, EditTimerPresetQueryVariables, TimerPresetUpdateInput, useUpdateTimerPresetMutation } from '../../../../../lib/generated/graphql'
 
 export default function EditTimerPresetPage({ params: { id } }: { params: { id: string } }) {
   const [errors, setErrors] = useErrors()
   const [input, setInput] = useState<TimerPresetUpdateInput | null>(null)
 
-  const { data } = useSuspenseQuery<EditTimerPresetQuery, EditTimerPresetQueryVariables>(EDIT_TIMER_PRESET_QUERY, {
+  const { data } = useSuspenseQuery<EditTimerPresetQuery, EditTimerPresetQueryVariables>(EditTimerPresetDocument, {
     variables: { id }
   })
 

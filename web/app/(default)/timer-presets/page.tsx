@@ -1,53 +1,44 @@
 'use client'
 
-import { gql } from '@apollo/client'
 import { useSuspenseQuery } from '@apollo/experimental-nextjs-app-support/ssr'
-import { faVolumeUp } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Link from 'next/link'
-import { Alert, Button, Card, Col, Row } from 'react-bootstrap'
-import { TimerPresetsQuery, useDeleteTimerPresetMutation } from '../../../lib/generated/graphql'
+import { Alert, Button, Col, Row } from 'react-bootstrap'
+import { TimerPresetListItemFragment, TimerPresetsDocument, TimerPresetsQuery } from '../../../lib/generated/graphql'
+import TimerPresetList from './TimerPresetList'
+import { ApolloClient } from '@apollo/client'
 
-const TIMER_PRESETS_QUERY = gql`
-  query TimerPresets {
-    timerPresets {
-      nodes {
-        id
-        name
-        isSystem
-        phasesCount
-        totalDurationHumanized
-        phases(limit: 3) {
-          id
-          name
-          durationHumanized
-          audioClip {
-            id
-          }
-        }
-      }
-    }
-  }
-`
+export function onTimerPresetCreate<T>(preset: TimerPresetListItemFragment, client: ApolloClient<T>) {
+  client.cache.updateQuery<TimerPresetsQuery>(
+    {
+      query: TimerPresetsDocument,
+    },
+    (data) => (data && {
+      ...data,
+      timerPresets: {
+        ...data.timerPresets,
+        nodes: [...data.timerPresets.nodes, preset],
+      },
+    })
+  )
+}
 
-gql`
-  mutation DeleteTimerPreset($id: ID!) {
-    timerPresetDelete(id: $id) {
-      success
-    }
-  }
-`
+export function onTimerPresetDelete<T>(preset: TimerPresetListItemFragment, client: ApolloClient<T>) {
+  client.cache.updateQuery<TimerPresetsQuery>(
+    {
+      query: TimerPresetsDocument,
+    },
+    (data) => (data && {
+      ...data,
+      timerPresets: {
+        ...data.timerPresets,
+        nodes: data.timerPresets.nodes.filter(({ id }) => id !== preset.id),
+      },
+    })
+  )
+}
 
 export default function TimerPresetsPage() {
-  const { data, refetch } = useSuspenseQuery<TimerPresetsQuery>(TIMER_PRESETS_QUERY)
-
-  const [deleteTimerPreset, {}] = useDeleteTimerPresetMutation({
-    onCompleted: ({ timerPresetDelete }) => {
-      if (timerPresetDelete?.success) {
-        refetch()
-      }
-    }
-  })
+  const { data, client } = useSuspenseQuery<TimerPresetsQuery>(TimerPresetsDocument)
 
   return (
     <>
@@ -72,63 +63,12 @@ export default function TimerPresetsPage() {
           </p>
         </Alert>
       )}
-      {data?.timerPresets?.nodes?.map((preset) => (
-        <Card key={preset.id} body className="mb-3">
-          <Row>
-            <Col>
-              <Card.Title><h4>{preset.name}</h4></Card.Title>
-            </Col>
-            <Col xs="auto">
-              <Link href={`/timer-presets/${preset.id}/edit`} passHref legacyBehavior>
-                <Button as="a" variant="outline-secondary">Edit</Button>
-              </Link>
-              {!preset.isSystem && (
-                <Button variant="outline-danger" className="ms-2" onClick={() => (
-                  confirm(`Are you sure you want to delete the timer preset "${preset.name}"?`) &&
-                    deleteTimerPreset({ variables: { id: preset.id } })
-                )}>
-                  Delete
-                </Button>
-              )}
-            </Col>
-          </Row>
-          <Card.Text>
-            {preset.phasesCount} phases, {preset.totalDurationHumanized} total
-            {preset.isSystem && <span className="text-muted"> (system-defined)</span>}
-          </Card.Text>
-          <Card.Subtitle className="mb-2">Phases</Card.Subtitle>
-          <Row>
-            {preset.phases.map((phase) => (
-              <Col key={phase.id} md={4} lg={3} className="mb-0">
-                <Card body>
-                  <Card.Title>
-                    {phase.name}
-                    {phase.audioClip && (
-                      <FontAwesomeIcon
-                        icon={faVolumeUp}
-                        className="ms-2 small text-muted"
-                        title="Includes an audio-cue"
-                      />
-                    )}
-                  </Card.Title>
-                  <Card.Text>
-                    {phase.durationHumanized}
-                  </Card.Text>
-                </Card>
-              </Col>
-            ))}
-            {preset.phasesCount > 3 && (
-              <Col md={12} lg={3}>
-                <Card body className="h-100">
-                  <Card.Text>
-                    <b>And {preset.phasesCount - 3} more...</b>
-                  </Card.Text>
-                </Card>
-              </Col>
-            )}
-          </Row>
-        </Card>
-      ))}
+      {data?.timerPresets && (
+        <TimerPresetList
+          presetList={data.timerPresets}
+          onDelete={(preset) => onTimerPresetDelete(preset, client)}
+        />
+      )}
     </>
   )
 }

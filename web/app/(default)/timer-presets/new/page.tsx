@@ -1,25 +1,11 @@
 'use client'
 
-import { gql } from '@apollo/client'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import TimerPresetForm from '../../../../components/TimerPreset/TimerPresetForm'
-import { ERRORS_FRAGMENT, useErrors } from '../../../../lib/errors'
+import { useErrors } from '../../../../lib/errors'
 import { TimerPhaseDurationUnit, TimerPresetCreateInput, useCreateTimerPresetMutation } from '../../../../lib/generated/graphql'
-
-gql`
-  mutation CreateTimerPreset($input: TimerPresetCreateInput!) {
-    timerPresetCreate(input: $input) {
-      timerPreset {
-        id
-      }
-      errors {
-        ...Errors
-      }
-    }
-  }
-  ${ERRORS_FRAGMENT}
-`
+import { onTimerPresetCreate } from '../page'
 
 export default function NewTimerPresetPage() {
   const [errors, setErrors] = useErrors()
@@ -36,11 +22,14 @@ export default function NewTimerPresetPage() {
   })
 
   const router = useRouter()
-  const [createTimerPreset, { loading }] = useCreateTimerPresetMutation({
+  const [createTimerPreset, { client, loading }] = useCreateTimerPresetMutation({
     onCompleted: (data) => {
       setErrors(data?.timerPresetCreate?.errors)
 
-      if (data.timerPresetCreate?.timerPreset) {
+      const preset = data?.timerPresetCreate?.timerPreset
+
+      if (preset) {
+        onTimerPresetCreate(preset, client)
         router.push('/timer-presets')
       }
     }

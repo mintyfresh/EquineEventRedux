@@ -1,0 +1,6 @@
+fragment TimerPresetList on TimerPresetConnection {
+  nodes {
+    id
+    ...TimerPresetListItem
+  }
+}
