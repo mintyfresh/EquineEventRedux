@@ -3,7 +3,7 @@
 import { useSuspenseQuery } from '@apollo/experimental-nextjs-app-support/ssr'
 import { useEffect, useState } from 'react'
 import { Button, ButtonToolbar, Card, Col, Form, Row } from 'react-bootstrap'
-import Slip from '../../../../../components/Slip'
+import Slip from './Slip'
 import { EventSlipsDocument, EventSlipsQuery, EventSlipsQueryVariables } from '../../../../../lib/generated/graphql'
 
 export default function EventSlipsPage({ params: { id } }: { params: { id: string } }) {

@@ -1107,6 +1107,12 @@ export type EventPlayersQueryVariables = Exact<{
 
 export type EventPlayersQuery = { __typename?: 'Query', event: { __typename?: 'Event', id: string, name: string, slug: string, deleted: boolean, players: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, winsCount: number, drawsCount: number, lossesCount: number, score: number, opponentWinRate: number, paid: boolean, dropped: boolean, deleted: boolean }> }, allPlayers: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, deleted: boolean }> } } };
 
+export type SlipEventFragment = { __typename?: 'Event', id: string, name: string };
+
+export type SlipRoundFragment = { __typename?: 'Round', id: string, number: number };
+
+export type SlipMatchFragment = { __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, table: number, player1: { __typename?: 'Player', id: string, name: string, score: number }, player2?: { __typename?: 'Player', id: string, name: string, score: number } | null };
+
 export type EventSlipsQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
@@ -1361,12 +1367,6 @@ export type GeneratePairingsMutationVariables = Exact<{
 
 export type GeneratePairingsMutation = { __typename?: 'Mutation', eventGeneratePairings?: { __typename?: 'EventGeneratePairingsPayload', pairings: Array<{ __typename?: 'Pairing', player1: { __typename?: 'Player', id: string, name: string }, player2?: { __typename?: 'Player', id: string, name: string } | null }> } | null };
 
-export type SlipEventFragment = { __typename?: 'Event', id: string, name: string };
-
-export type SlipRoundFragment = { __typename?: 'Round', id: string, number: number };
-
-export type SlipMatchFragment = { __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, table: number, player1: { __typename?: 'Player', id: string, name: string, score: number }, player2?: { __typename?: 'Player', id: string, name: string, score: number } | null };
-
 export type TimerFragment = { __typename?: 'Timer', id: string, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> };
 
 export type TimerPhaseFragment = { __typename?: 'TimerPhase', id: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null };
@@ -1520,6 +1520,36 @@ export const EventLayoutFragmentDoc = gql`
   name
   slug
   deleted
+}
+    `;
+export const SlipEventFragmentDoc = gql`
+    fragment SlipEvent on Event {
+  id
+  name
+}
+    `;
+export const SlipRoundFragmentDoc = gql`
+    fragment SlipRound on Round {
+  id
+  number
+}
+    `;
+export const SlipMatchFragmentDoc = gql`
+    fragment SlipMatch on Match {
+  id
+  player1 {
+    id
+    name
+    score
+  }
+  player2 {
+    id
+    name
+    score
+  }
+  winnerId
+  draw
+  table
 }
     `;
 export const TimerPresetListItemFragmentDoc = gql`
@@ -1812,36 +1842,6 @@ export const RoundListItemFragmentDoc = gql`
 }
     ${RoundListItemHeaderFragmentDoc}
 ${RoundListItemMatchFragmentDoc}`;
-export const SlipEventFragmentDoc = gql`
-    fragment SlipEvent on Event {
-  id
-  name
-}
-    `;
-export const SlipRoundFragmentDoc = gql`
-    fragment SlipRound on Round {
-  id
-  number
-}
-    `;
-export const SlipMatchFragmentDoc = gql`
-    fragment SlipMatch on Match {
-  id
-  player1 {
-    id
-    name
-    score
-  }
-  player2 {
-    id
-    name
-    score
-  }
-  winnerId
-  draw
-  table
-}
-    `;
 export const TimerListItemPhaseFragmentDoc = gql`
     fragment TimerListItemPhase on TimerPhase {
   id

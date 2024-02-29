@@ -1,38 +1,4 @@
-import { gql } from '@apollo/client'
-import { SlipEventFragment, SlipMatchFragment, SlipRoundFragment } from '../lib/generated/graphql'
-
-export const SLIP_EVENT_FRAGMENT = gql`
-  fragment SlipEvent on Event {
-    id
-    name
-  }
-`
-
-export const SLIP_ROUND_FRAGMENT = gql`
-  fragment SlipRound on Round {
-    id
-    number
-  }
-`
-
-export const SLIP_MATCH_FRAGMENT = gql`
-  fragment SlipMatch on Match {
-    id
-    player1 {
-      id
-      name
-      score
-    }
-    player2 {
-      id
-      name
-      score
-    }
-    winnerId
-    draw
-    table
-  }
-`
+import { SlipEventFragment, SlipMatchFragment, SlipRoundFragment } from '../../../../../lib/generated/graphql'
 
 export interface SlipProps {
   event: SlipEventFragment
