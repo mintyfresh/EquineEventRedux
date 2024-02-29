@@ -1,0 +1,18 @@
+mutation DeleteAudioClip($id: ID!) {
+  audioClipDelete(id: $id) {
+    success
+  }
+}
+
+fragment AudioClipListItem on AudioClip {
+  id
+  name
+  contentType
+  contentTypeHuman
+  fileSizeHuman
+  fileUrl
+  timerPresets {
+    id
+    name
+  }
+}

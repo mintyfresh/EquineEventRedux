@@ -1027,24 +1027,26 @@ export type TimerUpdatedPayload = {
   timer: Timer;
 };
 
-export type UploadAudioClipMutationVariables = Exact<{
-  input: AudioClipCreateInput;
-}>;
-
-
-export type UploadAudioClipMutation = { __typename?: 'Mutation', audioClipCreate?: { __typename?: 'AudioClipCreatePayload', audioClip?: { __typename?: 'AudioClip', id: string } | null, errors?: Array<{ __typename?: 'Error', attribute: string, message: string }> | null } | null };
-
-export type IndexAudioClipsQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type IndexAudioClipsQuery = { __typename?: 'Query', audioClips: { __typename?: 'AudioClipConnection', nodes: Array<{ __typename?: 'AudioClip', id: string, name: string, contentType: string, contentTypeHuman: string, fileSizeHuman: string, fileUrl: string, timerPresets: Array<{ __typename?: 'TimerPreset', id: string, name: string }> }> } };
-
 export type DeleteAudioClipMutationVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
 export type DeleteAudioClipMutation = { __typename?: 'Mutation', audioClipDelete?: { __typename?: 'AudioClipDeletePayload', success?: boolean | null } | null };
+
+export type AudioClipListItemFragment = { __typename?: 'AudioClip', id: string, name: string, contentType: string, contentTypeHuman: string, fileSizeHuman: string, fileUrl: string, timerPresets: Array<{ __typename?: 'TimerPreset', id: string, name: string }> };
+
+export type UploadAudioClipMutationVariables = Exact<{
+  input: AudioClipCreateInput;
+}>;
+
+
+export type UploadAudioClipMutation = { __typename?: 'Mutation', audioClipCreate?: { __typename?: 'AudioClipCreatePayload', audioClip?: { __typename?: 'AudioClip', id: string, name: string, contentType: string, contentTypeHuman: string, fileSizeHuman: string, fileUrl: string, timerPresets: Array<{ __typename?: 'TimerPreset', id: string, name: string }> } | null, errors?: Array<{ __typename?: 'Error', attribute: string, message: string }> | null } | null };
+
+export type IndexAudioClipsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type IndexAudioClipsQuery = { __typename?: 'Query', audioClips: { __typename?: 'AudioClipConnection', nodes: Array<{ __typename?: 'AudioClip', id: string, name: string, contentType: string, contentTypeHuman: string, fileSizeHuman: string, fileUrl: string, timerPresets: Array<{ __typename?: 'TimerPreset', id: string, name: string }> }> } };
 
 export type EventExportQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -1482,6 +1484,20 @@ export type TimerPresetSelectFragment = { __typename?: 'TimerPreset', id: string
 
 export type ErrorsFragment = { __typename?: 'Error', attribute: string, message: string };
 
+export const AudioClipListItemFragmentDoc = gql`
+    fragment AudioClipListItem on AudioClip {
+  id
+  name
+  contentType
+  contentTypeHuman
+  fileSizeHuman
+  fileUrl
+  timerPresets {
+    id
+    name
+  }
+}
+    `;
 export const EventLayoutFragmentDoc = gql`
     fragment EventLayout on Event {
   id
@@ -1898,94 +1914,6 @@ export const ErrorsFragmentDoc = gql`
   message(full: true)
 }
     `;
-export const UploadAudioClipDocument = gql`
-    mutation UploadAudioClip($input: AudioClipCreateInput!) {
-  audioClipCreate(input: $input) {
-    audioClip {
-      id
-    }
-    errors {
-      ...Errors
-    }
-  }
-}
-    ${ErrorsFragmentDoc}`;
-export type UploadAudioClipMutationFn = Apollo.MutationFunction<UploadAudioClipMutation, UploadAudioClipMutationVariables>;
-
-/**
- * __useUploadAudioClipMutation__
- *
- * To run a mutation, you first call `useUploadAudioClipMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUploadAudioClipMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [uploadAudioClipMutation, { data, loading, error }] = useUploadAudioClipMutation({
- *   variables: {
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useUploadAudioClipMutation(baseOptions?: Apollo.MutationHookOptions<UploadAudioClipMutation, UploadAudioClipMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<UploadAudioClipMutation, UploadAudioClipMutationVariables>(UploadAudioClipDocument, options);
-      }
-export type UploadAudioClipMutationHookResult = ReturnType<typeof useUploadAudioClipMutation>;
-export type UploadAudioClipMutationResult = Apollo.MutationResult<UploadAudioClipMutation>;
-export type UploadAudioClipMutationOptions = Apollo.BaseMutationOptions<UploadAudioClipMutation, UploadAudioClipMutationVariables>;
-export const IndexAudioClipsDocument = gql`
-    query IndexAudioClips {
-  audioClips {
-    nodes {
-      id
-      name
-      contentType
-      contentTypeHuman
-      fileSizeHuman
-      fileUrl
-      timerPresets {
-        id
-        name
-      }
-    }
-  }
-}
-    `;
-
-/**
- * __useIndexAudioClipsQuery__
- *
- * To run a query within a React component, call `useIndexAudioClipsQuery` and pass it any options that fit your needs.
- * When your component renders, `useIndexAudioClipsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useIndexAudioClipsQuery({
- *   variables: {
- *   },
- * });
- */
-export function useIndexAudioClipsQuery(baseOptions?: Apollo.QueryHookOptions<IndexAudioClipsQuery, IndexAudioClipsQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<IndexAudioClipsQuery, IndexAudioClipsQueryVariables>(IndexAudioClipsDocument, options);
-      }
-export function useIndexAudioClipsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<IndexAudioClipsQuery, IndexAudioClipsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<IndexAudioClipsQuery, IndexAudioClipsQueryVariables>(IndexAudioClipsDocument, options);
-        }
-export function useIndexAudioClipsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<IndexAudioClipsQuery, IndexAudioClipsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<IndexAudioClipsQuery, IndexAudioClipsQueryVariables>(IndexAudioClipsDocument, options);
-        }
-export type IndexAudioClipsQueryHookResult = ReturnType<typeof useIndexAudioClipsQuery>;
-export type IndexAudioClipsLazyQueryHookResult = ReturnType<typeof useIndexAudioClipsLazyQuery>;
-export type IndexAudioClipsSuspenseQueryHookResult = ReturnType<typeof useIndexAudioClipsSuspenseQuery>;
-export type IndexAudioClipsQueryResult = Apollo.QueryResult<IndexAudioClipsQuery, IndexAudioClipsQueryVariables>;
 export const DeleteAudioClipDocument = gql`
     mutation DeleteAudioClip($id: ID!) {
   audioClipDelete(id: $id) {
@@ -2019,6 +1947,87 @@ export function useDeleteAudioClipMutation(baseOptions?: Apollo.MutationHookOpti
 export type DeleteAudioClipMutationHookResult = ReturnType<typeof useDeleteAudioClipMutation>;
 export type DeleteAudioClipMutationResult = Apollo.MutationResult<DeleteAudioClipMutation>;
 export type DeleteAudioClipMutationOptions = Apollo.BaseMutationOptions<DeleteAudioClipMutation, DeleteAudioClipMutationVariables>;
+export const UploadAudioClipDocument = gql`
+    mutation UploadAudioClip($input: AudioClipCreateInput!) {
+  audioClipCreate(input: $input) {
+    audioClip {
+      id
+      ...AudioClipListItem
+    }
+    errors {
+      ...Errors
+    }
+  }
+}
+    ${AudioClipListItemFragmentDoc}
+${ErrorsFragmentDoc}`;
+export type UploadAudioClipMutationFn = Apollo.MutationFunction<UploadAudioClipMutation, UploadAudioClipMutationVariables>;
+
+/**
+ * __useUploadAudioClipMutation__
+ *
+ * To run a mutation, you first call `useUploadAudioClipMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUploadAudioClipMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [uploadAudioClipMutation, { data, loading, error }] = useUploadAudioClipMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUploadAudioClipMutation(baseOptions?: Apollo.MutationHookOptions<UploadAudioClipMutation, UploadAudioClipMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UploadAudioClipMutation, UploadAudioClipMutationVariables>(UploadAudioClipDocument, options);
+      }
+export type UploadAudioClipMutationHookResult = ReturnType<typeof useUploadAudioClipMutation>;
+export type UploadAudioClipMutationResult = Apollo.MutationResult<UploadAudioClipMutation>;
+export type UploadAudioClipMutationOptions = Apollo.BaseMutationOptions<UploadAudioClipMutation, UploadAudioClipMutationVariables>;
+export const IndexAudioClipsDocument = gql`
+    query IndexAudioClips {
+  audioClips {
+    nodes {
+      ...AudioClipListItem
+    }
+  }
+}
+    ${AudioClipListItemFragmentDoc}`;
+
+/**
+ * __useIndexAudioClipsQuery__
+ *
+ * To run a query within a React component, call `useIndexAudioClipsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useIndexAudioClipsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useIndexAudioClipsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useIndexAudioClipsQuery(baseOptions?: Apollo.QueryHookOptions<IndexAudioClipsQuery, IndexAudioClipsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<IndexAudioClipsQuery, IndexAudioClipsQueryVariables>(IndexAudioClipsDocument, options);
+      }
+export function useIndexAudioClipsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<IndexAudioClipsQuery, IndexAudioClipsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<IndexAudioClipsQuery, IndexAudioClipsQueryVariables>(IndexAudioClipsDocument, options);
+        }
+export function useIndexAudioClipsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<IndexAudioClipsQuery, IndexAudioClipsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<IndexAudioClipsQuery, IndexAudioClipsQueryVariables>(IndexAudioClipsDocument, options);
+        }
+export type IndexAudioClipsQueryHookResult = ReturnType<typeof useIndexAudioClipsQuery>;
+export type IndexAudioClipsLazyQueryHookResult = ReturnType<typeof useIndexAudioClipsLazyQuery>;
+export type IndexAudioClipsSuspenseQueryHookResult = ReturnType<typeof useIndexAudioClipsSuspenseQuery>;
+export type IndexAudioClipsQueryResult = Apollo.QueryResult<IndexAudioClipsQuery, IndexAudioClipsQueryVariables>;
 export const EventExportDocument = gql`
     query EventExport($id: ID!) {
   event(id: $id) {

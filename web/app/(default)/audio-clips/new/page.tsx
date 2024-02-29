@@ -1,27 +1,13 @@
 'use client'
 
-import { gql } from '@apollo/client'
 import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
 import { Button, Form } from 'react-bootstrap'
 import FormBaseErrors from '../../../../components/Form/FormBaseErrors'
 import FormControlErrors from '../../../../components/Form/FormControlErrors'
-import { ERRORS_FRAGMENT, useErrors } from '../../../../lib/errors'
+import { useErrors } from '../../../../lib/errors'
 import { AudioClipCreateInput, useUploadAudioClipMutation } from '../../../../lib/generated/graphql'
-
-gql`
-  mutation UploadAudioClip($input: AudioClipCreateInput!) {
-    audioClipCreate(input: $input) {
-      audioClip {
-        id
-      }
-      errors {
-        ...Errors
-      }
-    }
-  }
-  ${ERRORS_FRAGMENT}
-`
+import { onAudioClipCreate } from '../page'
 
 export default function NewAudioClipPage() {
   const [errors, setErrors] = useErrors()
@@ -29,11 +15,12 @@ export default function NewAudioClipPage() {
   const [input, setInput] = useState<AudioClipCreateInput>({ name: '', file: null })
 
   const router = useRouter()
-  const [uploadAudioClip, { loading }] = useUploadAudioClipMutation({
+  const [uploadAudioClip, { client, loading }] = useUploadAudioClipMutation({
     onCompleted: ({ audioClipCreate }) => {
       setErrors(audioClipCreate?.errors)
 
       if (audioClipCreate?.audioClip) {
+        onAudioClipCreate(audioClipCreate.audioClip, client)
         router.push(`/audio-clips`)
       }
     }
