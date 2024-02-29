@@ -83,14 +83,16 @@ class PrefixedErrors implements Errors {
   }
 }
 
+const NULL_ERRORS = new NullErrors()
+
 export const useErrors = (): [Errors, (errors: ErrorsFragment[] | null | undefined) => void] => {
-  const [errors, _setErrors] = useState<Errors>(new NullErrors())
+  const [errors, _setErrors] = useState<Errors>(NULL_ERRORS)
 
   const setErrors = (errors: ErrorsFragment[] | null | undefined) => {
     if (errors) {
       _setErrors(new ParsedErrors(errors))
     } else {
-      _setErrors(new NullErrors())
+      _setErrors(NULL_ERRORS)
     }
   }
 

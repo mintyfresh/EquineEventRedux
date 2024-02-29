@@ -42,7 +42,6 @@ const CreatePlayerButton: React.FC<CreatePlayerButtonProps> = ({ event, onCreate
   const [createPlayer, { loading }] = useCreatePlayerMutation({
     variables: { eventID: event.id, input },
     onCompleted: ({ playerCreate }) => {
-      focus()
       setErrors(playerCreate?.errors)
 
       if (playerCreate?.player?.id) {
@@ -68,10 +67,9 @@ const CreatePlayerButton: React.FC<CreatePlayerButtonProps> = ({ event, onCreate
         errors={errors}
         disabled={loading}
         onSubmit={(createAnother, focus) => {
-          focus()
           createPlayer().then((result) => {
             if (result.data?.playerCreate?.player?.id) {
-              setShowModal(createAnother)
+              createAnother ? focus() : setShowModal(false)
             }
           })
         }}

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Button, Form, Modal } from 'react-bootstrap'
 import { Errors } from '../lib/errors'
 import { PlayerInput } from '../lib/generated/graphql'
@@ -19,7 +19,16 @@ export interface PlayerModalProps {
 const PlayerModal: React.FC<PlayerModalProps> = ({ title, mode, show, disabled, input, errors, onHide, onChange, onSubmit }) => {
   const nameRef = useRef<HTMLInputElement>(null)
 
+  const [focusName, setFocusName] = useState(false)
   const [createAnother, setCreateAnother] = useState(false)
+
+  // Focus name on next update if requested
+  useEffect(() => {
+    if (focusName) {
+      nameRef.current?.focus()
+      setFocusName(false)
+    }
+  }, [nameRef.current, focusName])
 
   return (
     <Modal
@@ -32,7 +41,7 @@ const PlayerModal: React.FC<PlayerModalProps> = ({ title, mode, show, disabled, 
       </Modal.Header>
       <Form onSubmit={(event) => {
         event.preventDefault()
-        onSubmit(createAnother, () => nameRef.current?.focus())
+        onSubmit(createAnother, () => setFocusName(true))
       }}>
         <Modal.Body>
           <Form.Group className="mb-3">
