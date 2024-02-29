@@ -4,7 +4,7 @@ import React from 'react'
 import { Button, Card, Col, Form, InputGroup, Row } from 'react-bootstrap'
 import { Errors } from '../../lib/errors'
 import { TimerPhaseDurationUnit, TimerPresetCreateInput, TimerPresetPhaseInput, TimerPresetUpdateInput } from '../../lib/generated/graphql'
-import AudioClipSelect from '../AudioClip/AudioClipSelect'
+import AudioClipSelect from '../AudioClipSelect/AudioClipSelect'
 import FormControlErrors from '../Form/FormControlErrors'
 import FormMultiControlErrors from '../Form/FormMultiControlErrors'
 

@@ -1,22 +1,9 @@
-import { gql } from '@apollo/client'
+import { useQuery } from '@apollo/experimental-nextjs-app-support/ssr'
 import { faPlay } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
 import { Button, Form, InputGroup } from 'react-bootstrap'
-import { useAudioClipSelectQuery } from '../../lib/generated/graphql'
-
-gql`
-  query AudioClipSelect {
-    audioClips {
-      nodes {
-        id
-        name
-        fileName
-        fileUrl
-      }
-    }
-  }
-`
+import { AudioClipSelectDocument, AudioClipSelectQuery } from '../../lib/generated/graphql'
 
 export interface AudioClipSelectProps extends Omit<React.ComponentProps<typeof Form.Select>, 'onChange'> {
   onChange?(id: string | null | undefined): void
@@ -24,7 +11,7 @@ export interface AudioClipSelectProps extends Omit<React.ComponentProps<typeof F
 }
 
 const AudioClipSelect: React.FC<AudioClipSelectProps> = ({ inputGroupProps, onChange, ...props }) => {
-  const { data, loading } = useAudioClipSelectQuery()
+  const { data, loading } = useQuery<AudioClipSelectQuery>(AudioClipSelectDocument)
 
   const playAudioClip = (id: string | null | undefined) => {
     if (!id) {

@@ -15,10 +15,6 @@ export default function EventPlayersPage({ params: { id } }: { params: { id: str
     variables: { id, deleted: deleted ? DeletedFilter.Deleted : undefined }
   })
 
-  if (!data?.event) {
-    return null
-  }
-
   return (
     <>
       <ButtonToolbar className="mb-3 d-print-none">
