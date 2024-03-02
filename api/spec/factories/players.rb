@@ -18,6 +18,7 @@
 #  losses_count            :integer          default(0), not null
 #  score                   :integer          default(0), not null
 #  maximum_possible_score  :integer          default(0), not null
+#  deleted_in              :uuid
 #
 # Indexes
 #
