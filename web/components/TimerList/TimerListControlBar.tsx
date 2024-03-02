@@ -1,6 +1,6 @@
 import React from 'react'
 import { Button, Col, Dropdown, DropdownButton, Row } from 'react-bootstrap'
-import { TimerListItemFragment, usePauseAllEventTimersMutation, useUnpauseAllEventTimersMutation } from '../../lib/generated/graphql'
+import { TimerListItemFragment, useBulkDeleteRoundTimersMutation, usePauseAllRoundTimersMutation, useUnpauseAllRoundTimersMutation } from '../../lib/generated/graphql'
 import TimerListInlineForm from './TimerListInlineForm'
 
 export interface TimerListControlBarProps {
@@ -16,8 +16,9 @@ const TimerListControlBar: React.FC<TimerListControlBarProps> = ({ roundId, pinT
     window.open('timers/fullscreen', 'Timers', 'menubar=no,toolbar=no,location=no,status=no,directories=no')
   }
 
-  const [pauseAllTimers, {}] = usePauseAllEventTimersMutation({ variables: { roundId } })
-  const [unpauseAllTimers, {}] = useUnpauseAllEventTimersMutation({ variables: { roundId } })
+  const [pauseAllTimers, {}] = usePauseAllRoundTimersMutation({ variables: { roundId } })
+  const [unpauseAllTimers, {}] = useUnpauseAllRoundTimersMutation({ variables: { roundId } })
+  const [bulkDeleteTimers] = useBulkDeleteRoundTimersMutation()
 
   return (
     <Row {...(pinToTop ? { style: { position: 'absolute', top: 10, right: 20, zIndex: 1000 } } : {})}>
@@ -52,9 +53,20 @@ const TimerListControlBar: React.FC<TimerListControlBarProps> = ({ roundId, pinT
             <Dropdown.Item onClick={() => unpauseAllTimers()}>
               Unpause all timers
             </Dropdown.Item>
-            <Dropdown.Item>Clear expired timers</Dropdown.Item>
+            <Dropdown.Item onClick={() =>
+              confirm('Are you sure you want to clear all expired timers?') &&
+                bulkDeleteTimers({ variables: { roundId, expiredOnly: true } })
+            }>
+              Clear expired timers
+            </Dropdown.Item>
             <Dropdown.Divider />
-            <Dropdown.Item className="text-danger">Clear all timers</Dropdown.Item>
+            <Dropdown.Item className="text-danger" onClick={() =>
+              confirm('Are you sure you want to clear all timers? This cannot be undone!') &&
+                confirm('This will delete all timers, including active ones. Are you really sure?') &&
+                bulkDeleteTimers({ variables: { roundId, expiredOnly: false } })
+            }>
+              Clear all timers
+            </Dropdown.Item>
           </DropdownButton>
         )}
       </Col>

@@ -1,4 +1,4 @@
-mutation PauseAllEventTimers($roundId: ID!) {
+mutation PauseAllRoundTimers($roundId: ID!) {
   roundPauseAllTimers(roundId: $roundId) {
     timers {
       ...TimerListItem
@@ -6,10 +6,16 @@ mutation PauseAllEventTimers($roundId: ID!) {
   }
 }
 
-mutation UnpauseAllEventTimers($roundId: ID!) {
+mutation UnpauseAllRoundTimers($roundId: ID!) {
   roundUnpauseAllTimers(roundId: $roundId) {
     timers {
       ...TimerListItem
     }
+  }
+}
+
+mutation BulkDeleteRoundTimers($roundId: ID!, $expiredOnly: Boolean!) {
+  roundBulkDeleteTimers(roundId: $roundId, expiredOnly: $expiredOnly) {
+    timerIds
   }
 }
