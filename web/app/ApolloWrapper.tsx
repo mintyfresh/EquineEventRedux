@@ -1,12 +1,12 @@
 'use client'
 
-import { ApolloLink, createHttpLink, split } from '@apollo/client'
+import { ApolloLink, split } from '@apollo/client'
 import { getMainDefinition } from '@apollo/client/utilities'
 import { ApolloNextAppProvider, NextSSRApolloClient, NextSSRInMemoryCache, SSRMultipartLink } from '@apollo/experimental-nextjs-app-support/ssr'
 import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
 import ActionCableLink from 'graphql-ruby-client/subscriptions/ActionCableLink'
-import result from '../lib/generated/graphql'
 import React from 'react'
+import result from '../lib/generated/graphql'
 
 const isSSR = typeof window === 'undefined'
 

@@ -15,7 +15,8 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED 1
-RUN npm run build
+ARG GRAPHQL_API_URL
+RUN env GRAPHQL_API_URL=$GRAPHQL_API_URL npm run build
 
 # Application runner
 FROM node:${NODE_VERSION}-alpine AS runner
