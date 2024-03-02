@@ -131,4 +131,48 @@ RSpec.describe Match do
     match.destroy!
     expect(match.round).to be_complete
   end
+
+  it "increments the winner's win-count and the loser's loss-count when a winner is assigned", :deliver_published_messages do
+    match.save!
+    winner, loser = match.players.shuffle
+    expect { match.update!(winner_id: winner.id) }.to change { winner.reload.wins_count }.by(1)
+      .and change { loser.reload.losses_count }.by(1)
+  end
+
+  it "decrements the winner's win-count and the loser's loss-count when a winner is unassigned", :deliver_published_messages do
+    match.save!
+    winner, loser = match.players.shuffle
+    match.update!(winner_id: winner.id)
+    expect { match.update!(winner_id: nil) }.to change { winner.reload.wins_count }.by(-1)
+      .and change { loser.reload.losses_count }.by(-1)
+  end
+
+  it "increments both players' draw-count when a match is drawn", :deliver_published_messages do
+    match.save!
+    player1, player2 = match.players
+    expect { match.update!(draw: true) }.to change { player1.reload.draws_count }.by(1)
+      .and change { player2.reload.draws_count }.by(1)
+  end
+
+  context 'when the match is a bye' do
+    subject(:match) { build(:match, :bye) }
+
+    it 'is valid' do
+      expect(match).to be_valid
+    end
+
+    it 'marks the match as complete' do
+      match.save!
+      expect(match).to be_complete
+    end
+
+    it 'marks the first player as the winner' do
+      match.save!
+      expect(match.winner_id).to eq(match.player1_id)
+    end
+
+    it "increments the winner's win-count", :deliver_published_messages do
+      expect { match.save! }.to change { match.player1.reload.wins_count }.by(1)
+    end
+  end
 end
