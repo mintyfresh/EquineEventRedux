@@ -24,7 +24,7 @@
 #
 FactoryBot.define do
   factory :round do
-    event
+    event factory: %i[event with_players]
 
     number { event.rounds.size + 1 }
 

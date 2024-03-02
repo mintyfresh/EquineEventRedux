@@ -26,8 +26,20 @@ FactoryBot.define do
         players_count { 3 }
       end
 
-      after(:build) do |event, e|
-        event.players = build_list(:player, e.players_count, event:)
+      players do
+        build_list(:player, players_count, event: instance)
+      end
+    end
+
+    trait :with_rounds do
+      with_players
+
+      transient do
+        rounds_count { 3 }
+      end
+
+      rounds do
+        build_list(:round, rounds_count, event: instance)
       end
     end
   end

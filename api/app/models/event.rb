@@ -35,6 +35,16 @@ class Event < ApplicationRecord
     self.slug = name.parameterize
   end
 
+  after_soft_delete do
+    rounds.non_deleted.find_each { |round| round.destroy!(deleted_in:) }
+    association(:rounds).reset
+  end
+
+  after_restore do
+    rounds.deleted.where(deleted_in:).find_each(&:restore!)
+    association(:rounds).reset
+  end
+
   # @return [Integer]
   def next_round_number
     (rounds.non_deleted.maximum(:number) || 0) + 1

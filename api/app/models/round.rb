@@ -56,11 +56,13 @@ class Round < ApplicationRecord
   before_save :calculate_round_completeness, if: :matches_changed?
 
   after_soft_delete do
-    matches.each { |match| match.destroy!(deleted_in:) }
+    matches.non_deleted.find_each { |match| match.destroy!(deleted_in:) }
+    association(:matches).reset
   end
 
   after_restore do
-    matches.each { |match| match.restore! if match.deleted_in == deleted_in }
+    matches.deleted.where(deleted_in:).find_each(&:restore!)
+    association(:matches).reset
   end
 
   after_match_completion do
