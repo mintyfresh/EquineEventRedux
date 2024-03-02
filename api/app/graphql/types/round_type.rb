@@ -42,9 +42,11 @@ module Types
 
     # @return [Array<::Match>]
     def matches
-      scope = Match.paired_first.order(:table, :created_at)
+      @matches ||= begin
+        scope = Match.paired_first.order(:table, :created_at)
 
-      dataloader.with(Sources::RecordList, ::Match, :round_id, scope:).load(object.id)
+        dataloader.with(Sources::RecordList, ::Match, :round_id, scope:).load(object.id)
+      end
     end
 
     # @param deleted [Proc]
