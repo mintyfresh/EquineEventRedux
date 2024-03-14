@@ -49,12 +49,16 @@ module Types
 
     # @return [ActiveSupport::Duration]
     def total_duration
-      phases.sum(0.seconds, &:duration)
+      phases # ensure phases are loaded
+
+      object.total_duration
     end
 
     # @return [Integer]
     def total_duration_in_seconds
-      total_duration.seconds.to_i
+      phases # ensure phases are loaded
+
+      object.total_duration_in_seconds
     end
 
     # @return [Float]
@@ -64,6 +68,8 @@ module Types
 
     # @return [Float]
     def time_remaining_in_phase
+      phases # ensure phases are loaded
+
       object.time_remaining_in_phase(instant)
     end
 
@@ -74,7 +80,7 @@ module Types
 
     # @return [Array<::TimerPhase>]
     def phases
-      @phases ||= dataloader.with(Sources::RecordList, ::TimerPhase, :timer_id).load(object.id)
+      dataloader.with(Sources::Association, ::Timer, :phases).load(object)
     end
   end
 end
