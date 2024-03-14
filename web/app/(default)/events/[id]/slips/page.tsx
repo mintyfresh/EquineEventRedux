@@ -10,7 +10,8 @@ export default function EventSlipsPage({ params: { id } }: { params: { id: strin
   const [round, setRound] = useState<EventSlipsQuery['event']['rounds'][0] | null>(null)
 
   const { data: { event } } = useSuspenseQuery<EventSlipsQuery, EventSlipsQueryVariables>(EventSlipsDocument, {
-    variables: { id }
+    variables: { id },
+    fetchPolicy: 'cache-and-network'
   })
 
   useEffect(() => {

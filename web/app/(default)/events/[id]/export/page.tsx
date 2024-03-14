@@ -64,7 +64,7 @@ const EventStandingsExport: React.FC<EventExportQuery> = ({ event }) => {
 }
 
 const EventMatchesExport: React.FC<EventExportQuery> = ({ event }) => {
-  const round = event.rounds[0];
+  const round = event.rounds[0]
 
   if (!round) {
     return (
@@ -108,7 +108,8 @@ const EventChallongeExport: React.FC<EventExportQuery> = ({ event }) => {
 
 export default function EventExportPage({ params: { id } }: { params: { id: string } }) {
   const { data } = useSuspenseQuery<EventExportQuery, EventExportQueryVariables>(EventExportDocument, {
-    variables: { id }
+    variables: { id },
+    fetchPolicy: 'cache-and-network'
   })
 
   if (!data?.event) {

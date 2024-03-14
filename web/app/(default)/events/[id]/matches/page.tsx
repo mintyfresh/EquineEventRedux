@@ -13,7 +13,8 @@ export default function EventMatchesPage({ params: { id } }: { params: { id: str
   const [deleted, setDeleted] = useState<boolean>(false)
 
   const { data, refetch } = useSuspenseQuery<EventMatchesQuery, EventMatchesQueryVariables>(EventMatchesDocument, {
-    variables: { id, deleted: deleted ? DeletedFilter.Deleted : undefined }
+    variables: { id, deleted: deleted ? DeletedFilter.Deleted : undefined },
+    fetchPolicy: 'cache-and-network'
   })
 
   const [setResolution, { loading: settingResolution }] = useSetMatchResolutionMutation()

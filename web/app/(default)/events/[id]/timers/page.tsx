@@ -7,7 +7,8 @@ import { EventTimersQuery, EventTimersQueryVariables, EventTimersDocument } from
 
 export default function EventTimersPage({ params: { id, fullscreen } }: { params: { id: string, fullscreen?: boolean } }) {
   const { data } = useSuspenseQuery<EventTimersQuery, EventTimersQueryVariables>(EventTimersDocument, {
-    variables: { eventId: id }
+    variables: { eventId: id },
+    fetchPolicy: 'cache-and-network'
   })
 
   const currentRound = data?.event?.currentRound

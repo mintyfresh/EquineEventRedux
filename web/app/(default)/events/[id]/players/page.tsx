@@ -12,7 +12,8 @@ export default function EventPlayersPage({ params: { id } }: { params: { id: str
   const [deleted, setDeleted] = useState<boolean>(false)
 
   const { data, refetch } = useSuspenseQuery<EventPlayersQuery, EventPlayersQueryVariables>(EventPlayersDocument, {
-    variables: { id, deleted: deleted ? DeletedFilter.Deleted : undefined }
+    variables: { id, deleted: deleted ? DeletedFilter.Deleted : undefined },
+    fetchPolicy: 'cache-and-network'
   })
 
   return (
