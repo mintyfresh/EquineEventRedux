@@ -105,14 +105,14 @@ const RoundListItemHeader: React.FC<RoundListItemHeaderProps> = ({ round, disabl
       {...props}
       style={expanded ? style : { ...style, borderBottom: 'none' }}
     >
-      <FontAwesomeIcon
-        icon={expanded ? faChevronDown : faChevronUp}
-        className="me-2"
-        role="button"
-        onClick={() => onExpand?.(!expanded)}
-      />
-      Round {round.number}
-      {round.isComplete && ' (Complete)'}
+      <a role="button" onClick={() => onExpand?.(!expanded)} style={{ textDecoration: 'none' }}>
+        <FontAwesomeIcon
+          icon={expanded ? faChevronDown : faChevronUp}
+          className="me-2 user-select-none"
+        />
+        Round {round.number}
+        {round.isComplete && ' (Complete)'}
+      </a>
       {timer && (
         <Timer
           timer={timer}
