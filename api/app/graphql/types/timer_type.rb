@@ -47,6 +47,16 @@ module Types
       object.expired?(instant)
     end
 
+    # @return [ActiveSupport::Duration]
+    def total_duration
+      phases.sum(0.seconds, &:duration)
+    end
+
+    # @return [Integer]
+    def total_duration_in_seconds
+      total_duration.seconds.to_i
+    end
+
     # @return [Float]
     def time_remaining
       object.time_remaining(instant)
@@ -64,7 +74,7 @@ module Types
 
     # @return [Array<::TimerPhase>]
     def phases
-      dataloader.with(Sources::RecordList, ::TimerPhase, :timer_id).load(object.id)
+      @phases ||= dataloader.with(Sources::RecordList, ::TimerPhase, :timer_id).load(object.id)
     end
   end
 end
