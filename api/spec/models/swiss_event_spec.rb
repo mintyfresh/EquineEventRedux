@@ -18,16 +18,8 @@
 #  index_events_on_name  (name) UNIQUE WHERE (deleted_at IS NULL)
 #  index_events_on_slug  (slug) UNIQUE WHERE (deleted_at IS NULL)
 #
-FactoryBot.define do
-  factory :event do
-    sequence(:name) { |n| "#{Faker::Book.title.first(45)} #{n}" }
+require 'rails_helper'
 
-    trait :with_players do
-      transient do
-        players_count { 3 }
-      end
-
-      players { build_list(:player, players_count, event: instance) }
-    end
-  end
+RSpec.describe SwissEvent do
+  pending "add some examples to (or delete) #{__FILE__}"
 end

@@ -10,6 +10,8 @@
 #  updated_at :datetime         not null
 #  deleted_at :datetime
 #  slug       :string           not null
+#  type       :string           not null
+#  data       :jsonb            not null
 #
 # Indexes
 #
@@ -36,7 +38,7 @@ RSpec.describe Event do
   end
 
   it 'is invalid with a duplicate name' do
-    create(:event, name: event.name)
+    create(:swiss_event, name: event.name)
     expect(event).to be_invalid
   end
 end

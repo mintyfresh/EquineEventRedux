@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_23_024122) do
+ActiveRecord::Schema[7.1].define(version: 2024_03_31_201425) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pgcrypto"
@@ -58,6 +58,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_23_024122) do
     t.datetime "updated_at", null: false
     t.datetime "deleted_at", precision: nil
     t.string "slug", null: false
+    t.string "type", null: false
+    t.jsonb "data", default: {}, null: false
     t.index ["name"], name: "index_events_on_name", unique: true, where: "(deleted_at IS NULL)"
     t.index ["slug"], name: "index_events_on_slug", unique: true, where: "(deleted_at IS NULL)"
   end
@@ -96,6 +98,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_23_024122) do
     t.integer "losses_count", default: 0, null: false
     t.integer "score", default: 0, null: false
     t.integer "maximum_possible_score", default: 0, null: false
+    t.string "type", null: false
+    t.jsonb "data", default: {}, null: false
     t.index ["event_id", "name"], name: "index_players_on_event_id_and_name", unique: true, where: "(deleted_at IS NULL)"
     t.index ["event_id"], name: "index_players_on_event_id"
   end

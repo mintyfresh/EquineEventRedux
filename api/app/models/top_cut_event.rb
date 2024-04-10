@@ -18,16 +18,18 @@
 #  index_events_on_name  (name) UNIQUE WHERE (deleted_at IS NULL)
 #  index_events_on_slug  (slug) UNIQUE WHERE (deleted_at IS NULL)
 #
-FactoryBot.define do
-  factory :event do
-    sequence(:name) { |n| "#{Faker::Book.title.first(45)} #{n}" }
+class TopCutEvent < Event
+  PAIRING_MODES = %w[top_to_bottom sequential].freeze
 
-    trait :with_players do
-      transient do
-        players_count { 3 }
-      end
+  store_accessor :data, :swiss_event_id, :pairing_mode, :players_count
 
-      players { build_list(:player, players_count, event: instance) }
-    end
+  validates :swiss_event_id, presence: true
+  validates :pairing_mode, inclusion: { in: PAIRING_MODES }
+  validates :players_count, numericality: { only_integer: true, greater_than: 0, multiple_of: 2 }
+  validates :players, presence: true
+
+  validate on: :create do
+    # TODO: Add a useful error message for this assertion.
+    players.size == players_count or errors.add(:players, :invalid)
   end
 end

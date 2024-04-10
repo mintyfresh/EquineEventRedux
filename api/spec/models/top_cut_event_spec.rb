@@ -18,16 +18,23 @@
 #  index_events_on_name  (name) UNIQUE WHERE (deleted_at IS NULL)
 #  index_events_on_slug  (slug) UNIQUE WHERE (deleted_at IS NULL)
 #
-FactoryBot.define do
-  factory :event do
-    sequence(:name) { |n| "#{Faker::Book.title.first(45)} #{n}" }
+require 'rails_helper'
 
-    trait :with_players do
-      transient do
-        players_count { 3 }
-      end
+RSpec.describe TopCutEvent do
+  subject(:event) { build(:top_cut_event) }
 
-      players { build_list(:player, players_count, event: instance) }
-    end
+  it 'has a valid factory' do
+    expect(event).to be_valid
+      .and be_a(described_class)
+  end
+
+  it 'is invalid without players' do
+    event.players = []
+    expect(event).to be_invalid
+  end
+
+  it 'is invalid when the players count does not match the number of players' do
+    event.players_count += 1
+    expect(event).to be_invalid
   end
 end

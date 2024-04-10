@@ -19,15 +19,11 @@
 #  index_events_on_slug  (slug) UNIQUE WHERE (deleted_at IS NULL)
 #
 FactoryBot.define do
-  factory :event do
-    sequence(:name) { |n| "#{Faker::Book.title.first(45)} #{n}" }
+  factory :swiss_event, class: 'SwissEvent', parent: :event do
+    type { 'SwissEvent' }
 
     trait :with_players do
-      transient do
-        players_count { 3 }
-      end
-
-      players { build_list(:player, players_count, event: instance) }
+      players { build_list(:swiss_player, players_count, event: instance) }
     end
   end
 end

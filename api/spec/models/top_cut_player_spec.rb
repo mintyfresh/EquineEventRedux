@@ -32,25 +32,6 @@
 #
 require 'rails_helper'
 
-RSpec.describe Player do
-  subject(:player) { build(:player) }
-
-  it 'has a valid factory' do
-    expect(player).to be_valid
-  end
-
-  it 'is invalid without an event' do
-    player.event = nil
-    expect(player).to be_invalid
-  end
-
-  it 'is invalid without a name' do
-    player.name = nil
-    expect(player).to be_invalid
-  end
-
-  it 'is invalid with a name longer than 50 characters' do
-    player.name = 'a' * 51
-    expect(player).to be_invalid
-  end
+RSpec.describe TopCutPlayer do
+  pending "add some examples to (or delete) #{__FILE__}"
 end

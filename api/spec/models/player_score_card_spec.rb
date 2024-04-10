@@ -13,7 +13,7 @@ require 'rails_helper'
 RSpec.describe PlayerScoreCard do
   subject(:player_score_card) { player.score_card }
 
-  let(:player) { create(:player) }
+  let(:player) { create(:swiss_player) }
 
   before(:each) do
     create_list(:match, 3, event: player.event, player1: player)

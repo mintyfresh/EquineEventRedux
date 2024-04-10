@@ -82,7 +82,7 @@ RSpec.describe Match::UpdatePlayerScoresSubscriber, type: :subscriber do
     context 'when one if the players is replaced' do
       let(:message) { Match::UpdateMessage.new(match:, changes: { 'player1_id' => [new_player.id, old_player.id] }) }
       let(:match) { create(:match, :draw) }
-      let!(:new_player) { create(:player, event: match.event) }
+      let!(:new_player) { create(:swiss_player, event: match.event) }
       let!(:old_player) { match.player1 }
 
       before(:each) do

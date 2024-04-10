@@ -41,7 +41,7 @@ RSpec.describe Round do
   end
 
   it 'is invalid when two matches have the same table number' do
-    round.event = create(:event)
+    round.event = create(:swiss_event)
     round.matches << build(:match, event: round.event, round:, table: 1)
     round.matches << build(:match, event: round.event, round:, table: 1)
     expect(round).to be_invalid

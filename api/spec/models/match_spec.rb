@@ -71,12 +71,12 @@ RSpec.describe Match do
   end
 
   it 'is invalid when player 1 is not in the round' do
-    match.player1 = create(:player)
+    match.player1 = create(:swiss_player)
     expect(match).to be_invalid
   end
 
   it 'is invalid when player 2 is not in the round' do
-    match.player2 = create(:player)
+    match.player2 = create(:swiss_player)
     expect(match).to be_invalid
   end
 

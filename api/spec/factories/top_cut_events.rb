@@ -19,15 +19,16 @@
 #  index_events_on_slug  (slug) UNIQUE WHERE (deleted_at IS NULL)
 #
 FactoryBot.define do
-  factory :event do
-    sequence(:name) { |n| "#{Faker::Book.title.first(45)} #{n}" }
+  factory :top_cut_event, class: 'TopCutEvent', parent: :event do
+    type { 'TopCutEvent' }
+    swiss_event_id { SecureRandom.uuid }
+    pairing_mode { TopCutEvent::PAIRING_MODES.sample }
 
     trait :with_players do
-      transient do
-        players_count { 3 }
-      end
-
-      players { build_list(:player, players_count, event: instance) }
+      players_count { 8 }
+      players { build_list(:top_cut_player, players_count, event: instance) }
     end
+
+    with_players
   end
 end

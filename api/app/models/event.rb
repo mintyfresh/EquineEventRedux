@@ -10,6 +10,8 @@
 #  updated_at :datetime         not null
 #  deleted_at :datetime
 #  slug       :string           not null
+#  type       :string           not null
+#  data       :jsonb            not null
 #
 # Indexes
 #

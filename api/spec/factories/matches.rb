@@ -34,12 +34,12 @@ FactoryBot.define do
   factory :match do
     round { create(:round, event:) }
 
-    player1 { create(:player, event: round.event) }
-    player2 { create(:player, event: round.event) }
+    player1 { create(:swiss_player, event: round.event) }
+    player2 { create(:swiss_player, event: round.event) }
     table { (round.matches.filter_map(&:table).max || 0) + 1 }
 
     transient do
-      event { build(:event) }
+      event { build(:swiss_event) }
     end
 
     trait :draw do
