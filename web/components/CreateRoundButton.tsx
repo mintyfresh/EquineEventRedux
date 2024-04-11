@@ -1,10 +1,10 @@
 import { gql } from '@apollo/client'
 import { faSpinner } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { MutableRefObject, useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Button } from 'react-bootstrap'
-import { ERRORS_FRAGMENT, useErrors } from '../lib/errors'
-import { CreateRoundButtonFragment, RoundInput, useCreateRoundMutation, usePlayersForRoundCreateLazyQuery } from '../lib/generated/graphql'
+import { useErrors } from '../lib/errors'
+import { CreateRoundButtonFragment, RoundCreateCustomInput, useCreateCustomRoundMutation, usePlayersForRoundCreateLazyQuery } from '../lib/generated/graphql'
 import { MATCH_FORM_INPUT_PLAYER_FRAGMENT } from './MatchFormInput'
 import RoundModal from './RoundModal'
 
@@ -30,8 +30,8 @@ gql`
 `
 
 gql`
-  mutation CreateRound($eventId: ID!, $input: RoundInput!) {
-    roundCreate(eventId: $eventId, input: $input) {
+  mutation CreateCustomRound($input: RoundCreateCustomInput!) {
+    roundCreateCustom(input: $input) {
       round {
         id
       }
@@ -40,10 +40,10 @@ gql`
       }
     }
   }
-  ${ERRORS_FRAGMENT}
 `
 
-const EMPTY_ROUND_CREATE_INPUT: RoundInput = {
+const EMPTY_ROUND_CREATE_INPUT: RoundCreateCustomInput = {
+  eventId: '',
   matches: []
 }
 
@@ -54,19 +54,19 @@ export interface CreateRoundButtonProps extends Omit<React.ComponentProps<typeof
 
 const CreateRoundButton: React.FC<CreateRoundButtonProps> = ({ event, onCreate, ...props }) => {
   const [showModal, setShowModal] = useState(false)
-  const [input, setInput] = useState<RoundInput>(EMPTY_ROUND_CREATE_INPUT)
+  const [input, setInput] = useState<RoundCreateCustomInput>(EMPTY_ROUND_CREATE_INPUT)
   const [errors, setErrors] = useErrors()
 
   const [loadPlayers, { data, loading: playersLoading }] = usePlayersForRoundCreateLazyQuery({
     variables: { id: event.id }
   })
 
-  const [createRound, { loading }] = useCreateRoundMutation({
-    variables: { eventId: event.id, input },
-    onCompleted: ({ roundCreate }) => {
-      setErrors(roundCreate?.errors)
+  const [createRound, { loading }] = useCreateCustomRoundMutation({
+    variables: { input: { ...input, eventId: event.id } },
+    onCompleted: ({ roundCreateCustom }) => {
+      setErrors(roundCreateCustom?.errors)
 
-      if (roundCreate?.round?.id) {
+      if (roundCreateCustom?.round?.id) {
         // Reset input and modal state
         setInput(EMPTY_ROUND_CREATE_INPUT)
         setShowModal(false)
@@ -98,12 +98,13 @@ const CreateRoundButton: React.FC<CreateRoundButtonProps> = ({ event, onCreate, 
           show={showModal}
           players={data.event.players.nodes}
           event={data.event}
+          round={{ id: '' }}
           input={input}
           errors={errors}
           disabled={loading}
           onHide={() => setShowModal(false)}
           onInputChange={(input) => {
-            setInput(input)
+            setInput({ ...input, eventId: event.id })
             setErrors(null)
           }}
           onSubmit={() => createRound()}

@@ -14,7 +14,7 @@ export const CREATE_EVENT_FRAGMENT = gql`
 `
 
 gql`
-  mutation CreateEvent($input: EventInput!) {
+  mutation CreateEvent($input: EventCreateInput!) {
     eventCreate(input: $input) {
       event {
         ...CreateEvent
@@ -40,7 +40,7 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ onCreate }) => {
   const [errors, setErrors] = useErrors()
 
   const [createEvent, { loading }] = useCreateEventMutation({
-    variables: { input: { name } },
+    variables: { input: { swiss: { name } } },
     onCompleted: ({ eventCreate }) => {
       setErrors(eventCreate?.errors)
 

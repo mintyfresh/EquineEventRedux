@@ -2,7 +2,7 @@ import { gql } from '@apollo/client'
 import { useState } from 'react'
 import { Dropdown } from 'react-bootstrap'
 import { ERRORS_FRAGMENT, useErrors } from '../../lib/errors'
-import { EditRoundDropdownItemFragment, RoundInput, usePlayersForEditRoundLazyQuery, useUpdateRoundMutation } from '../../lib/generated/graphql'
+import { EditRoundDropdownItemFragment, RoundUpdateInput, usePlayersForEditRoundLazyQuery, useUpdateRoundMutation } from '../../lib/generated/graphql'
 import { MATCH_FORM_INPUT_PLAYER_FRAGMENT } from '../MatchFormInput'
 import RoundModal from '../RoundModal'
 
@@ -48,7 +48,7 @@ gql`
 `
 
 gql`
-  mutation UpdateRound($roundID: ID!, $roundInput: RoundInput!) {
+  mutation UpdateRound($roundID: ID!, $roundInput: RoundUpdateInput!) {
     roundUpdate(id: $roundID, input: $roundInput) {
       round {
         id
@@ -63,7 +63,7 @@ gql`
   ${ERRORS_FRAGMENT}
 `
 
-const buildRoundInput = (round: EditRoundDropdownItemFragment): RoundInput => ({
+const buildRoundInput = (round: EditRoundDropdownItemFragment): RoundUpdateInput => ({
   matches: round.matches.map((match) => ({
     id: match.id,
     table: match.table,
@@ -78,7 +78,7 @@ export interface EditRoundDropdownItemProps {
 
 const EditRoundDropdownItem: React.FC<EditRoundDropdownItemProps> = ({ round }) => {
   const [visible, setVisible] = useState(false)
-  const [input, setInput] = useState<RoundInput>(buildRoundInput(round))
+  const [input, setInput] = useState<RoundUpdateInput>(buildRoundInput(round))
   const [errors, setErrors] = useErrors()
 
   const [loadPlayers, { data, loading: playersLoading }] = usePlayersForEditRoundLazyQuery({
@@ -119,6 +119,7 @@ const EditRoundDropdownItem: React.FC<EditRoundDropdownItemProps> = ({ round }) 
           show={visible}
           players={data.round.players.concat(data.round.unpairedPlayers)}
           event={{ id: round.eventId }}
+          round={round}
           input={input}
           errors={errors}
           disabled={loading}

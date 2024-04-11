@@ -2,12 +2,12 @@ import { gql } from '@apollo/client'
 import { useMemo } from 'react'
 import { Alert, Button, ButtonGroup, ButtonToolbar, Dropdown, Form, Modal } from 'react-bootstrap'
 import { Errors } from '../lib/errors'
-import { MatchFormInputPlayerFragment, MatchInput, RoundInput, useGeneratePairingsMutation } from '../lib/generated/graphql'
+import { MatchFormInputPlayerFragment, MatchInput, RoundUpdateInput, useGeneratePairingsMutation } from '../lib/generated/graphql'
 import MatchFormInput from './MatchFormInput'
 
 gql`
-  mutation GeneratePairings($eventId: ID!, $playerIds: [ID!]!) {
-    eventGeneratePairings(eventId: $eventId, playerIds: $playerIds) {
+  mutation GeneratePairings($eventId: ID!, $roundId: ID!) {
+    eventGeneratePairings(eventId: $eventId, roundId: $roundId) {
       pairings {
         player1 {
           id
@@ -37,13 +37,14 @@ export interface RoundModalProps {
   mode: 'create' | 'update'
   show: boolean
   event: { id: string }
-  input: RoundInput
+  round: { id: string }
+  input: RoundUpdateInput
   errors: Errors
   players: MatchFormInputPlayerFragment[]
   disabled?: boolean
 
   onHide(): void
-  onInputChange(input: RoundInput): void
+  onInputChange(input: RoundUpdateInput): void
   onSubmit(): void
 }
 
@@ -64,7 +65,7 @@ const calculateGaps = (matches: MatchInput[]): number[] => {
   return gaps
 }
 
-const RoundModal: React.FC<RoundModalProps> = ({ title, mode, show, onHide, errors, players, disabled, event, input, onInputChange, onSubmit }) => {
+const RoundModal: React.FC<RoundModalProps> = ({ title, mode, show, onHide, errors, players, disabled, event, round, input, onInputChange, onSubmit }) => {
   const matches = useMemo(() => (input.matches ?? []).sort((a, b) => a.table - b.table), [input.matches])
   const gaps = useMemo(() => calculateGaps(matches), [matches])
 
@@ -141,34 +142,10 @@ const RoundModal: React.FC<RoundModalProps> = ({ title, mode, show, onHide, erro
     })
   }
 
-  const [pairRemainingPlayers, {}] = useGeneratePairingsMutation({
-    variables: {
-      eventId: event.id,
-      playerIds: unpairedPlayers.map(({ id }) => id)
-    },
-    onCompleted: ({ eventGeneratePairings }) => {
-      if (eventGeneratePairings?.pairings) {
-        let previousTable = 0
-
-        onInputChange({
-          ...input,
-          matches: [
-            ...matches,
-            ...eventGeneratePairings.pairings.map((pairing) => ({
-              table: previousTable = generateNextTable(previousTable),
-              player1Id: pairing.player1.id,
-              player2Id: pairing.player2?.id
-            }))
-          ]
-        })
-      }
-    }
-  })
-
   const [pairAllPlayers, {}] = useGeneratePairingsMutation({
     variables: {
       eventId: event.id,
-      playerIds: players.map(({ id }) => id)
+      roundId: round.id
     },
     onCompleted: ({ eventGeneratePairings }) => {
       if (eventGeneratePairings?.pairings) {
@@ -234,14 +211,11 @@ const RoundModal: React.FC<RoundModalProps> = ({ title, mode, show, onHide, erro
         <Modal.Footer>
           <ButtonToolbar className="w-100">
             <Dropdown as={ButtonGroup}>
-              <Button variant="secondary" onClick={() => pairRemainingPlayers()} accessKey="p">
-                <u>P</u>air Remaining Players
+              <Button variant="secondary" onClick={() => pairAllPlayers()} accessKey="p">
+                <u>P</u>air Players
               </Button>
               <Dropdown.Toggle split variant="secondary" />
               <Dropdown.Menu align="end">
-                <Dropdown.Item onClick={() => pairAllPlayers()}>
-                  Pair All Players
-                </Dropdown.Item>
                 <Dropdown.Item onClick={() => clearAllMatches()}>
                   Clear All Pairings
                 </Dropdown.Item>
