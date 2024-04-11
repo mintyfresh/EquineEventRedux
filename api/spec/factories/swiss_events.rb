@@ -23,6 +23,10 @@ FactoryBot.define do
     type { 'SwissEvent' }
 
     trait :with_players do
+      transient do
+        players_count { 3 }
+      end
+
       players { build_list(:swiss_player, players_count, event: instance) }
     end
   end

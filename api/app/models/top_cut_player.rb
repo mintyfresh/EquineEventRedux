@@ -35,4 +35,9 @@ class TopCutPlayer < Player
 
   validates :swiss_player_id, presence: true
   validates :swiss_ranking, numericality: { only_integer: true, greater_than: 0 }
+
+  # @return [Boolean]
+  def eliminated?
+    losses_count.positive?
+  end
 end

@@ -28,13 +28,23 @@ RSpec.describe TopCutEvent do
       .and be_a(described_class)
   end
 
+  it 'is invalid without a swiss event' do
+    event.swiss_event_id = nil
+    expect(event).to be_invalid
+  end
+
+  it 'is invalid without a pairing mode' do
+    event.pairing_mode = nil
+    expect(event).to be_invalid
+  end
+
   it 'is invalid without players' do
     event.players = []
     expect(event).to be_invalid
   end
 
-  it 'is invalid when the players count does not match the number of players' do
-    event.players_count += 1
+  it 'is invalid with an odd number of players' do
+    event.players << build(:top_cut_player, event:)
     expect(event).to be_invalid
   end
 end

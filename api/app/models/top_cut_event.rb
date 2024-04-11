@@ -21,15 +21,14 @@
 class TopCutEvent < Event
   PAIRING_MODES = %w[top_to_bottom sequential].freeze
 
-  store_accessor :data, :swiss_event_id, :pairing_mode, :players_count
+  store_accessor :data, :swiss_event_id, :pairing_mode
 
   validates :swiss_event_id, presence: true
   validates :pairing_mode, inclusion: { in: PAIRING_MODES }
-  validates :players_count, numericality: { only_integer: true, greater_than: 0, multiple_of: 2 }
   validates :players, presence: true
 
-  validate on: :create do
-    # TODO: Add a useful error message for this assertion.
-    players.size == players_count or errors.add(:players, :invalid)
+  # ensure an even number of players are present
+  validate on: :create, if: -> { players.any? } do
+    players.length.even? or errors.add(:players, :odd)
   end
 end

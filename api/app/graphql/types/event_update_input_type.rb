@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Types
-  class EventInputType < BaseInputObject
+  class EventUpdateInputType < BaseInputObject
     argument :name, String, required: false
   end
 end

@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
 module Types
-  class EventType < BaseObject
+  module EventType
+    include BaseInterface
+
+    orphan_types Types::SwissEventType, Types::TopCutEventType
+
     field :id, ID, null: false
     field :slug, String, null: false
     field :name, String, null: false

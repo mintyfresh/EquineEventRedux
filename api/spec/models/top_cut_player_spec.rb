@@ -33,5 +33,30 @@
 require 'rails_helper'
 
 RSpec.describe TopCutPlayer do
-  pending "add some examples to (or delete) #{__FILE__}"
+  subject(:player) { build(:top_cut_player) }
+
+  it 'has a valid factory' do
+    expect(player).to be_valid
+      .and be_a(described_class)
+  end
+
+  it 'is invalid without a swiss player ID' do
+    player.swiss_player_id = nil
+    expect(player).to be_invalid
+  end
+
+  it 'is invalid without a swiss ranking' do
+    player.swiss_ranking = nil
+    expect(player).to be_invalid
+  end
+
+  it 'is invalid with a non-integer swiss ranking' do
+    player.swiss_ranking = 1.5
+    expect(player).to be_invalid
+  end
+
+  it 'is invalid with a non-positive swiss ranking' do
+    player.swiss_ranking = 0
+    expect(player).to be_invalid
+  end
 end
