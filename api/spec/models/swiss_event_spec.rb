@@ -21,5 +21,10 @@
 require 'rails_helper'
 
 RSpec.describe SwissEvent do
-  pending "add some examples to (or delete) #{__FILE__}"
+  subject(:event) { build(:swiss_event) }
+
+  it 'has a valid factory' do
+    expect(event).to be_valid
+      .and be_a(described_class)
+  end
 end

@@ -45,4 +45,11 @@ class Event < ApplicationRecord
   def current_round
     rounds.non_deleted.order(:number).last
   end
+
+  # @abstract
+  # @param round [Round]
+  # @return [Array<(Player, Player), (Player, nil)>]
+  def generate_pairings(round)
+    raise NotImplementedError, "#{self.class.name}#generate_pairings must be implemented"
+  end
 end

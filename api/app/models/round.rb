@@ -82,6 +82,16 @@ class Round < ApplicationRecord
     end
   end
 
+  # @param pairings [Array<(Player, Player), (Player, nil)>]
+  # @return [Array<Match>]
+  def create_matches_from_pairings!(pairings)
+    transaction do
+      pairings.map.with_index(1) do |players, table|
+        matches.create!(players:, table:)
+      end
+    end
+  end
+
 private
 
   # @return [void]

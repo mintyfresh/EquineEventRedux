@@ -4,7 +4,7 @@ module Types
   module EventType
     include BaseInterface
 
-    orphan_types Types::SwissEventType, Types::TopCutEventType
+    orphan_types Types::SwissEventType, Types::SingleEliminationEventType
 
     field :id, ID, null: false
     field :slug, String, null: false

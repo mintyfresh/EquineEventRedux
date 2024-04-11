@@ -20,6 +20,7 @@ module Types
     field :player_import_bulk, mutation: Mutations::PlayerImportBulk
 
     field :round_create, mutation: Mutations::RoundCreate
+    field :round_create_custom, mutation: Mutations::RoundCreateCustom
     field :round_update, mutation: Mutations::RoundUpdate
     field :round_delete, mutation: Mutations::RoundDelete
     field :round_restore, mutation: Mutations::RoundRestore

@@ -19,4 +19,11 @@
 #  index_events_on_slug  (slug) UNIQUE WHERE (deleted_at IS NULL)
 #
 class SwissEvent < Event
+  has_many :players, class_name: 'SwissPlayer', dependent: :destroy, inverse_of: :event
+
+  # @param round [Round]
+  # @return [Array<(SwissPlayer, SwissPlayer), (SwissPlayer, nil)>]
+  def generate_pairings(_round)
+    SwissPlayerPairingService.new(self).generate_pairings
+  end
 end

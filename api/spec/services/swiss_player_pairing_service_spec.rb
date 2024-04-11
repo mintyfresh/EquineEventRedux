@@ -2,14 +2,15 @@
 
 require 'rails_helper'
 
-RSpec.describe PlayerPairingService, type: :service do
-  subject(:service) { described_class.new }
+RSpec.describe SwissPlayerPairingService, type: :service do
+  subject(:service) { described_class.new(event) }
+
+  let(:event) { create(:swiss_event) }
 
   describe '#generate_pairings', :deliver_published_messages do
-    subject(:generate_pairings) { service.generate_pairings(players) }
+    subject(:generate_pairings) { service.generate_pairings }
 
-    let(:players) { create_list(:swiss_player, 4, event:) }
-    let(:event) { create(:swiss_event) }
+    let!(:players) { create_list(:swiss_player, 4, :paid, event:) }
 
     it 'returns a list of pairings' do
       expect(generate_pairings).to be_a(Array)
@@ -30,7 +31,7 @@ RSpec.describe PlayerPairingService, type: :service do
     end
 
     context 'when there is an odd number of players' do
-      let(:players) { create_list(:swiss_player, 5, event:) }
+      let(:players) { create_list(:swiss_player, 5, :paid, event:) }
 
       it 'includes all players and one bye in the pairings' do
         expect(generate_pairings.flatten).to contain_exactly(*players, nil)

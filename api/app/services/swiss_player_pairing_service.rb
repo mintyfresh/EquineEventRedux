@@ -1,13 +1,19 @@
 # frozen_string_literal: true
 
-class PlayerPairingService
+class SwissPlayerPairingService
   PREVIOUSLY_PAIRED_PENALTY = -9_999_999
 
-  # @param players [Array<Player>]
-  # @return [Array<(Player, (Player, nil))>]
-  def generate_pairings(players)
-    players = players.shuffle
-    weighted_edges = generated_weighted_edges(players)
+  # @param event [SwissEvent]
+  def initialize(event)
+    @event   = event
+    @players = event.players.active.includes(:score_card).shuffle
+    # Append a placeholder if the number of players is odd
+    @players << nil if @players.count.odd?
+  end
+
+  # @return [Array<(SwissPlayer, (SwissPlayer, nil))>]
+  def generate_pairings
+    weighted_edges = generated_weighted_edges
 
     graph = GraphMatching::Graph::WeightedGraph[*weighted_edges]
     edges = graph.maximum_weighted_matching(true).edges
@@ -15,7 +21,7 @@ class PlayerPairingService
     pairings = edges.map do |(player1, player2)|
       # Resolve players from the indices
       # The placeholder player is indexed beyond the end of this array so it becomes nil
-      pairing = [players[player1], players[player2]]
+      pairing = [@players[player1], @players[player2]]
       pairing = pairing.reverse if pairing.first.nil?
 
       pairing
@@ -28,20 +34,16 @@ class PlayerPairingService
 
 private
 
-  # @param players [Array<Player>]
   # @return [Array<(Integer, Integer, Numeric)>]
-  def generated_weighted_edges(players)
-    # Append a placeholder if the number of players is odd
-    players = [*players, nil] if players.count.odd?
-
-    (0...players.length).to_a.combination(2).map do |player1_index, player2_index|
+  def generated_weighted_edges
+    (0...@players.length).to_a.combination(2).map do |player1_index, player2_index|
       # Use indices into the array because the graph-matching library expects numeric edges
-      [player1_index, player2_index, calculate_weight_for_pairing(players[player1_index], players[player2_index])]
+      [player1_index, player2_index, calculate_weight_for_pairing(@players[player1_index], @players[player2_index])]
     end
   end
 
-  # @param player1 [Player]
-  # @param player2 [Player, nil]
+  # @param player1 [SwissPlayer]
+  # @param player2 [SwissPlayer, nil]
   # @return [Numeric]
   def calculate_weight_for_pairing(player1, player2)
     # Apply a penalty for each time these players have been matched together.
@@ -57,8 +59,8 @@ private
     ((max + min) / 2.0) - ((max - min)**2) + penalty
   end
 
-  # @param player1 [Player]
-  # @param player2 [Player, nil]
+  # @param player1 [SwissPlayer]
+  # @param player2 [SwissPlayer, nil]
   # @return [Array<(Numeric, Numeric)>]
   def calculate_rankings_for_pairing(player1, player2)
     return [0.0, 0.0] if player2.nil?
@@ -69,8 +71,8 @@ private
     ]
   end
 
-  # @param pairings [Array<Array<Player>>]
-  # @return [Array<Array<Player>>]
+  # @param pairings [Array<Array<SwissPlayer>>]
+  # @return [Array<Array<SwissPlayer>>]
   def sort_pairings_by_rankings(pairings)
     pairings.sort do |pair1, pair2|
       next +1 if pair1[1].nil?

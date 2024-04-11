@@ -35,9 +35,14 @@ FactoryBot.define do
     event
 
     sequence(:name) { |n| "#{Faker::Internet.user_name} #{n}" }
+    paid { true }
 
     trait :paid do
       paid { true }
+    end
+
+    trait :unpaid do
+      paid { false }
     end
 
     trait :dropped do

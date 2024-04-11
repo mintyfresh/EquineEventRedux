@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Types
-  class RoundInputType < BaseInputObject
+  class RoundUpdateInputType < BaseInputObject
     argument :matches, [MatchInputType], required: false, as: :matches_attributes
   end
 end

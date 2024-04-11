@@ -28,6 +28,10 @@ FactoryBot.define do
 
     number { event.rounds.size + 1 }
 
+    trait :complete do
+      complete { true }
+    end
+
     trait :with_matches do
       transient do
         matches_count { 3 }

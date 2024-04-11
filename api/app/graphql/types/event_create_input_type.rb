@@ -5,7 +5,7 @@ module Types
     one_of
 
     argument :swiss, SwissEventCreateInputType, required: false
-    argument :top_cut, TopCutEventCreateInputType, required: false
+    argument :single_elimination, SingleEliminationEventCreateInputType, required: false
 
     # @return [Hash]
     def prepare

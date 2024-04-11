@@ -1,20 +1,14 @@
 # frozen_string_literal: true
 
 module Mutations
-  class RoundCreate < RecordCreate['Round']
+  class RoundCreateCustom < RecordCreate['Round', input_type: Types::RoundCreateCustomInputType]
     def resolve(input:)
       event = input.event
 
       validate_current_round_complete(event)
       return { errors: event.errors } if event.errors.any?
 
-      Round.transaction do
-        super(input:).tap do |result|
-          round    = result[:round]
-          pairings = event.generate_pairings(round)
-          round.create_matches_from_pairings!(pairings)
-        end
-      end
+      super(input:)
     end
 
   private

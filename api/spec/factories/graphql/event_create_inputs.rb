@@ -9,8 +9,8 @@ FactoryBot.define do
       swiss { graphql_input(:swiss_event_create_input) }
     end
 
-    trait :top_cut do
-      top_cut { graphql_input(:top_cut_event_create_input) }
+    trait :single_elimination do
+      single_elimination { graphql_input(:single_elimination_event_create_input) }
     end
   end
 end

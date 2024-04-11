@@ -30,11 +30,22 @@
 #
 #  fk_rails_...  (event_id => events.id)
 #
-FactoryBot.define do
-  factory :top_cut_player, class: 'TopCutPlayer', parent: :player do
-    event factory: :top_cut_event
-    type { 'TopCutPlayer' }
-    swiss_player_id { SecureRandom.uuid }
-    sequence(:swiss_ranking) { |n| n + 1 }
-  end
+class SingleEliminationPlayer < Player
+  store_accessor :data, :swiss_player_id, :swiss_ranking
+
+  validates :swiss_player_id, presence: true
+  validates :swiss_ranking, numericality: { only_integer: true, greater_than: 0 }
+
+  # @!method self.order_by_swiss_ranking(direction = :asc)
+  #   Orders the players by their swiss ranking.
+  #   @param direction [Symbol] the direction to order the players in.
+  #   @return [Class<SingleEliminationPlayer>]
+  scope :order_by_swiss_ranking, lambda { |direction = :asc|
+    (directions = ActiveRecord::Relation::VALID_DIRECTIONS).include?(direction) or
+      raise ArgumentError, "Direction #{direction.inspect} is invalid. Valid directions are: #{directions.inspect}"
+
+    order(Arel.sql(<<-SQL.squish))
+      ("players"."data" ->> 'swiss_ranking')::integer #{direction.to_s.upcase}
+    SQL
+  }
 end

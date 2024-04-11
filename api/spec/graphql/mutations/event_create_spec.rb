@@ -32,16 +32,16 @@ RSpec.describe Mutations::EventCreate do
     expect(resolve.dig('data', 'eventCreate', 'event', 'name')).to eq(input.dig('swiss', 'name'))
   end
 
-  context 'when the event is a top-cut event' do
-    let(:input) { graphql_input(:event_create_input, :top_cut) }
+  context 'when the event is a single-elimination event' do
+    let(:input) { graphql_input(:event_create_input, :single_elimination) }
 
-    it 'creates a new top-cut event' do
-      expect { resolve }.to change { TopCutEvent.count }.by(1)
+    it 'creates a new single-elimination event' do
+      expect { resolve }.to change { SingleEliminationEvent.count }.by(1)
     end
 
-    it 'returns the new top-cut event', :aggregate_failures do
-      expect(resolve.dig('data', 'eventCreate', 'event', '__typename')).to eq('TopCutEvent')
-      expect(resolve.dig('data', 'eventCreate', 'event', 'name')).to eq(input.dig('topCut', 'name'))
+    it 'returns the new single-elimination event', :aggregate_failures do
+      expect(resolve.dig('data', 'eventCreate', 'event', '__typename')).to eq('SingleEliminationEvent')
+      expect(resolve.dig('data', 'eventCreate', 'event', 'name')).to eq(input.dig('singleElimination', 'name'))
     end
   end
 end

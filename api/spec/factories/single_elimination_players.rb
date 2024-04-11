@@ -30,14 +30,11 @@
 #
 #  fk_rails_...  (event_id => events.id)
 #
-class TopCutPlayer < Player
-  store_accessor :data, :swiss_player_id, :swiss_ranking
-
-  validates :swiss_player_id, presence: true
-  validates :swiss_ranking, numericality: { only_integer: true, greater_than: 0 }
-
-  # @return [Boolean]
-  def eliminated?
-    losses_count.positive?
+FactoryBot.define do
+  factory :single_elimination_player, class: 'SingleEliminationPlayer', parent: :player do
+    event factory: :single_elimination_event
+    type { 'SingleEliminationPlayer' }
+    swiss_player_id { SecureRandom.uuid }
+    sequence(:swiss_ranking) { |n| n + 1 }
   end
 end

@@ -20,8 +20,8 @@
 #
 require 'rails_helper'
 
-RSpec.describe TopCutEvent do
-  subject(:event) { build(:top_cut_event) }
+RSpec.describe SingleEliminationEvent do
+  subject(:event) { build(:single_elimination_event) }
 
   it 'has a valid factory' do
     expect(event).to be_valid
@@ -43,8 +43,8 @@ RSpec.describe TopCutEvent do
     expect(event).to be_invalid
   end
 
-  it 'is invalid with an odd number of players' do
-    event.players << build(:top_cut_player, event:)
+  it 'is invalid with a non-power-of-2 number of players' do
+    event.players << build(:single_elimination_player, event:)
     expect(event).to be_invalid
   end
 end

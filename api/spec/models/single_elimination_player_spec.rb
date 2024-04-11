@@ -32,8 +32,8 @@
 #
 require 'rails_helper'
 
-RSpec.describe TopCutPlayer do
-  subject(:player) { build(:top_cut_player) }
+RSpec.describe SingleEliminationPlayer do
+  subject(:player) { build(:single_elimination_player) }
 
   it 'has a valid factory' do
     expect(player).to be_valid

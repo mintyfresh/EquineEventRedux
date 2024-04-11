@@ -18,17 +18,19 @@
 #  index_events_on_name  (name) UNIQUE WHERE (deleted_at IS NULL)
 #  index_events_on_slug  (slug) UNIQUE WHERE (deleted_at IS NULL)
 #
-class TopCutEvent < Event
-  PAIRING_MODES = %w[top_to_bottom sequential].freeze
+FactoryBot.define do
+  factory :single_elimination_event, class: 'SingleEliminationEvent', parent: :event do
+    type { 'SingleEliminationEvent' }
+    swiss_event_id { SecureRandom.uuid }
+    players { build_list(:single_elimination_player, players_count, event: instance) }
+    pairing_mode { SingleEliminationEvent::PAIRING_MODES.sample }
 
-  store_accessor :data, :swiss_event_id, :pairing_mode
+    transient do
+      players_count { 8 }
+    end
 
-  validates :swiss_event_id, presence: true
-  validates :pairing_mode, inclusion: { in: PAIRING_MODES }
-  validates :players, presence: true
-
-  # ensure an even number of players are present
-  validate on: :create, if: -> { players.any? } do
-    players.length.even? or errors.add(:players, :odd)
+    trait :with_players do
+      players { build_list(:single_elimination_player, players_count, event: instance) }
+    end
   end
 end
