@@ -21,9 +21,9 @@
 class SwissEvent < Event
   has_many :players, class_name: 'SwissPlayer', dependent: :destroy, inverse_of: :event
 
-  # @param round [Round]
+  # @param round_number [Integer]
   # @return [Array<(SwissPlayer, SwissPlayer), (SwissPlayer, nil)>]
-  def generate_pairings(_round)
+  def generate_pairings(_round_number)
     SwissPlayerPairingService.new(self).generate_pairings
   end
 end

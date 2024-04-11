@@ -6,7 +6,7 @@ import { MatchFormInputPlayerFragment, MatchInput, RoundUpdateInput, useGenerate
 import MatchFormInput from './MatchFormInput'
 
 gql`
-  mutation GeneratePairings($eventId: ID!, $roundId: ID!) {
+  mutation GeneratePairings($eventId: ID!, $roundId: ID) {
     eventGeneratePairings(eventId: $eventId, roundId: $roundId) {
       pairings {
         player1 {
@@ -145,7 +145,7 @@ const RoundModal: React.FC<RoundModalProps> = ({ title, mode, show, onHide, erro
   const [pairAllPlayers, {}] = useGeneratePairingsMutation({
     variables: {
       eventId: event.id,
-      roundId: round.id
+      roundId: round?.id ?? null
     },
     onCompleted: ({ eventGeneratePairings }) => {
       if (eventGeneratePairings?.pairings) {

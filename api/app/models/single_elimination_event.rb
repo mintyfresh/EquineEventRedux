@@ -55,9 +55,9 @@ class SingleEliminationEvent < Event
     players.length / (2**(round_number - 1))
   end
 
-  # @param round [Round]
+  # @param round_number [Integer]
   # @return [Array<(SingleEliminationPlayer, SingleEliminationPlayer)>]
-  def generate_pairings(round)
-    SingleEliminationPlayerPairingService.new(self).generate_pairings(round.number)
+  def generate_pairings(round_number)
+    SingleEliminationPlayerPairingService.new(self).generate_pairings(round_number)
   end
 end

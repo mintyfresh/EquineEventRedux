@@ -7,13 +7,18 @@ module Mutations
     field :pairings, [Types::PairingType], null: false
 
     argument :event_id, ID, required: true
-    argument :round_id, ID, required: true
+    argument :round_id, ID, required: false
 
-    def resolve(event_id:, round_id:)
+    def resolve(event_id:, round_id: nil)
       event = ::Event.find(event_id)
-      round = event.rounds.find(round_id)
 
-      pairings = event.generate_pairings(round)
+      if round_id.present?
+        round_number = event.rounds.find(round_id)
+      else
+        round_number = event.next_round_number
+      end
+
+      pairings = event.generate_pairings(round_number)
       pairings = pairings.map { |(player1, player2)| { player1:, player2: } }
 
       { pairings: }

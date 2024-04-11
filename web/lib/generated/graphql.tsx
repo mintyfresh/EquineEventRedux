@@ -322,7 +322,7 @@ export type MutationEventDeleteArgs = {
 
 export type MutationEventGeneratePairingsArgs = {
   eventId: Scalars['ID'];
-  roundId: Scalars['ID'];
+  roundId?: InputMaybe<Scalars['ID']>;
 };
 
 
@@ -1397,7 +1397,7 @@ export type RoundListItemMatchFragment = { __typename?: 'Round', id: string, num
 
 export type GeneratePairingsMutationVariables = Exact<{
   eventId: Scalars['ID'];
-  roundId: Scalars['ID'];
+  roundId?: InputMaybe<Scalars['ID']>;
 }>;
 
 
@@ -2848,7 +2848,7 @@ export function useRoundListItemHeaderTimerDeletedSubscription(baseOptions: Apol
 export type RoundListItemHeaderTimerDeletedSubscriptionHookResult = ReturnType<typeof useRoundListItemHeaderTimerDeletedSubscription>;
 export type RoundListItemHeaderTimerDeletedSubscriptionResult = Apollo.SubscriptionResult<RoundListItemHeaderTimerDeletedSubscription>;
 export const GeneratePairingsDocument = gql`
-    mutation GeneratePairings($eventId: ID!, $roundId: ID!) {
+    mutation GeneratePairings($eventId: ID!, $roundId: ID) {
   eventGeneratePairings(eventId: $eventId, roundId: $roundId) {
     pairings {
       player1 {

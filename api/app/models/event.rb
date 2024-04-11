@@ -47,9 +47,9 @@ class Event < ApplicationRecord
   end
 
   # @abstract
-  # @param round [Round]
+  # @param round_number [Integer]
   # @return [Array<(Player, Player), (Player, nil)>]
-  def generate_pairings(round)
+  def generate_pairings(round_number)
     raise NotImplementedError, "#{self.class.name}#generate_pairings must be implemented"
   end
 end
