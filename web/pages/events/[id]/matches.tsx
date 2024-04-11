@@ -1,13 +1,13 @@
 import { GetServerSideProps } from 'next'
 import { useEffect, useState } from 'react'
 import { Alert, Button, ButtonToolbar, Card, OverlayTrigger, Tooltip } from 'react-bootstrap'
-import CreateRoundButton from '../../../components/CreateRoundButton'
 import EventLayout from '../../../components/EventLayout'
 import RoundList from '../../../components/RoundList'
 import { RoundViewMode } from '../../../components/RoundList/RoundListItem'
 import { DeletedFilter, EventMatchesDocument, EventMatchesQuery, EventMatchesQueryVariables, useEventMatchesQuery, useSetMatchResolutionMutation } from '../../../lib/generated/graphql'
 import { initializeApolloClient } from '../../../lib/graphql/client'
 import { NextPageWithLayout } from '../../../lib/types/next-page'
+import CreateRoundDropdown from '../../../components/CreateRoundDropdown/CreateRoundDropdown'
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   const apolloClient = initializeApolloClient()
@@ -86,7 +86,7 @@ const EventMatchesPage: NextPageWithLayout<{ id: string }> = ({ id }) => {
             }
           >
             <div>
-              <CreateRoundButton
+              <CreateRoundDropdown
                 event={data.event}
                 disabled={!allRoundsComplete}
                 onCreate={() => refetch()}

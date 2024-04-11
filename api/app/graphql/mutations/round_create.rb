@@ -11,7 +11,7 @@ module Mutations
       Round.transaction do
         super(input:).tap do |result|
           round    = result[:round]
-          pairings = event.generate_pairings(round)
+          pairings = event.generate_pairings(round.number)
           round.create_matches_from_pairings!(pairings)
         end
       end

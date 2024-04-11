@@ -1,0 +1,10 @@
+mutation CreateRound($input: RoundCreateInput!) {
+  roundCreate(input: $input) {
+    round {
+      id
+    }
+    errors {
+      ...Errors
+    } 
+  }
+}

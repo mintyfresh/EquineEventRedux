@@ -1,0 +1,22 @@
+query CreateRoundDropdownPlayers($eventId: ID!) {
+  event(id: $eventId) {
+    id
+    players(activeOnly: true) {
+      nodes {
+        id
+        ...MatchFormInputPlayer
+      }
+    }
+  }
+}
+
+mutation CreateCustomRound($input: RoundCreateCustomInput!) {
+  roundCreateCustom(input: $input) {
+    round {
+      id
+    }
+    errors {
+      ...Errors
+    }
+  }
+}

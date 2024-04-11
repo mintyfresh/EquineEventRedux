@@ -1207,6 +1207,20 @@ export type CreateCustomRoundMutationVariables = Exact<{
 
 export type CreateCustomRoundMutation = { __typename?: 'Mutation', roundCreateCustom?: { __typename?: 'RoundCreateCustomPayload', round?: { __typename?: 'Round', id: string } | null, errors?: Array<{ __typename?: 'Error', attribute: string, message: string }> | null } | null };
 
+export type CreateRoundMutationVariables = Exact<{
+  input: RoundCreateInput;
+}>;
+
+
+export type CreateRoundMutation = { __typename?: 'Mutation', roundCreate?: { __typename?: 'RoundCreatePayload', round?: { __typename?: 'Round', id: string } | null, errors?: Array<{ __typename?: 'Error', attribute: string, message: string }> | null } | null };
+
+export type CreateRoundDropdownPlayersQueryVariables = Exact<{
+  eventId: Scalars['ID'];
+}>;
+
+
+export type CreateRoundDropdownPlayersQuery = { __typename?: 'Query', event: { __typename?: 'SingleEliminationEvent', id: string, players: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string }> } } | { __typename?: 'SwissEvent', id: string, players: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string }> } } };
+
 type EventLayout_SingleEliminationEvent_Fragment = { __typename?: 'SingleEliminationEvent', name: string, id: string, slug: string, deleted: boolean };
 
 type EventLayout_SwissEvent_Fragment = { __typename?: 'SwissEvent', name: string, id: string, slug: string, deleted: boolean };
@@ -2229,6 +2243,90 @@ export function useCreateCustomRoundMutation(baseOptions?: Apollo.MutationHookOp
 export type CreateCustomRoundMutationHookResult = ReturnType<typeof useCreateCustomRoundMutation>;
 export type CreateCustomRoundMutationResult = Apollo.MutationResult<CreateCustomRoundMutation>;
 export type CreateCustomRoundMutationOptions = Apollo.BaseMutationOptions<CreateCustomRoundMutation, CreateCustomRoundMutationVariables>;
+export const CreateRoundDocument = gql`
+    mutation CreateRound($input: RoundCreateInput!) {
+  roundCreate(input: $input) {
+    round {
+      id
+    }
+    errors {
+      ...Errors
+    }
+  }
+}
+    ${ErrorsFragmentDoc}`;
+export type CreateRoundMutationFn = Apollo.MutationFunction<CreateRoundMutation, CreateRoundMutationVariables>;
+
+/**
+ * __useCreateRoundMutation__
+ *
+ * To run a mutation, you first call `useCreateRoundMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateRoundMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createRoundMutation, { data, loading, error }] = useCreateRoundMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateRoundMutation(baseOptions?: Apollo.MutationHookOptions<CreateRoundMutation, CreateRoundMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateRoundMutation, CreateRoundMutationVariables>(CreateRoundDocument, options);
+      }
+export type CreateRoundMutationHookResult = ReturnType<typeof useCreateRoundMutation>;
+export type CreateRoundMutationResult = Apollo.MutationResult<CreateRoundMutation>;
+export type CreateRoundMutationOptions = Apollo.BaseMutationOptions<CreateRoundMutation, CreateRoundMutationVariables>;
+export const CreateRoundDropdownPlayersDocument = gql`
+    query CreateRoundDropdownPlayers($eventId: ID!) {
+  event(id: $eventId) {
+    id
+    players(activeOnly: true) {
+      nodes {
+        id
+        ...MatchFormInputPlayer
+      }
+    }
+  }
+}
+    ${MatchFormInputPlayerFragmentDoc}`;
+
+/**
+ * __useCreateRoundDropdownPlayersQuery__
+ *
+ * To run a query within a React component, call `useCreateRoundDropdownPlayersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCreateRoundDropdownPlayersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useCreateRoundDropdownPlayersQuery({
+ *   variables: {
+ *      eventId: // value for 'eventId'
+ *   },
+ * });
+ */
+export function useCreateRoundDropdownPlayersQuery(baseOptions: Apollo.QueryHookOptions<CreateRoundDropdownPlayersQuery, CreateRoundDropdownPlayersQueryVariables> & ({ variables: CreateRoundDropdownPlayersQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<CreateRoundDropdownPlayersQuery, CreateRoundDropdownPlayersQueryVariables>(CreateRoundDropdownPlayersDocument, options);
+      }
+export function useCreateRoundDropdownPlayersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<CreateRoundDropdownPlayersQuery, CreateRoundDropdownPlayersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<CreateRoundDropdownPlayersQuery, CreateRoundDropdownPlayersQueryVariables>(CreateRoundDropdownPlayersDocument, options);
+        }
+export function useCreateRoundDropdownPlayersSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<CreateRoundDropdownPlayersQuery, CreateRoundDropdownPlayersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<CreateRoundDropdownPlayersQuery, CreateRoundDropdownPlayersQueryVariables>(CreateRoundDropdownPlayersDocument, options);
+        }
+export type CreateRoundDropdownPlayersQueryHookResult = ReturnType<typeof useCreateRoundDropdownPlayersQuery>;
+export type CreateRoundDropdownPlayersLazyQueryHookResult = ReturnType<typeof useCreateRoundDropdownPlayersLazyQuery>;
+export type CreateRoundDropdownPlayersSuspenseQueryHookResult = ReturnType<typeof useCreateRoundDropdownPlayersSuspenseQuery>;
+export type CreateRoundDropdownPlayersQueryResult = Apollo.QueryResult<CreateRoundDropdownPlayersQuery, CreateRoundDropdownPlayersQueryVariables>;
 export const DeleteEventDocument = gql`
     mutation DeleteEvent($id: ID!) {
   eventDelete(id: $id) {

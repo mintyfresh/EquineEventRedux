@@ -2,7 +2,7 @@ import { gql } from '@apollo/client'
 import { useMemo } from 'react'
 import { Alert, Button, ButtonGroup, ButtonToolbar, Dropdown, Form, Modal } from 'react-bootstrap'
 import { Errors } from '../lib/errors'
-import { MatchFormInputPlayerFragment, MatchInput, RoundUpdateInput, useGeneratePairingsMutation } from '../lib/generated/graphql'
+import { MatchFormInputPlayerFragment, MatchInput, RoundCreateCustomInput, RoundUpdateInput, useGeneratePairingsMutation } from '../lib/generated/graphql'
 import MatchFormInput from './MatchFormInput'
 
 gql`
@@ -32,19 +32,19 @@ const UnpairedPlayersCounter: React.FC<{ count: number }> = ({ count }) => (
   </div>
 )
 
-export interface RoundModalProps {
+export interface RoundModalProps<Input extends RoundUpdateInput | RoundCreateCustomInput> {
   title: string
   mode: 'create' | 'update'
   show: boolean
   event: { id: string }
-  round: { id: string }
-  input: RoundUpdateInput
+  round?: { id: string } | null
+  input: Input
   errors: Errors
   players: MatchFormInputPlayerFragment[]
   disabled?: boolean
 
   onHide(): void
-  onInputChange(input: RoundUpdateInput): void
+  onInputChange(input: Input): void
   onSubmit(): void
 }
 
@@ -65,7 +65,7 @@ const calculateGaps = (matches: MatchInput[]): number[] => {
   return gaps
 }
 
-const RoundModal: React.FC<RoundModalProps> = ({ title, mode, show, onHide, errors, players, disabled, event, round, input, onInputChange, onSubmit }) => {
+export default function RoundModal<Input extends RoundUpdateInput | RoundCreateCustomInput>({ title, mode, show, onHide, errors, players, disabled, event, round, input, onInputChange, onSubmit }: RoundModalProps<Input>) {
   const matches = useMemo(() => (input.matches ?? []).sort((a, b) => a.table - b.table), [input.matches])
   const gaps = useMemo(() => calculateGaps(matches), [matches])
 
@@ -235,5 +235,3 @@ const RoundModal: React.FC<RoundModalProps> = ({ title, mode, show, onHide, erro
     </Modal>
   )
 }
-
-export default RoundModal
