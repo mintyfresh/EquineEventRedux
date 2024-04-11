@@ -118,8 +118,8 @@ RSpec.describe Match do
 
   it 'prevents the players from being reassigned once the match is complete', :aggregate_failures do
     match.update!(draw: true)
-    match.player1 = create(:player, event: match.round.event)
-    match.player2 = create(:player, event: match.round.event)
+    match.player1 = create(:swiss_player, event: match.round.event)
+    match.player2 = create(:swiss_player, event: match.round.event)
     expect(match).to be_invalid
     expect(match.errors).to be_of_kind(:player1, :cannot_be_changed)
     expect(match.errors).to be_of_kind(:player2, :cannot_be_changed)
@@ -211,6 +211,21 @@ RSpec.describe Match do
     it "decreases the winner's wins-count when the match is deleted" do
       match.save!
       expect { match.destroy! }.to change { match.player1.wins_count }.by(-1)
+    end
+  end
+
+  context 'when the event is a single-elimination event' do
+    subject(:match) { build(:match, event:, player_factory: :single_elimination_player) }
+
+    let(:event) { create(:single_elimination_event) }
+
+    it 'has a valid factory' do
+      expect(match).to be_valid
+    end
+
+    it 'is invalid when marked as a draw' do
+      match.draw = true
+      expect(match).to be_invalid
     end
   end
 end

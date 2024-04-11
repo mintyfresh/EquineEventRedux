@@ -75,6 +75,11 @@ class Match < ApplicationRecord
     errors.add(:winner_id, :not_in_match) unless winner_id.in?(player_ids)
   end
 
+  validate if: :draw? do
+    # Ensure that the match is not marked as a draw if the event does not allow draws.
+    errors.add(:draw, :not_permitted) unless round.event.draws_permitted?
+  end
+
   validate if: :complete?, on: :update do
     # Prevent players from being reassigned in completed matches.
     errors.add(:player1, :cannot_be_changed) if player1_changed?

@@ -13,6 +13,10 @@ module Types
     field :deleted, Boolean, null: false
     field :deleted_at, GraphQL::Types::ISO8601DateTime, null: true
 
+    field :draws_permitted, Boolean, null: false, method: :draws_permitted? do
+      description 'Whether ties/draws are allowed in this event.'
+    end
+
     field :players, Types::PlayerConnectionType, null: false do
       extension Extensions::DeletedFilterExtension
       extension Extensions::Players::ActiveOnlyExtension

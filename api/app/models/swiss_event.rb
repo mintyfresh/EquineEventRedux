@@ -22,6 +22,11 @@
 class SwissEvent < Event
   has_many :players, class_name: 'SwissPlayer', dependent: :destroy, inverse_of: :event
 
+  # @return [Boolean]
+  def draws_permitted?
+    true
+  end
+
   # @param round_number [Integer]
   # @return [Array<(SwissPlayer, SwissPlayer), (SwissPlayer, nil)>]
   def generate_pairings(_round_number)

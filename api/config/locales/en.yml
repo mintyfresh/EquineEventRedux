@@ -16,8 +16,11 @@ en:
         match:
           attributes:
             player1:
+              not_found: is not part of this event
               same_as_player2: cannot also be Player 2
               required: must be selected
+            player2:
+              not_found: is not part of this event
         timer_preset_phase:
           attributes:
             duration_amount:

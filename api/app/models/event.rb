@@ -58,6 +58,12 @@ class Event < ApplicationRecord
   end
 
   # @abstract
+  # @return [Boolean]
+  def draws_permitted?
+    raise NotImplementedError, "#{self.class.name}#draws_permitted? must be implemented"
+  end
+
+  # @abstract
   # @param round_number [Integer]
   # @return [Array<(Player, Player), (Player, nil)>]
   def generate_pairings(round_number)

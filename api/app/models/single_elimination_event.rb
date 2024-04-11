@@ -56,6 +56,11 @@ class SingleEliminationEvent < Event
     players.length / (2**(round_number - 1))
   end
 
+  # @return [Boolean]
+  def draws_permitted?
+    false
+  end
+
   # @param round_number [Integer]
   # @return [Array<(SingleEliminationPlayer, SingleEliminationPlayer)>]
   def generate_pairings(round_number)
