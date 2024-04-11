@@ -58,6 +58,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_31_201425) do
     t.datetime "updated_at", null: false
     t.datetime "deleted_at", precision: nil
     t.string "slug", null: false
+    t.uuid "deleted_in"
     t.string "type", null: false
     t.jsonb "data", default: {}, null: false
     t.index ["name"], name: "index_events_on_name", unique: true, where: "(deleted_at IS NULL)"
@@ -98,6 +99,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_31_201425) do
     t.integer "losses_count", default: 0, null: false
     t.integer "score", default: 0, null: false
     t.integer "maximum_possible_score", default: 0, null: false
+    t.uuid "deleted_in"
     t.string "type", null: false
     t.jsonb "data", default: {}, null: false
     t.index ["event_id", "name"], name: "index_players_on_event_id_and_name", unique: true, where: "(deleted_at IS NULL)"

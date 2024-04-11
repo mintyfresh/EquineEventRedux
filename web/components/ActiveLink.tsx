@@ -1,18 +1,17 @@
 import Link, { LinkProps } from 'next/link'
-import { useRouter } from 'next/router'
+import { usePathname } from 'next/navigation'
 import React, { Children } from 'react'
 
 const ActiveLink = ({ children, ...props }: React.PropsWithChildren<LinkProps>) => {
-  const { asPath } = useRouter()
-  const active = asPath === props.href || asPath === props.as
+  const pathname = usePathname()
+  const active = pathname === props.href
+  const child = Children.only(children)
 
   if (!active) {
     return (
-      <Link {...props}>{children}</Link>
+      <Link {...props}>{child}</Link>
     )
   }
-
-  const child = Children.only(children)
 
   return (
     <Link {...props}>

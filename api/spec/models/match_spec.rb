@@ -116,6 +116,15 @@ RSpec.describe Match do
     expect(match).to be_complete
   end
 
+  it 'prevents the players from being reassigned once the match is complete', :aggregate_failures do
+    match.update!(draw: true)
+    match.player1 = create(:player, event: match.round.event)
+    match.player2 = create(:player, event: match.round.event)
+    expect(match).to be_invalid
+    expect(match.errors).to be_of_kind(:player1, :cannot_be_changed)
+    expect(match.errors).to be_of_kind(:player2, :cannot_be_changed)
+  end
+
   it 'automatically sets the round as complete if the final match is complete', :aggregate_failures do
     match.save
     create_list(:match, 2, :with_winner, round: match.round)
@@ -130,5 +139,78 @@ RSpec.describe Match do
     expect(match.round.reload).not_to be_complete
     match.destroy!
     expect(match.round).to be_complete
+  end
+
+  it "increments the winner's wins-count and the loser's losses-count when a winner is assigned" do
+    match.save!
+    winner, loser = match.players.shuffle
+    expect { match.update!(winner_id: winner.id) }.to change { winner.wins_count }.by(1)
+      .and change { loser.losses_count }.by(1)
+  end
+
+  it "decrements the winner's wins-count and the loser's losses-count when a winner is unassigned" do
+    match.save!
+    winner, loser = match.players.shuffle
+    match.update!(winner_id: winner.id)
+    expect { match.update!(winner_id: nil) }.to change { winner.wins_count }.by(-1)
+      .and change { loser.losses_count }.by(-1)
+  end
+
+  it "decreases the winner's wins-count and the loser's losses-count when the match is deleted" do
+    match.save!
+    winner, loser = match.players.shuffle
+    match.update!(winner_id: winner.id)
+    expect { match.destroy! }.to change { winner.wins_count }.by(-1)
+      .and change { loser.losses_count }.by(-1)
+  end
+
+  it "increments both players' draws-count when a match is drawn" do
+    match.save!
+    player1, player2 = match.players
+    expect { match.update!(draw: true) }.to change { player1.draws_count }.by(1)
+      .and change { player2.draws_count }.by(1)
+  end
+
+  it "decrements both players' draws-count when a match is no longer drawn" do
+    match.save!
+    player1, player2 = match.players
+    match.update!(draw: true)
+    expect { match.update!(draw: false) }.to change { player1.draws_count }.by(-1)
+      .and change { player2.draws_count }.by(-1)
+  end
+
+  it "decreases both players' draws-count when the match is deleted" do
+    match.save!
+    player1, player2 = match.players
+    match.update!(draw: true)
+    expect { match.destroy! }.to change { player1.draws_count }.by(-1)
+      .and change { player2.draws_count }.by(-1)
+  end
+
+  context 'when the match is a bye' do
+    subject(:match) { build(:match, :bye) }
+
+    it 'is valid' do
+      expect(match).to be_valid
+    end
+
+    it 'marks the match as complete' do
+      match.save!
+      expect(match).to be_complete
+    end
+
+    it 'marks the first player as the winner' do
+      match.save!
+      expect(match.winner_id).to eq(match.player1_id)
+    end
+
+    it "increments the winner's wins-count" do
+      expect { match.save! }.to change { match.player1.wins_count }.by(1)
+    end
+
+    it "decreases the winner's wins-count when the match is deleted" do
+      match.save!
+      expect { match.destroy! }.to change { match.player1.wins_count }.by(-1)
+    end
   end
 end

@@ -31,7 +31,6 @@
 #  fk_rails_...  (round_id => rounds.id)
 #
 class Match < ApplicationRecord
-  include Moonfire::Model
   include SoftDeletable
 
   attr_readonly :round_id
@@ -47,36 +46,43 @@ class Match < ApplicationRecord
   has_one :event, through: :round
   has_one :timer, dependent: :destroy, inverse_of: :match
 
+  before_validation do
+    self.player_ids = player_ids&.sort_by(&PLAYER_IDS_COMPARATOR)
+    self.winner_id  = player1_id if player2_id.nil?
+    self.complete   = winner_id.present? || draw?
+  end
+
   validates :winner_id, absence: { if: :draw? }
   validates :table, numericality: { greater_than: 0 }
 
-  validate do
-    errors.add(:player1, :same_as_player2) if player2_id.present? && player1_id == player2_id
+  validate if: -> { player1_changed? || player2_changed? } do
+    # Prevent players 1 and 2 from being the same.
+    errors.add(:player1, :same_as_player2) if player1 == player2
   end
 
-  validate if: -> { round && player1_id_changed? } do
+  validate if: -> { round && player1_changed? } do
+    # Ensure that player 1 is a member of the event.
     errors.add(:player1, :not_found) unless round.event.players.include?(player1)
   end
 
-  validate if: -> { round && player2_id_changed? } do
+  validate if: -> { round && player2_changed? } do
+    # Ensure that player 2 is a member of the event, or that it is a BYE.
     errors.add(:player2, :not_found) unless player2.nil? || round.event.players.include?(player2)
   end
 
   validate if: :winner_id? do
+    # Ensure the selected winner is actually a part of the match.
     errors.add(:winner_id, :not_in_match) unless winner_id.in?(player_ids)
   end
 
-  before_validation do
-    self.player_ids = player_ids&.sort_by(&PLAYER_IDS_COMPARATOR)
+  validate if: :complete?, on: :update do
+    # Prevent players from being reassigned in completed matches.
+    errors.add(:player1, :cannot_be_changed) if player1_changed?
+    errors.add(:player2, :cannot_be_changed) if player2_changed?
   end
 
-  before_save do
-    self.winner_id = player1_id if player2_id.nil?
-  end
-
-  before_save do
-    self.complete = winner_id.present? || draw?
-  end
+  # Recalculate the wins/losses/draws counts if the result of the match was changed.
+  after_save :recalculate_player_statistics!, if: :saved_change_to_match_result?
 
   after_save if: -> { saved_change_to_complete?(to: true) } do
     round.run_callbacks(:match_completion)
@@ -85,8 +91,6 @@ class Match < ApplicationRecord
   after_soft_delete unless: -> { round.deleted? } do
     round.run_callbacks(:match_completion)
   end
-
-  publishes_messages_on :create, :update, :destroy
 
   # @!method self.complete
   #   @return [Class<Match>]
@@ -152,5 +156,20 @@ class Match < ApplicationRecord
   # @return [Player, nil]
   def loser
     winner_id && (player1_id == winner_id ? player2 : player1)
+  end
+
+  # Determines whether the result of the match was changed by the last save.
+  # This includes the winner being assigned, the match being drawn, or the match being deleted/restored.
+  #
+  # @return [Boolean]
+  def saved_change_to_match_result?
+    saved_change_to_winner_id? || saved_change_to_draw? || saved_change_to_deleted?
+  end
+
+private
+
+  # @return [void]
+  def recalculate_player_statistics!
+    players.compact.each(&:calculate_statistics!)
   end
 end

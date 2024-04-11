@@ -2,22 +2,12 @@
 
 module Mutations
   class PlayerCreate < RecordCreate['Player']
-    field :event, Types::EventType, null: true do
-      description 'The Event that the Player was added to'
-    end
+  protected
 
-    argument :event_id, ID, required: true do
-      description 'The ID of the Event to add the Player to'
-    end
-
-    def resolve(event_id:, **arguments)
-      event = ::Event.find(event_id)
-
-      result = super(**arguments) do |player|
-        player.event = event
-      end
-
-      { **result, event: }
+    # @param input [Types::PlayerCreateInputType]
+    # @return [Player]
+    def build_record(input:)
+      input.event.players.build(input.to_h)
     end
   end
 end

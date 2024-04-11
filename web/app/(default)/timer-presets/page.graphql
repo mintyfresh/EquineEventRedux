@@ -1,0 +1,9 @@
+query TimerPresets {
+  timerPresets {
+    nodes {
+      id
+      isSystem
+      ...TimerPresetListItem
+    }
+  }
+}

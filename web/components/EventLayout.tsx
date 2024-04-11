@@ -1,16 +1,7 @@
-import { gql } from '@apollo/client'
 import Head from 'next/head'
 import { EventLayoutFragment } from '../lib/generated/graphql'
-import EventNav, { EVENT_NAV_FRAGMENT } from './EventNav'
+import EventNav from './EventNav'
 import Layout from './Layout'
-
-export const EVENT_LAYOUT_FRAGMENT = gql`
-  fragment EventLayout on Event {
-    name
-    ...EventNav
-  }
-  ${EVENT_NAV_FRAGMENT}
-`
 
 export type EventLayoutProps = React.PropsWithChildren<{ event: EventLayoutFragment }>
 

@@ -49,7 +49,11 @@ FactoryBot.define do
 
     trait :with_winner do
       draw { false }
-      winner_id { [player1, player2].compact.sample.id }
+      winner_id { players.compact.sample.id }
+    end
+
+    trait :bye do
+      player2 { nil }
     end
   end
 end

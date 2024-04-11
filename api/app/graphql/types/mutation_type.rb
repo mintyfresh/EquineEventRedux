@@ -26,6 +26,7 @@ module Types
     field :round_restore, mutation: Mutations::RoundRestore
     field :round_pause_all_timers, mutation: Mutations::RoundPauseAllTimers
     field :round_unpause_all_timers, mutation: Mutations::RoundUnpauseAllTimers
+    field :round_bulk_delete_timers, mutation: Mutations::RoundBulkDeleteTimers
 
     field :timer_create, mutation: Mutations::TimerCreate
     field :timer_update, mutation: Mutations::TimerUpdate
@@ -35,6 +36,8 @@ module Types
     field :timer_skip_to_next_phase, mutation: Mutations::TimerSkipToNextPhase
     field :timer_reset, mutation: Mutations::TimerReset
     field :timer_clone_with_extension, mutation: Mutations::TimerCloneWithExtension
+    field :timer_adjust, mutation: Mutations::TimerAdjust
+    field :timer_extend, mutation: Mutations::TimerExtend
 
     field :timer_preset_create, mutation: Mutations::TimerPresetCreate
     field :timer_preset_update, mutation: Mutations::TimerPresetUpdate

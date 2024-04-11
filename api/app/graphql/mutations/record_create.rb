@@ -64,15 +64,23 @@ module Mutations
       output_type.graphql_name.underscore.to_sym
     end
 
-    def resolve(**arguments, &)
-      input  = arguments.fetch(self.class.model_input_name)
-      record = self.class.model.new(input.to_h, &)
+    def resolve(**arguments)
+      record = build_record(**arguments)
+      yield(record) if block_given?
 
       if record.save
         { self.class.model_output_name => record }
       else
         { errors: record.errors }
       end
+    end
+
+  protected
+
+    def build_record(**arguments)
+      input = arguments.fetch(self.class.model_input_name)
+
+      self.class.model.new(input.to_h)
     end
   end
 end

@@ -3,7 +3,7 @@ import { Alert, Col, Row } from 'react-bootstrap'
 import { TimerListFragment, TimerListFragmentDoc, TimerListItemFragment, useTimerListItemCreatedSubscription, useTimerListItemDeletedSubscription, useTimerListItemUpdatedSubscription } from '../../lib/generated/graphql'
 import TimerListControlBar from './TimerListControlBar'
 import TimerListItem from './TimerListItem'
-import { useApolloClient } from '../../lib/graphql/client'
+import { useApolloClient } from '@apollo/client'
 
 const upsertTimerListItem = (timers: TimerListItemFragment[], timer: TimerListItemFragment) => {
   const index = timers.findIndex((t) => t.id === timer.id)

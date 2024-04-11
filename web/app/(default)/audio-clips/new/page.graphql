@@ -1,0 +1,11 @@
+mutation UploadAudioClip($input: AudioClipCreateInput!) {
+  audioClipCreate(input: $input) {
+    audioClip {
+      id
+      ...AudioClipListItem
+    }
+    errors {
+      ...Errors
+    }
+  }
+}

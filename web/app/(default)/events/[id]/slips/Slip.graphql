@@ -1,0 +1,26 @@
+fragment SlipEvent on Event {
+  id
+  name
+}
+
+fragment SlipRound on Round {
+  id
+  number
+}
+
+fragment SlipMatch on Match {
+  id
+  player1 {
+    id
+    name
+    score
+  }
+  player2 {
+    id
+    name
+    score
+  }
+  winnerId
+  draw
+  table
+}

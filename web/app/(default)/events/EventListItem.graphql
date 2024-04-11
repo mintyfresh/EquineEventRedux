@@ -1,0 +1,22 @@
+mutation DeleteEvent($id: ID!) {
+  eventDelete(id: $id) {
+    success
+  }
+}
+
+mutation RestoreEvent($id: ID!) {
+  eventRestore(id: $id) {
+    event {
+      id
+      ...EventListItem
+    }
+  }
+}
+
+fragment EventListItem on Event {
+  id
+  name
+  slug
+  deleted
+  createdAt
+}

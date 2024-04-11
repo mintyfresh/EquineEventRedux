@@ -1,4 +1,4 @@
-import { useSuspenseQuery } from '@apollo/client'
+import { useSuspenseQuery } from '@apollo/experimental-nextjs-app-support/ssr'
 import { useState } from 'react'
 import { ButtonGroup, Dropdown } from 'react-bootstrap'
 import { CreateRoundDropdownPlayersDocument, CreateRoundDropdownPlayersQuery, CreateRoundDropdownPlayersQueryVariables, RoundCreateCustomInput, useCreateCustomRoundMutation } from '../../lib/generated/graphql'
@@ -17,7 +17,7 @@ export default function CreateRoundDropdown({ event, disabled, onCreate }: Creat
   const [input, setInput] = useState<RoundCreateCustomInput>({ eventId: event.id })
   const [errors, setErrors] = useErrors()
 
-  const { data: { event: { players } } } = useQuery<CreateRoundDropdownPlayersQuery, CreateRoundDropdownPlayersQueryVariables>(
+  const { data: { event: { players } } } = useSuspenseQuery<CreateRoundDropdownPlayersQuery, CreateRoundDropdownPlayersQueryVariables>(
     CreateRoundDropdownPlayersDocument,
     {
       variables: { eventId: event.id }

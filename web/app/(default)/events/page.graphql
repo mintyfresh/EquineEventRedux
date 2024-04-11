@@ -1,0 +1,5 @@
+query EventsIndex($deleted: DeletedFilter) {
+  events(deleted: $deleted) {
+    ...EventList
+  }
+}

@@ -135,7 +135,7 @@ const PlayerTable: React.FC<PlayerTableProps> = ({ players, onDelete, onRestore 
         </span>
       )
     }
-  ], [onDelete])
+  ], [onDelete, onRestore])
 
   const table = useReactTable({
     data: players,

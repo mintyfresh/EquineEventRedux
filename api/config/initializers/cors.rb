@@ -8,7 +8,7 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins '*'
+    origins ENV.fetch('WEB_APP_HOME', 'http://localhost:4500')
 
     # Websocket connections
     resource '/cable',
@@ -21,6 +21,7 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
              methods: :get
 
     # ActiveStorage Disk Service
+    # (this is what actually serves file from the filesystem)
     resource '/files/disk/*',
              headers: :any,
              methods: :get

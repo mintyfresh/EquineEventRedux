@@ -1,0 +1,10 @@
+query AudioClipSelect {
+  audioClips {
+    nodes {
+      id
+      name
+      fileName
+      fileUrl
+    }
+  }
+}

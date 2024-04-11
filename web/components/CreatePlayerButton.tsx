@@ -2,16 +2,18 @@ import { gql } from '@apollo/client'
 import { useState } from 'react'
 import { Button } from 'react-bootstrap'
 import { ERRORS_FRAGMENT, useErrors } from '../lib/errors'
-import { CreatePlayerButtonFragment, PlayerInput, useCreatePlayerMutation } from '../lib/generated/graphql'
+import { CreatePlayerButtonFragment, PlayerCreateInput, useCreatePlayerMutation } from '../lib/generated/graphql'
 import PlayerModal from './PlayerModal'
 
-const defaultPlayerInput: PlayerInput = {
+const DEFAULT_INPUT: PlayerCreateInput = {
+  eventId: '',
+  name: '',
   paid: true
 }
 
 gql`
-  mutation CreatePlayer($eventID: ID!, $input: PlayerInput!) {
-    playerCreate(eventId: $eventID, input: $input) {
+  mutation CreatePlayer($input: PlayerCreateInput!) {
+    playerCreate(input: $input) {
       player {
         id
       }
@@ -36,13 +38,12 @@ export interface CreatePlayerButtonProps extends Omit<React.ComponentProps<typeo
 
 const CreatePlayerButton: React.FC<CreatePlayerButtonProps> = ({ event, onCreate, ...props }) => {
   const [showModal, setShowModal] = useState(false)
-  const [input, setInput] = useState<PlayerInput>(defaultPlayerInput)
+  const [input, setInput] = useState<PlayerCreateInput>({ ...DEFAULT_INPUT, eventId: event.id })
   const [errors, setErrors] = useErrors()
 
   const [createPlayer, { loading }] = useCreatePlayerMutation({
-    variables: { eventID: event.id, input },
+    variables: { input },
     onCompleted: ({ playerCreate }) => {
-      focus()
       setErrors(playerCreate?.errors)
 
       if (playerCreate?.player?.id) {
@@ -68,10 +69,9 @@ const CreatePlayerButton: React.FC<CreatePlayerButtonProps> = ({ event, onCreate
         errors={errors}
         disabled={loading}
         onSubmit={(createAnother, focus) => {
-          focus()
           createPlayer().then((result) => {
             if (result.data?.playerCreate?.player?.id) {
-              setShowModal(createAnother)
+              createAnother ? focus() : setShowModal(false)
             }
           })
         }}

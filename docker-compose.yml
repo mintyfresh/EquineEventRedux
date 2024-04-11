@@ -32,6 +32,8 @@ services:
     build:
       context: ./web
       dockerfile: Dockerfile
+      args:
+        - GRAPHQL_API_URL=http://api:3000/graphql
     restart: unless-stopped
     environment:
       GRAPHQL_API_URL: http://api:3000/graphql # the URL of the GraphQL API

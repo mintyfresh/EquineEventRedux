@@ -10,6 +10,7 @@
 #  updated_at :datetime         not null
 #  deleted_at :datetime
 #  slug       :string           not null
+#  deleted_in :uuid
 #  type       :string           not null
 #  data       :jsonb            not null
 #
@@ -27,7 +28,21 @@ FactoryBot.define do
         players_count { 3 }
       end
 
-      players { build_list(:player, players_count, event: instance) }
+      players do
+        build_list(:player, players_count, event: instance)
+      end
+    end
+
+    trait :with_rounds do
+      with_players
+
+      transient do
+        rounds_count { 3 }
+      end
+
+      rounds do
+        build_list(:round, rounds_count, event: instance)
+      end
     end
   end
 end

@@ -1,8 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  publicRuntimeConfig: {
-    ACTION_CABLE_URL: process.env.ACTION_CABLE_URL
+  async rewrites() {
+    return [
+      {
+        source: '/api/graphql',
+        destination: process.env.GRAPHQL_API_URL
+      }
+    ]
   }
 }
 

@@ -38,8 +38,8 @@ class Timer < ApplicationRecord
 
   strips_whitespace_from :label
 
-  has_many :phases, -> { ordered }, class_name: 'TimerPhase', dependent: :destroy, inverse_of: :timer,
-           extend: TimerPhaseable::CollectionHelpers
+  has_many :phases, -> { ordered }, autosave: true, class_name: 'TimerPhase',
+           dependent: :destroy, inverse_of: :timer, extend: TimerPhaseable::CollectionHelpers
 
   validate if: -> { match.present? } do
     # Ensure the match belongs to the timer's round.
@@ -163,6 +163,39 @@ class Timer < ApplicationRecord
   # @return [Boolean]
   def expired?(at = Time.current)
     expires_at.present? && expires_at <= at && !paused?
+  end
+
+  # Adjusts the remaining time on the timer.
+  # Does not increase or reduce the overall duration of the timer, just skips ahead or back in time.
+  #
+  # @param duration [ActiveSupport::Duration]
+  # @param at [Time] the time at which the adjustment is taking place
+  # @return [Boolean]
+  def adjust!(duration, at = Time.current)
+    return false if expired?(at)
+
+    self.expires_at += duration
+
+    save!
+  end
+
+  # Extends (or shortens) the duration of the current phase.
+  #
+  # @param duration [ActiveSupport::Duration] the amount of time to extend the phase by
+  # @param at [Time] the time at which the extension is taking place
+  # @return [Boolean]
+  def extend!(duration, at = Time.current)
+    return false if expired?(at)
+
+    # ensure there is a phase to extend
+    phase = current_phase(at)
+    return false if phase.nil?
+
+    # add the extension and adjust the expiry to match
+    phase.extension_in_seconds += duration.to_i
+    self.expires_at += duration
+
+    save!
   end
 
   # Checks if the timer is paused.

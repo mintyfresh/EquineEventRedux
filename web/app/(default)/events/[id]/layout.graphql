@@ -1,0 +1,12 @@
+query EventLayout($id: ID!) {
+  event(id: $id) {
+    ...EventLayout
+  }
+}
+
+fragment EventLayout on Event {
+  id
+  name
+  slug
+  deleted
+}

@@ -1,25 +1,34 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Button, Form, Modal } from 'react-bootstrap'
 import { Errors } from '../lib/errors'
-import { PlayerInput } from '../lib/generated/graphql'
+import { PlayerCreateInput, PlayerInput } from '../lib/generated/graphql'
 import FormControlErrors from './Form/FormControlErrors'
 
-export interface PlayerModalProps {
+export interface PlayerModalProps<Input extends PlayerInput | PlayerCreateInput> {
   title: string
   mode: 'create' | 'update'
   show: boolean
   disabled: boolean
-  input: PlayerInput
+  input: Input
   errors: Errors
   onHide: () => void
-  onChange: (input: PlayerInput) => void
+  onChange: (input: Input) => void
   onSubmit: (createAnother: boolean, focus: () => void) => void
 }
 
-const PlayerModal: React.FC<PlayerModalProps> = ({ title, mode, show, disabled, input, errors, onHide, onChange, onSubmit }) => {
+export default function PlayerModal<Input extends PlayerInput | PlayerCreateInput>({ title, mode, show, disabled, input, errors, onHide, onChange, onSubmit }: PlayerModalProps<Input>) {
   const nameRef = useRef<HTMLInputElement>(null)
 
+  const [focusName, setFocusName] = useState(false)
   const [createAnother, setCreateAnother] = useState(false)
+
+  // Focus name on next update if requested
+  useEffect(() => {
+    if (focusName) {
+      nameRef.current?.focus()
+      setFocusName(false)
+    }
+  }, [focusName])
 
   return (
     <Modal
@@ -32,7 +41,7 @@ const PlayerModal: React.FC<PlayerModalProps> = ({ title, mode, show, disabled, 
       </Modal.Header>
       <Form onSubmit={(event) => {
         event.preventDefault()
-        onSubmit(createAnother, () => nameRef.current?.focus())
+        onSubmit(createAnother, () => setFocusName(true))
       }}>
         <Modal.Body>
           <Form.Group className="mb-3">
@@ -91,5 +100,3 @@ const PlayerModal: React.FC<PlayerModalProps> = ({ title, mode, show, disabled, 
     </Modal>
   )
 }
-
-export default PlayerModal

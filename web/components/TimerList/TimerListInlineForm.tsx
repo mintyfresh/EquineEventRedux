@@ -12,7 +12,7 @@ const TimerListInlineForm: React.FC<TimerListInlineFormProps> = ({ roundId, onCr
   const [input, setInput] = useState<TimerCreateInput | null>(null)
   const { data } = useTimerListInlineFormPresetsQuery({
     onCompleted: ({ timerPresets }) => {
-      setInput((input) => input ?? { presetId: timerPresets.nodes[0]?.id ?? '' })
+      setInput((input) => input ?? { presetId: timerPresets.nodes[0]?.id ?? '', roundId })
     }
   })
 
@@ -28,7 +28,7 @@ const TimerListInlineForm: React.FC<TimerListInlineFormProps> = ({ roundId, onCr
     <Form
       onSubmit={(event) => {
         event.preventDefault()
-        createTimer({ variables: { roundId, input: input! } })
+        createTimer({ variables: { input: input! } })
       }}
     >
       <Row>
@@ -38,7 +38,7 @@ const TimerListInlineForm: React.FC<TimerListInlineFormProps> = ({ roundId, onCr
             <TimerPresetSelect
               timerPresets={data?.timerPresets.nodes ?? []}
               selected={input?.presetId ?? ''}
-              onChange={(preset) => setInput({ ...input, presetId: preset.id })}
+              onChange={(preset) => setInput({ ...input, presetId: preset.id, roundId })}
             />
           </InputGroup>
         </Col>

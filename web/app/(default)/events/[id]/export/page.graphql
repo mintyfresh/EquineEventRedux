@@ -1,0 +1,39 @@
+query EventExport($id: ID!) {
+  event(id: $id) {
+    id
+    ...EventLayout
+    players(orderBy: SCORE, orderByDirection: DESC) {
+      nodes {
+        id
+        name
+        score
+        winsCount
+        lossesCount
+        drawsCount
+        opponentWinRate
+      }
+    }
+    rounds(orderBy: NUMBER, orderByDirection: DESC) {
+      id
+      number
+      matches {
+        id
+        table
+        player1 {
+          id
+          name
+          winsCount
+          lossesCount
+          drawsCount
+        }
+        player2 {
+          id
+          name
+          winsCount
+          lossesCount
+          drawsCount
+        }
+      }
+    }
+  }
+}
