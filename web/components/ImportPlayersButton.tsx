@@ -17,7 +17,7 @@ const SOURCE_EVENT_FOR_IMPORT_FRAGMENT = gql`
     id
     name
     deleted
-    players {
+    players(orderBy: SCORE, orderByDirection: DESC) {
       nodes {
         ...PlayerForImport
       }
@@ -113,6 +113,14 @@ const ImportPlayersButton: React.FC<ImportPlayersButtonProps> = ({ event, onImpo
     }
   }
 
+  const selectAll = () => {
+    setSelectedPlayers(sourceEvent?.players.nodes ?? [])
+  }
+
+  const selectNone = () => {
+    setSelectedPlayers([])
+  }
+
   return (
     <>
       <Button
@@ -164,18 +172,19 @@ const ImportPlayersButton: React.FC<ImportPlayersButtonProps> = ({ event, onImpo
                 )}
               </Form.Select>
             </Form.Group>
-            <Form.Group className="mb-3">
+            <Form.Group>
               {sourceEvent && (
                 <>
                   <Form.Label>
                     Players to Import
                   </Form.Label>
-                  {sourceEvent.players.nodes.map((player) => (
+                  {sourceEvent.players.nodes.map((player, index) => (
                     <Form.Check
                       key={player.id}
                       id={`player-check-${player.id}`}
                       label={(
                         <>
+                          #{index + 1} -{' '}
                           {player.name}
                           {player.deleted && <PlayerDeletedBadge className="ms-1" />}
                         </>
@@ -185,6 +194,17 @@ const ImportPlayersButton: React.FC<ImportPlayersButtonProps> = ({ event, onImpo
                       disabled={playerAlreadyExists(player)}
                     />
                   ))}
+                  <p className="mb-2">
+                    {selectedPlayers.length} players selected
+                  </p>
+                  <div>
+                    <Button size="sm" onClick={selectAll}>
+                      Select all
+                    </Button>
+                    <Button size="sm" onClick={selectNone} className="ms-2">
+                      Select none
+                    </Button>
+                  </div>
                 </>
               )}
             </Form.Group>

@@ -1833,7 +1833,7 @@ export const SourceEventForImportFragmentDoc = gql`
   id
   name
   deleted
-  players {
+  players(orderBy: SCORE, orderByDirection: DESC) {
     nodes {
       ...PlayerForImport
     }
