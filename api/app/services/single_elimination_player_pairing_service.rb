@@ -4,7 +4,7 @@ class SingleEliminationPlayerPairingService
   # @param event [SingleEliminationEvent]
   def initialize(event)
     @event   = event
-    @players = event.players.order_by_swiss_ranking.to_a
+    @players = event.players.active.order_by_swiss_ranking.to_a
 
     # check if the number of players is a power of 2
     return if (base = Math.log2(@players.count)).round == base
