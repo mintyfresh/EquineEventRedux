@@ -39,6 +39,13 @@ module SoftDeletable
   end
 
   # @return [Boolean]
+  def not_deleted
+    !deleted
+  end
+
+  alias not_deleted? not_deleted
+
+  # @return [Boolean]
   def deleted_was
     deleted_at_was.present?
   end

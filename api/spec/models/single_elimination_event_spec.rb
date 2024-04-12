@@ -29,23 +29,13 @@ RSpec.describe SingleEliminationEvent do
       .and be_a(described_class)
   end
 
-  it 'is invalid without a swiss event' do
-    event.swiss_event_id = nil
-    expect(event).to be_invalid
-  end
-
   it 'is invalid without a pairing mode' do
     event.pairing_mode = nil
     expect(event).to be_invalid
   end
 
-  it 'is invalid without players' do
-    event.players = []
-    expect(event).to be_invalid
-  end
-
-  it 'is invalid with a non-power-of-2 number of players' do
-    event.players << build(:single_elimination_player, event:)
+  it 'is invalid with an unknown pairing mode' do
+    event.pairing_mode = 'unknown'
     expect(event).to be_invalid
   end
 end

@@ -22,16 +22,19 @@
 FactoryBot.define do
   factory :single_elimination_event, class: 'SingleEliminationEvent', parent: :event do
     type { 'SingleEliminationEvent' }
-    swiss_event_id { SecureRandom.uuid }
-    players { build_list(:single_elimination_player, players_count, event: instance) }
     pairing_mode { SingleEliminationEvent::PAIRING_MODES.sample }
+    with_players
 
     transient do
       players_count { 8 }
     end
 
     trait :with_players do
-      players { build_list(:single_elimination_player, players_count, event: instance) }
+      players do
+        Array.new(players_count) do |index|
+          build(:single_elimination_player, event: instance, swiss_ranking: index + 1)
+        end
+      end
     end
   end
 end

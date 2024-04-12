@@ -4,8 +4,6 @@ module Types
   class SingleEliminationEventType < BaseObject
     implements Types::EventType
 
-    field :swiss_event_id, ID, null: false
-    field :swiss_event, Types::SwissEventType, null: false
     field :pairing_mode, Types::SingleEliminationPairingModeType, null: false
 
     field :maximum_number_of_rounds, Integer, null: false do
@@ -20,15 +18,17 @@ module Types
       end
     end
 
-    # @return [::SwissEvent]
-    def swiss_event
-      dataloader.with(Sources::Record, ::SwissEvent).load(object.swiss_event_id)
+    # @return [Integer]
+    def maximum_number_of_rounds
+      # preload the players association to avoid COUNT queries
+      players && object.maximum_number_of_rounds
     end
 
     # @param round_number [Integer]
     # @return [Integer]
     def number_of_players_in_round(round_number:)
-      object.number_of_players_in_round(round_number)
+      # preload the players association to avoid COUNT queries
+      players && object.number_of_players_in_round(round_number)
     rescue ArgumentError => error
       # handle non-positive round numbers
       raise GraphQL::ExecutionError, error.message

@@ -22,26 +22,26 @@
 class SingleEliminationEvent < Event
   PAIRING_MODES = %w[top_to_bottom sequential].freeze
 
-  store_accessor :data, :swiss_event_id, :pairing_mode
+  store_accessor :data, :pairing_mode
 
   has_many :players, class_name: 'SingleEliminationPlayer', dependent: :destroy, inverse_of: :event
 
-  validates :swiss_event_id, presence: true
   validates :pairing_mode, inclusion: { in: PAIRING_MODES }
-  validates :players, presence: true
 
-  validate on: :create, if: -> { players.any? } do
-    # ensure that the number of players is a power of two so that we can pair them up
-    if (base = Math.log2(players.length)).round != base
-      errors.add(:players, :must_be_power_of_two, count: players.length, lower: 2**base.floor, upper: 2**base.ceil)
-    end
+  # The number of players in the event.
+  #
+  # @return [Integer]
+  def active_players_count
+    players.loaded? ? players.count(&:active?) : players.active.count
   end
 
   # The maximum number of rounds that can be played in this event.
   #
   # @return [Integer]
   def maximum_number_of_rounds
-    Math.log2(players.length).to_i
+    # round up to the nearest integer
+    # additional rounds are added to the event to accommodate byes
+    Math.log2(active_players_count).ceil
   end
 
   # The number of players in a given round.
@@ -53,7 +53,14 @@ class SingleEliminationEvent < Event
     round_number.positive? or
       raise ArgumentError, 'round_number must be positive'
 
-    players.length / (2**(round_number - 1))
+    # the total number of player "slots" in the event, including byes
+    # these are added to pad the players list to be a power of 2
+    total_player_slots_count = 2**maximum_number_of_rounds
+
+    players_in_round = total_player_slots_count / (2**(round_number - 1))
+    players_in_round = active_players_count if players_in_round > active_players_count
+
+    players_in_round
   end
 
   # @return [Boolean]
