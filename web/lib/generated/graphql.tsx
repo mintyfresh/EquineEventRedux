@@ -1429,22 +1429,9 @@ type EventNav_SwissEvent_Fragment = { __typename?: 'SwissEvent', id: string, slu
 
 export type EventNavFragment = EventNav_SingleEliminationEvent_Fragment | EventNav_SwissEvent_Fragment;
 
-export type PlayerForImportFragment = { __typename?: 'Player', id: string, name: string, deleted: boolean };
+type ImportPlayersButton_SingleEliminationEvent_Fragment = { __typename?: 'SingleEliminationEvent', id: string, name: string, allPlayers: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, deleted: boolean }> } };
 
-type SourceEventForImport_SingleEliminationEvent_Fragment = { __typename?: 'SingleEliminationEvent', id: string, name: string, deleted: boolean, players: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, deleted: boolean }> } };
-
-type SourceEventForImport_SwissEvent_Fragment = { __typename?: 'SwissEvent', id: string, name: string, deleted: boolean, players: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, deleted: boolean }> } };
-
-export type SourceEventForImportFragment = SourceEventForImport_SingleEliminationEvent_Fragment | SourceEventForImport_SwissEvent_Fragment;
-
-export type SourceEventsForImportQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type SourceEventsForImportQuery = { __typename?: 'Query', events: { __typename?: 'EventConnection', nodes: Array<{ __typename?: 'SingleEliminationEvent', id: string, name: string, deleted: boolean, players: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, deleted: boolean }> } } | { __typename?: 'SwissEvent', id: string, name: string, deleted: boolean, players: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, deleted: boolean }> } }> } };
-
-type ImportPlayersButton_SingleEliminationEvent_Fragment = { __typename?: 'SingleEliminationEvent', id: string, allPlayers: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, deleted: boolean }> } };
-
-type ImportPlayersButton_SwissEvent_Fragment = { __typename?: 'SwissEvent', id: string, allPlayers: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, deleted: boolean }> } };
+type ImportPlayersButton_SwissEvent_Fragment = { __typename?: 'SwissEvent', id: string, name: string, allPlayers: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, deleted: boolean }> } };
 
 export type ImportPlayersButtonFragment = ImportPlayersButton_SingleEliminationEvent_Fragment | ImportPlayersButton_SwissEvent_Fragment;
 
@@ -1453,9 +1440,33 @@ export type ImportPlayersMutationVariables = Exact<{
 }>;
 
 
-export type ImportPlayersMutation = { __typename?: 'Mutation', playerImportBulk?: { __typename?: 'PlayerImportBulkPayload', event?: { __typename?: 'SingleEliminationEvent', id: string, allPlayers: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, deleted: boolean }> } } | { __typename?: 'SwissEvent', id: string, allPlayers: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, deleted: boolean }> } } | null } | null };
+export type ImportPlayersMutation = { __typename?: 'Mutation', playerImportBulk?: { __typename?: 'PlayerImportBulkPayload', event?: { __typename?: 'SingleEliminationEvent', id: string, name: string, allPlayers: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, deleted: boolean }> } } | { __typename?: 'SwissEvent', id: string, name: string, allPlayers: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, deleted: boolean }> } } | null } | null };
 
 export type MatchFormInputPlayerFragment = { __typename?: 'Player', id: string, name: string };
+
+export type PlayerImportModalEventListQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type PlayerImportModalEventListQuery = { __typename?: 'Query', events: { __typename?: 'EventConnection', nodes: Array<{ __typename?: 'SingleEliminationEvent', id: string, name: string, humanType: string, deleted: boolean } | { __typename?: 'SwissEvent', id: string, name: string, humanType: string, deleted: boolean }> } };
+
+export type PlayerImportModelEventPlayersQueryVariables = Exact<{
+  eventId: Scalars['ID']['input'];
+}>;
+
+
+export type PlayerImportModelEventPlayersQuery = { __typename?: 'Query', event: { __typename?: 'SingleEliminationEvent', id: string, players: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, deleted: boolean }> } } | { __typename?: 'SwissEvent', id: string, players: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, deleted: boolean }> } } };
+
+type PlayerImportModalEvent_SingleEliminationEvent_Fragment = { __typename?: 'SingleEliminationEvent', id: string, name: string, allPlayers: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, deleted: boolean }> } };
+
+type PlayerImportModalEvent_SwissEvent_Fragment = { __typename?: 'SwissEvent', id: string, name: string, allPlayers: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, deleted: boolean }> } };
+
+export type PlayerImportModalEventFragment = PlayerImportModalEvent_SingleEliminationEvent_Fragment | PlayerImportModalEvent_SwissEvent_Fragment;
+
+type PlayerImportModalEventListItem_SingleEliminationEvent_Fragment = { __typename?: 'SingleEliminationEvent', id: string, name: string, humanType: string, deleted: boolean };
+
+type PlayerImportModalEventListItem_SwissEvent_Fragment = { __typename?: 'SwissEvent', id: string, name: string, humanType: string, deleted: boolean };
+
+export type PlayerImportModalEventListItemFragment = PlayerImportModalEventListItem_SingleEliminationEvent_Fragment | PlayerImportModalEventListItem_SwissEvent_Fragment;
 
 export type PlayerSelectListItemFragment = { __typename?: 'Player', id: string, name: string, deleted: boolean };
 
@@ -1823,10 +1834,30 @@ export const EventNavFragmentDoc = gql`
   deleted
 }
     `;
-export const PlayerForImportFragmentDoc = gql`
-    fragment PlayerForImport on Player {
+export const PlayerImportModalEventFragmentDoc = gql`
+    fragment PlayerImportModalEvent on Event {
   id
   name
+  allPlayers: players {
+    nodes {
+      id
+      name
+      deleted
+    }
+  }
+}
+    `;
+export const ImportPlayersButtonFragmentDoc = gql`
+    fragment ImportPlayersButton on Event {
+  id
+  ...PlayerImportModalEvent
+}
+    ${PlayerImportModalEventFragmentDoc}`;
+export const PlayerImportModalEventListItemFragmentDoc = gql`
+    fragment PlayerImportModalEventListItem on Event {
+  id
+  name
+  humanType
   deleted
 }
     `;
@@ -1835,32 +1866,6 @@ export const PlayerSelectListItemFragmentDoc = gql`
   id
   name
   deleted
-}
-    `;
-export const SourceEventForImportFragmentDoc = gql`
-    fragment SourceEventForImport on Event {
-  id
-  name
-  deleted
-  players(orderBy: SCORE, orderByDirection: DESC) {
-    nodes {
-      ...PlayerForImport
-      ...PlayerSelectListItem
-    }
-  }
-}
-    ${PlayerForImportFragmentDoc}
-${PlayerSelectListItemFragmentDoc}`;
-export const ImportPlayersButtonFragmentDoc = gql`
-    fragment ImportPlayersButton on Event {
-  id
-  allPlayers: players {
-    nodes {
-      id
-      name
-      deleted
-    }
-  }
 }
     `;
 export const PlayerNameWithBadgesFragmentDoc = gql`
@@ -3181,47 +3186,6 @@ export function useCreateCustomRoundMutation(baseOptions?: Apollo.MutationHookOp
 export type CreateCustomRoundMutationHookResult = ReturnType<typeof useCreateCustomRoundMutation>;
 export type CreateCustomRoundMutationResult = Apollo.MutationResult<CreateCustomRoundMutation>;
 export type CreateCustomRoundMutationOptions = Apollo.BaseMutationOptions<CreateCustomRoundMutation, CreateCustomRoundMutationVariables>;
-export const SourceEventsForImportDocument = gql`
-    query SourceEventsForImport {
-  events {
-    nodes {
-      ...SourceEventForImport
-    }
-  }
-}
-    ${SourceEventForImportFragmentDoc}`;
-
-/**
- * __useSourceEventsForImportQuery__
- *
- * To run a query within a React component, call `useSourceEventsForImportQuery` and pass it any options that fit your needs.
- * When your component renders, `useSourceEventsForImportQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useSourceEventsForImportQuery({
- *   variables: {
- *   },
- * });
- */
-export function useSourceEventsForImportQuery(baseOptions?: Apollo.QueryHookOptions<SourceEventsForImportQuery, SourceEventsForImportQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<SourceEventsForImportQuery, SourceEventsForImportQueryVariables>(SourceEventsForImportDocument, options);
-      }
-export function useSourceEventsForImportLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SourceEventsForImportQuery, SourceEventsForImportQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<SourceEventsForImportQuery, SourceEventsForImportQueryVariables>(SourceEventsForImportDocument, options);
-        }
-export function useSourceEventsForImportSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<SourceEventsForImportQuery, SourceEventsForImportQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<SourceEventsForImportQuery, SourceEventsForImportQueryVariables>(SourceEventsForImportDocument, options);
-        }
-export type SourceEventsForImportQueryHookResult = ReturnType<typeof useSourceEventsForImportQuery>;
-export type SourceEventsForImportLazyQueryHookResult = ReturnType<typeof useSourceEventsForImportLazyQuery>;
-export type SourceEventsForImportSuspenseQueryHookResult = ReturnType<typeof useSourceEventsForImportSuspenseQuery>;
-export type SourceEventsForImportQueryResult = Apollo.QueryResult<SourceEventsForImportQuery, SourceEventsForImportQueryVariables>;
 export const ImportPlayersDocument = gql`
     mutation ImportPlayers($input: PlayerImportBulkInput!) {
   playerImportBulk(input: $input) {
@@ -3258,6 +3222,92 @@ export function useImportPlayersMutation(baseOptions?: Apollo.MutationHookOption
 export type ImportPlayersMutationHookResult = ReturnType<typeof useImportPlayersMutation>;
 export type ImportPlayersMutationResult = Apollo.MutationResult<ImportPlayersMutation>;
 export type ImportPlayersMutationOptions = Apollo.BaseMutationOptions<ImportPlayersMutation, ImportPlayersMutationVariables>;
+export const PlayerImportModalEventListDocument = gql`
+    query PlayerImportModalEventList {
+  events {
+    nodes {
+      ...PlayerImportModalEventListItem
+    }
+  }
+}
+    ${PlayerImportModalEventListItemFragmentDoc}`;
+
+/**
+ * __usePlayerImportModalEventListQuery__
+ *
+ * To run a query within a React component, call `usePlayerImportModalEventListQuery` and pass it any options that fit your needs.
+ * When your component renders, `usePlayerImportModalEventListQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = usePlayerImportModalEventListQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function usePlayerImportModalEventListQuery(baseOptions?: Apollo.QueryHookOptions<PlayerImportModalEventListQuery, PlayerImportModalEventListQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<PlayerImportModalEventListQuery, PlayerImportModalEventListQueryVariables>(PlayerImportModalEventListDocument, options);
+      }
+export function usePlayerImportModalEventListLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<PlayerImportModalEventListQuery, PlayerImportModalEventListQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<PlayerImportModalEventListQuery, PlayerImportModalEventListQueryVariables>(PlayerImportModalEventListDocument, options);
+        }
+export function usePlayerImportModalEventListSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<PlayerImportModalEventListQuery, PlayerImportModalEventListQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<PlayerImportModalEventListQuery, PlayerImportModalEventListQueryVariables>(PlayerImportModalEventListDocument, options);
+        }
+export type PlayerImportModalEventListQueryHookResult = ReturnType<typeof usePlayerImportModalEventListQuery>;
+export type PlayerImportModalEventListLazyQueryHookResult = ReturnType<typeof usePlayerImportModalEventListLazyQuery>;
+export type PlayerImportModalEventListSuspenseQueryHookResult = ReturnType<typeof usePlayerImportModalEventListSuspenseQuery>;
+export type PlayerImportModalEventListQueryResult = Apollo.QueryResult<PlayerImportModalEventListQuery, PlayerImportModalEventListQueryVariables>;
+export const PlayerImportModelEventPlayersDocument = gql`
+    query PlayerImportModelEventPlayers($eventId: ID!) {
+  event(id: $eventId) {
+    id
+    players(orderBy: SCORE, orderByDirection: DESC) {
+      nodes {
+        ...PlayerSelectListItem
+      }
+    }
+  }
+}
+    ${PlayerSelectListItemFragmentDoc}`;
+
+/**
+ * __usePlayerImportModelEventPlayersQuery__
+ *
+ * To run a query within a React component, call `usePlayerImportModelEventPlayersQuery` and pass it any options that fit your needs.
+ * When your component renders, `usePlayerImportModelEventPlayersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = usePlayerImportModelEventPlayersQuery({
+ *   variables: {
+ *      eventId: // value for 'eventId'
+ *   },
+ * });
+ */
+export function usePlayerImportModelEventPlayersQuery(baseOptions: Apollo.QueryHookOptions<PlayerImportModelEventPlayersQuery, PlayerImportModelEventPlayersQueryVariables> & ({ variables: PlayerImportModelEventPlayersQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<PlayerImportModelEventPlayersQuery, PlayerImportModelEventPlayersQueryVariables>(PlayerImportModelEventPlayersDocument, options);
+      }
+export function usePlayerImportModelEventPlayersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<PlayerImportModelEventPlayersQuery, PlayerImportModelEventPlayersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<PlayerImportModelEventPlayersQuery, PlayerImportModelEventPlayersQueryVariables>(PlayerImportModelEventPlayersDocument, options);
+        }
+export function usePlayerImportModelEventPlayersSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<PlayerImportModelEventPlayersQuery, PlayerImportModelEventPlayersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<PlayerImportModelEventPlayersQuery, PlayerImportModelEventPlayersQueryVariables>(PlayerImportModelEventPlayersDocument, options);
+        }
+export type PlayerImportModelEventPlayersQueryHookResult = ReturnType<typeof usePlayerImportModelEventPlayersQuery>;
+export type PlayerImportModelEventPlayersLazyQueryHookResult = ReturnType<typeof usePlayerImportModelEventPlayersLazyQuery>;
+export type PlayerImportModelEventPlayersSuspenseQueryHookResult = ReturnType<typeof usePlayerImportModelEventPlayersSuspenseQuery>;
+export type PlayerImportModelEventPlayersQueryResult = Apollo.QueryResult<PlayerImportModelEventPlayersQuery, PlayerImportModelEventPlayersQueryVariables>;
 export const EditPlayerDocument = gql`
     mutation EditPlayer($id: ID!, $input: PlayerInput!) {
   playerUpdate(id: $id, input: $input) {

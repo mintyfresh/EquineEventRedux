@@ -1,0 +1,37 @@
+query PlayerImportModalEventList {
+  events {
+    nodes {
+      ...PlayerImportModalEventListItem
+    }
+  }
+}
+
+query PlayerImportModelEventPlayers($eventId: ID!) {
+  event(id: $eventId) {
+    id
+    players(orderBy: SCORE, orderByDirection: DESC) {
+      nodes {
+        ...PlayerSelectListItem
+      }
+    }
+  }
+}
+
+fragment PlayerImportModalEvent on Event {
+  id
+  name
+  allPlayers: players {
+    nodes {
+      id
+      name
+      deleted
+    }
+  }
+}
+
+fragment PlayerImportModalEventListItem on Event {
+  id
+  name
+  humanType
+  deleted
+}
