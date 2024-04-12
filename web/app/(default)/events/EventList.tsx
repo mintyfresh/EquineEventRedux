@@ -1,5 +1,5 @@
 import { ListGroup } from 'react-bootstrap'
-import { EventListFragment, EventListItemFragment } from '../../../lib/generated/graphql'
+import { EventListItemFragment } from '../../../lib/generated/graphql'
 import EventListItem from './EventListItem'
 
 export interface EventListProps {
@@ -9,7 +9,7 @@ export interface EventListProps {
 }
 
 export default function EventList({ events, onDelete, onRestore }: EventListProps) {
-    return (
+  return (
     <ListGroup>
       {events.map((event) => (
         <EventListItem

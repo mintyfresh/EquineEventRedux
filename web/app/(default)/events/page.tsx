@@ -35,14 +35,16 @@ export default function EventsIndexPage() {
           {deleted ? 'Hide' : 'Show'} deleted
         </Button>
       </ButtonToolbar>
-      <EventList
-        events={data.events.nodes}
-      />
-      {data.events.nodes.length === 0 && (
-        <Card body>
-          <Card.Text>No {deleted && 'deleted'} events found.</Card.Text>
-        </Card>
-      )}
+      <div className="mb-5">
+        <EventList
+          events={data.events.nodes}
+        />
+        {data.events.nodes.length === 0 && (
+          <Card body>
+            <Card.Text>No {deleted && 'deleted'} events found.</Card.Text>
+          </Card>
+        )}
+      </div>
     </>
   )
 }
