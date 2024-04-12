@@ -50,12 +50,14 @@ const RoundListItemMatchList: React.FC<RoundListItemMatchListProps> = ({ round, 
               >
                 Select {match.player2.name} as winner
               </Dropdown.Item>
-              <Dropdown.Item
-                disabled={disabled || match.draw}
-                onClick={() => onSetDraw?.(match.id)}
-              >
-                Mark as a draw
-              </Dropdown.Item>
+              {match.drawPermitted && (
+                <Dropdown.Item
+                  disabled={disabled || match.draw}
+                  onClick={() => onSetDraw?.(match.id)}
+                >
+                  Mark as a draw
+                </Dropdown.Item>
+              )}
             </EllipsisDropdown>
           )}
         </ListGroup.Item>

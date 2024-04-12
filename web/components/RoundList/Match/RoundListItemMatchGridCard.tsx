@@ -63,12 +63,16 @@ const MatchCardDivider: React.FC<MatchCardDividerProps> = ({ match, disabled, on
       onClick={() => !disabled && onSetDraw?.(match.id)}
     >
       <Col><hr /></Col>
-      <Col xs="auto" className="my-auto">
-        <h5 className={match.draw ? 'text-danger' : undefined}>
-          {match.draw ? '<< TIE >>' : 'TIE'}
-        </h5>
-      </Col>
-      <Col><hr /></Col>
+      {match.drawPermitted && (
+        <>
+          <Col xs="auto" className="my-auto">
+            <h5 className={match.draw ? 'text-danger' : undefined}>
+              {match.draw ? '<< TIE >>' : 'TIE'}
+            </h5>
+          </Col>
+          <Col><hr /></Col>
+        </>
+      )}
     </Row>
   )
 }

@@ -77,7 +77,7 @@ class Match < ApplicationRecord
 
   validate if: :draw? do
     # Ensure that the match is not marked as a draw if the event does not allow draws.
-    errors.add(:draw, :not_permitted) unless round.event.draws_permitted?
+    errors.add(:base, :draw_not_permitted) unless round.event.draws_permitted?
   end
 
   validate if: :complete?, on: :update do

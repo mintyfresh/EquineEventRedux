@@ -22,5 +22,6 @@ fragment RoundListItemMatchListItem on Match {
   }
   winnerId
   draw
+  drawPermitted
   table
 }

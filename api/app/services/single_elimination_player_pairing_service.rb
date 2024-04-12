@@ -42,7 +42,7 @@ private
   # @param round_number [Integer]
   # @return [Array<(SingleEliminationPlayer, SingleEliminationPlayer)>, nil]
   def extract_pairings_from_round(round_number)
-    @event.rounds.non_deleted.preload(:player1, :player2).find_by(number: round_number)&.pairings
+    @event.rounds.non_deleted.preload(matches: %i[player1 player2]).find_by(number: round_number)&.pairings
   end
 
   # Generates the initial list of pairings based on the event's pairing mode.

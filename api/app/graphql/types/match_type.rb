@@ -7,14 +7,20 @@ module Types
     field :player1_id, ID, null: false
     field :player2_id, ID, null: true
     field :winner_id, ID
-    field :draw, Boolean, null: false
     field :table, Integer, null: false
+    field :draw, Boolean, null: false
+    field :draw_permitted, Boolean, null: false, resolver_method: :draw_permitted?
 
     field :player1, Types::PlayerType, null: false
     field :player2, Types::PlayerType, null: true
 
     field :round, Types::RoundType, null: false
     field :timer, Types::TimerType, null: true
+
+    # @return [Boolean]
+    def draw_permitted?
+      dataloader.with(Sources::Association, ::Match, :event).load(object).draws_permitted?
+    end
 
     # @return [::Player]
     def player1

@@ -3,6 +3,7 @@ fragment RoundListItemMatchGridCard on Match {
   table
   winnerId
   draw
+  drawPermitted
   player1 {
     id
     name
