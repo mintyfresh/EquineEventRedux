@@ -1457,6 +1457,8 @@ export type ImportPlayersMutation = { __typename?: 'Mutation', playerImportBulk?
 
 export type MatchFormInputPlayerFragment = { __typename?: 'Player', id: string, name: string };
 
+export type PlayerSelectListItemFragment = { __typename?: 'Player', id: string, name: string, deleted: boolean };
+
 export type PlayerTableFragment = { __typename?: 'Player', id: string, name: string, winsCount: number, drawsCount: number, lossesCount: number, score: number, opponentWinRate: number, paid: boolean, dropped: boolean, deleted: boolean };
 
 export type EditPlayerDropdownItemFragment = { __typename?: 'Player', id: string, name: string, paid: boolean, dropped: boolean };
@@ -1828,6 +1830,13 @@ export const PlayerForImportFragmentDoc = gql`
   deleted
 }
     `;
+export const PlayerSelectListItemFragmentDoc = gql`
+    fragment PlayerSelectListItem on Player {
+  id
+  name
+  deleted
+}
+    `;
 export const SourceEventForImportFragmentDoc = gql`
     fragment SourceEventForImport on Event {
   id
@@ -1836,10 +1845,12 @@ export const SourceEventForImportFragmentDoc = gql`
   players(orderBy: SCORE, orderByDirection: DESC) {
     nodes {
       ...PlayerForImport
+      ...PlayerSelectListItem
     }
   }
 }
-    ${PlayerForImportFragmentDoc}`;
+    ${PlayerForImportFragmentDoc}
+${PlayerSelectListItemFragmentDoc}`;
 export const ImportPlayersButtonFragmentDoc = gql`
     fragment ImportPlayersButton on Event {
   id

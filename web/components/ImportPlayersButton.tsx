@@ -1,16 +1,9 @@
 import { gql } from '@apollo/client'
 import { useEffect, useState } from 'react'
 import { Button, Form, Modal } from 'react-bootstrap'
-import { ImportPlayersButtonFragment, PlayerForImportFragment, SourceEventForImportFragment, useImportPlayersMutation, useSourceEventsForImportLazyQuery } from '../lib/generated/graphql'
+import { ImportPlayersButtonFragment, PlayerSelectListItemFragment, SourceEventForImportFragment, useImportPlayersMutation, useSourceEventsForImportLazyQuery } from '../lib/generated/graphql'
 import PlayerDeletedBadge from './Players/PlayerDeletedBadge'
-
-const PLAYER_FOR_IMPORT_FRAGMENT = gql`
-  fragment PlayerForImport on Player {
-    id
-    name
-    deleted
-  }
-`
+import PlayerSelectList from './PlayerSelectList/PlayerSelectList'
 
 const SOURCE_EVENT_FOR_IMPORT_FRAGMENT = gql`
   fragment SourceEventForImport on Event {
@@ -19,11 +12,10 @@ const SOURCE_EVENT_FOR_IMPORT_FRAGMENT = gql`
     deleted
     players(orderBy: SCORE, orderByDirection: DESC) {
       nodes {
-        ...PlayerForImport
+        ...PlayerSelectListItem
       }
     }
   }
-  ${PLAYER_FOR_IMPORT_FRAGMENT}
 `
 
 gql`
@@ -70,7 +62,7 @@ export interface ImportPlayersButtonProps extends React.ComponentProps<typeof Bu
 const ImportPlayersButton: React.FC<ImportPlayersButtonProps> = ({ event, onImport, ...buttonProps }) => {
   const [show, setShow] = useState(false)
   const [sourceEvent, setSourceEvent] = useState<SourceEventForImportFragment | null>(null)
-  const [selectedPlayers, setSelectedPlayers] = useState<PlayerForImportFragment[]>([])
+  const [selectedPlayers, setSelectedPlayers] = useState<PlayerSelectListItemFragment[]>([])
   const [markAsPaid, setMarkAsPaid] = useState(true)
 
   const [loadSourceEvents, { data, loading: loadingEvents }] = useSourceEventsForImportLazyQuery()
@@ -101,25 +93,9 @@ const ImportPlayersButton: React.FC<ImportPlayersButtonProps> = ({ event, onImpo
   const activeSourceEvents = sourceEvents.filter(({ deleted }) => !deleted)
   const deletedSourceEvents = sourceEvents.filter(({ deleted }) => deleted)
 
-  const playerAlreadyExists = (player: PlayerForImportFragment) => (
+  const playerAlreadyExists = (player: PlayerSelectListItemFragment) => (
     event.allPlayers.nodes.some(({ name }) => name === player.name)
   )
-
-  const setPlayerSelected = (player: PlayerForImportFragment, selected: boolean) => {
-    if (selected) {
-      setSelectedPlayers([...selectedPlayers, player])
-    } else {
-      setSelectedPlayers(selectedPlayers.filter(({ id }) => id !== player.id))
-    }
-  }
-
-  const selectAll = () => {
-    setSelectedPlayers(sourceEvent?.players.nodes ?? [])
-  }
-
-  const selectNone = () => {
-    setSelectedPlayers([])
-  }
 
   return (
     <>
@@ -178,33 +154,12 @@ const ImportPlayersButton: React.FC<ImportPlayersButtonProps> = ({ event, onImpo
                   <Form.Label>
                     Players to Import
                   </Form.Label>
-                  {sourceEvent.players.nodes.map((player, index) => (
-                    <Form.Check
-                      key={player.id}
-                      id={`player-check-${player.id}`}
-                      label={(
-                        <>
-                          #{index + 1} -{' '}
-                          {player.name}
-                          {player.deleted && <PlayerDeletedBadge className="ms-1" />}
-                        </>
-                      )}
-                      checked={selectedPlayers.includes(player)}
-                      onChange={(event) => setPlayerSelected(player, event.currentTarget.checked)}
-                      disabled={playerAlreadyExists(player)}
-                    />
-                  ))}
-                  <p className="mb-2">
-                    {selectedPlayers.length} players selected
-                  </p>
-                  <div>
-                    <Button size="sm" onClick={selectAll}>
-                      Select all
-                    </Button>
-                    <Button size="sm" onClick={selectNone} className="ms-2">
-                      Select none
-                    </Button>
-                  </div>
+                  <PlayerSelectList
+                    players={sourceEvent.players.nodes}
+                    selected={selectedPlayers}
+                    canSelect={(player) => !playerAlreadyExists(player)}
+                    onChange={setSelectedPlayers}
+                  />
                 </>
               )}
             </Form.Group>

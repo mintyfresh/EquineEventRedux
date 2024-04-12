@@ -1,0 +1,5 @@
+fragment PlayerSelectListItem on Player {
+  id
+  name
+  deleted
+}
