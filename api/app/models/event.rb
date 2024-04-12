@@ -57,6 +57,11 @@ class Event < ApplicationRecord
     rounds.non_deleted.order(:number).last
   end
 
+  # @return [String]
+  def human_type
+    self.class.human_attribute_name('type/human')
+  end
+
   # @abstract
   # @return [Boolean]
   def draws_permitted?

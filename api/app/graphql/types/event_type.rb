@@ -9,6 +9,7 @@ module Types
     field :id, ID, null: false
     field :slug, String, null: false
     field :name, String, null: false
+    field :human_type, String, null: false
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false
     field :deleted, Boolean, null: false
     field :deleted_at, GraphQL::Types::ISO8601DateTime, null: true

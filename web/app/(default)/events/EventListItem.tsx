@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Dropdown, ListGroup } from 'react-bootstrap'
+import { Badge, Dropdown, ListGroup } from 'react-bootstrap'
 import EllipsisDropdown from '../../../components/EllipsisDropdown'
 import { DeletedFilter, EventListItemFragment, EventsIndexDocument, useDeleteEventMutation, useRestoreEventMutation } from '../../../lib/generated/graphql'
 
@@ -41,6 +41,9 @@ export default function EventListItem({ event, onDelete, onRestore }: EventListI
       <Link href={`/events/${event.deleted ? event.id : event.slug}/players`}>
         {event.name}
       </Link>
+      <Badge bg="secondary" className="ms-2">
+        {event.humanType}
+      </Badge>
       <EllipsisDropdown align="end" className="float-end">
         {event.deleted ? (
           <Dropdown.Item onClick={() => restoreEvent()}>Restore</Dropdown.Item>

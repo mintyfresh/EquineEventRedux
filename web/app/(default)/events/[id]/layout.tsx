@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import EventNav from '../../../../components/EventNav'
 import { EventLayoutDocument } from '../../../../lib/generated/graphql'
 import { getClient } from '../../../../lib/graphql/apollo-client'
+import { Badge } from 'react-bootstrap'
 
 export type EventLayoutProps = React.PropsWithChildren<{ params: { id: string } }>
 
@@ -43,7 +44,12 @@ export default async function EventLayout({ children, params: { id } }: EventLay
     return (
       <>
         <header className="d-print-none">
-          <h1>{data.event.name}</h1>
+          <div>
+            <h1 className="d-inline-block">{data.event.name}</h1>
+            <Badge bg="secondary" className="ms-3 mt-2 align-top">
+              {data.event.humanType}
+            </Badge>
+          </div>
           <EventNav event={data.event} />
         </header>
         {children}

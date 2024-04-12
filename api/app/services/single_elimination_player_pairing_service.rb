@@ -11,7 +11,7 @@ class SingleEliminationPlayerPairingService
   def generate_pairings(round_number)
     if round_number <= 1
       generate_initial_pairings
-    elsif (pairings = extract_pairings_from_round(round_number)).present?
+    elsif (pairings = extract_pairings_from_round(round_number - 1)).present?
       generate_pairings_for_following_round(pairings)
     else
       generate_pairings_for_following_round(generate_pairings(round_number - 1))

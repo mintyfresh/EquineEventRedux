@@ -102,6 +102,7 @@ export type Event = {
   deletedAt?: Maybe<Scalars['ISO8601DateTime']['output']>;
   /** Whether ties/draws are allowed in this event. */
   drawsPermitted: Scalars['Boolean']['output'];
+  humanType: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   players: PlayerConnection;
@@ -811,6 +812,7 @@ export type SingleEliminationEvent = Event & {
   deletedAt?: Maybe<Scalars['ISO8601DateTime']['output']>;
   /** Whether ties/draws are allowed in this event. */
   drawsPermitted: Scalars['Boolean']['output'];
+  humanType: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   /** Calculates the maximum number of rounds for the event. */
   maximumNumberOfRounds: Scalars['Int']['output'];
@@ -895,6 +897,7 @@ export type SwissEvent = Event & {
   deletedAt?: Maybe<Scalars['ISO8601DateTime']['output']>;
   /** Whether ties/draws are allowed in this event. */
   drawsPermitted: Scalars['Boolean']['output'];
+  humanType: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   players: PlayerConnection;
@@ -1234,7 +1237,7 @@ export type IndexAudioClipsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type IndexAudioClipsQuery = { __typename?: 'Query', audioClips: { __typename?: 'AudioClipConnection', nodes: Array<{ __typename?: 'AudioClip', id: string, name: string, contentType: string, contentTypeHuman: string, fileSizeHuman: string, fileUrl: string, timerPresets: Array<{ __typename?: 'TimerPreset', id: string, name: string }> }> } };
 
-export type EventListFragment = { __typename?: 'EventConnection', nodes: Array<{ __typename?: 'SingleEliminationEvent', id: string, slug: string, name: string, deleted: boolean, createdAt: string } | { __typename?: 'SwissEvent', id: string, slug: string, name: string, deleted: boolean, createdAt: string }> };
+export type EventListFragment = { __typename?: 'EventConnection', nodes: Array<{ __typename?: 'SingleEliminationEvent', id: string, slug: string, name: string, humanType: string, deleted: boolean, createdAt: string } | { __typename?: 'SwissEvent', id: string, slug: string, name: string, humanType: string, deleted: boolean, createdAt: string }> };
 
 export type DeleteEventMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -1248,11 +1251,11 @@ export type RestoreEventMutationVariables = Exact<{
 }>;
 
 
-export type RestoreEventMutation = { __typename?: 'Mutation', eventRestore?: { __typename?: 'EventRestorePayload', event?: { __typename?: 'SingleEliminationEvent', id: string, name: string, slug: string, deleted: boolean, createdAt: string } | { __typename?: 'SwissEvent', id: string, name: string, slug: string, deleted: boolean, createdAt: string } | null } | null };
+export type RestoreEventMutation = { __typename?: 'Mutation', eventRestore?: { __typename?: 'EventRestorePayload', event?: { __typename?: 'SingleEliminationEvent', id: string, name: string, humanType: string, slug: string, deleted: boolean, createdAt: string } | { __typename?: 'SwissEvent', id: string, name: string, humanType: string, slug: string, deleted: boolean, createdAt: string } | null } | null };
 
-type EventListItem_SingleEliminationEvent_Fragment = { __typename?: 'SingleEliminationEvent', id: string, name: string, slug: string, deleted: boolean, createdAt: string };
+type EventListItem_SingleEliminationEvent_Fragment = { __typename?: 'SingleEliminationEvent', id: string, name: string, humanType: string, slug: string, deleted: boolean, createdAt: string };
 
-type EventListItem_SwissEvent_Fragment = { __typename?: 'SwissEvent', id: string, name: string, slug: string, deleted: boolean, createdAt: string };
+type EventListItem_SwissEvent_Fragment = { __typename?: 'SwissEvent', id: string, name: string, humanType: string, slug: string, deleted: boolean, createdAt: string };
 
 export type EventListItemFragment = EventListItem_SingleEliminationEvent_Fragment | EventListItem_SwissEvent_Fragment;
 
@@ -1261,18 +1264,18 @@ export type EventExportQueryVariables = Exact<{
 }>;
 
 
-export type EventExportQuery = { __typename?: 'Query', event: { __typename?: 'SingleEliminationEvent', id: string, name: string, slug: string, deleted: boolean, players: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, score: number, winsCount: number, lossesCount: number, drawsCount: number, opponentWinRate: number }> }, rounds: Array<{ __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, table: number, player1: { __typename?: 'Player', id: string, name: string, winsCount: number, lossesCount: number, drawsCount: number }, player2?: { __typename?: 'Player', id: string, name: string, winsCount: number, lossesCount: number, drawsCount: number } | null }> }> } | { __typename?: 'SwissEvent', id: string, name: string, slug: string, deleted: boolean, players: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, score: number, winsCount: number, lossesCount: number, drawsCount: number, opponentWinRate: number }> }, rounds: Array<{ __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, table: number, player1: { __typename?: 'Player', id: string, name: string, winsCount: number, lossesCount: number, drawsCount: number }, player2?: { __typename?: 'Player', id: string, name: string, winsCount: number, lossesCount: number, drawsCount: number } | null }> }> } };
+export type EventExportQuery = { __typename?: 'Query', event: { __typename?: 'SingleEliminationEvent', id: string, name: string, humanType: string, slug: string, deleted: boolean, players: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, score: number, winsCount: number, lossesCount: number, drawsCount: number, opponentWinRate: number }> }, rounds: Array<{ __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, table: number, player1: { __typename?: 'Player', id: string, name: string, winsCount: number, lossesCount: number, drawsCount: number }, player2?: { __typename?: 'Player', id: string, name: string, winsCount: number, lossesCount: number, drawsCount: number } | null }> }> } | { __typename?: 'SwissEvent', id: string, name: string, humanType: string, slug: string, deleted: boolean, players: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, score: number, winsCount: number, lossesCount: number, drawsCount: number, opponentWinRate: number }> }, rounds: Array<{ __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, table: number, player1: { __typename?: 'Player', id: string, name: string, winsCount: number, lossesCount: number, drawsCount: number }, player2?: { __typename?: 'Player', id: string, name: string, winsCount: number, lossesCount: number, drawsCount: number } | null }> }> } };
 
 export type EventLayoutQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type EventLayoutQuery = { __typename?: 'Query', event: { __typename?: 'SingleEliminationEvent', id: string, name: string, slug: string, deleted: boolean } | { __typename?: 'SwissEvent', id: string, name: string, slug: string, deleted: boolean } };
+export type EventLayoutQuery = { __typename?: 'Query', event: { __typename?: 'SingleEliminationEvent', id: string, name: string, humanType: string, slug: string, deleted: boolean } | { __typename?: 'SwissEvent', id: string, name: string, humanType: string, slug: string, deleted: boolean } };
 
-type EventLayout_SingleEliminationEvent_Fragment = { __typename?: 'SingleEliminationEvent', id: string, name: string, slug: string, deleted: boolean };
+type EventLayout_SingleEliminationEvent_Fragment = { __typename?: 'SingleEliminationEvent', id: string, name: string, humanType: string, slug: string, deleted: boolean };
 
-type EventLayout_SwissEvent_Fragment = { __typename?: 'SwissEvent', id: string, name: string, slug: string, deleted: boolean };
+type EventLayout_SwissEvent_Fragment = { __typename?: 'SwissEvent', id: string, name: string, humanType: string, slug: string, deleted: boolean };
 
 export type EventLayoutFragment = EventLayout_SingleEliminationEvent_Fragment | EventLayout_SwissEvent_Fragment;
 
@@ -1282,7 +1285,7 @@ export type EventMatchesQueryVariables = Exact<{
 }>;
 
 
-export type EventMatchesQuery = { __typename?: 'Query', event: { __typename?: 'SingleEliminationEvent', id: string, name: string, slug: string, deleted: boolean, rounds: Array<{ __typename?: 'Round', id: string, number: number, eventId: string, isComplete: boolean, primaryTimer?: { __typename?: 'Timer', id: string, matchId?: string | null, isExpired: boolean, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null, matches: Array<{ __typename?: 'Match', id: string, table: number, winnerId?: string | null, draw: boolean, drawPermitted: boolean, player1: { __typename?: 'Player', id: string, name: string, dropped: boolean, paid: boolean, deleted: boolean }, player2?: { __typename?: 'Player', id: string, name: string, dropped: boolean, paid: boolean, deleted: boolean } | null, timer?: { __typename?: 'Timer', matchId?: string | null, id: string, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null }> }>, players: { __typename?: 'PlayerConnection', totalCount: number } } | { __typename?: 'SwissEvent', id: string, name: string, slug: string, deleted: boolean, rounds: Array<{ __typename?: 'Round', id: string, number: number, eventId: string, isComplete: boolean, primaryTimer?: { __typename?: 'Timer', id: string, matchId?: string | null, isExpired: boolean, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null, matches: Array<{ __typename?: 'Match', id: string, table: number, winnerId?: string | null, draw: boolean, drawPermitted: boolean, player1: { __typename?: 'Player', id: string, name: string, dropped: boolean, paid: boolean, deleted: boolean }, player2?: { __typename?: 'Player', id: string, name: string, dropped: boolean, paid: boolean, deleted: boolean } | null, timer?: { __typename?: 'Timer', matchId?: string | null, id: string, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null }> }>, players: { __typename?: 'PlayerConnection', totalCount: number } } };
+export type EventMatchesQuery = { __typename?: 'Query', event: { __typename?: 'SingleEliminationEvent', id: string, name: string, humanType: string, slug: string, deleted: boolean, rounds: Array<{ __typename?: 'Round', id: string, number: number, eventId: string, isComplete: boolean, primaryTimer?: { __typename?: 'Timer', id: string, matchId?: string | null, isExpired: boolean, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null, matches: Array<{ __typename?: 'Match', id: string, table: number, winnerId?: string | null, draw: boolean, drawPermitted: boolean, player1: { __typename?: 'Player', id: string, name: string, dropped: boolean, paid: boolean, deleted: boolean }, player2?: { __typename?: 'Player', id: string, name: string, dropped: boolean, paid: boolean, deleted: boolean } | null, timer?: { __typename?: 'Timer', matchId?: string | null, id: string, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null }> }>, players: { __typename?: 'PlayerConnection', totalCount: number } } | { __typename?: 'SwissEvent', id: string, name: string, humanType: string, slug: string, deleted: boolean, rounds: Array<{ __typename?: 'Round', id: string, number: number, eventId: string, isComplete: boolean, primaryTimer?: { __typename?: 'Timer', id: string, matchId?: string | null, isExpired: boolean, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null, matches: Array<{ __typename?: 'Match', id: string, table: number, winnerId?: string | null, draw: boolean, drawPermitted: boolean, player1: { __typename?: 'Player', id: string, name: string, dropped: boolean, paid: boolean, deleted: boolean }, player2?: { __typename?: 'Player', id: string, name: string, dropped: boolean, paid: boolean, deleted: boolean } | null, timer?: { __typename?: 'Timer', matchId?: string | null, id: string, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> } | null }> }>, players: { __typename?: 'PlayerConnection', totalCount: number } } };
 
 export type SetMatchResolutionMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -1299,7 +1302,7 @@ export type EventPlayersQueryVariables = Exact<{
 }>;
 
 
-export type EventPlayersQuery = { __typename?: 'Query', event: { __typename?: 'SingleEliminationEvent', id: string, name: string, slug: string, deleted: boolean, players: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, winsCount: number, drawsCount: number, lossesCount: number, score: number, opponentWinRate: number, paid: boolean, dropped: boolean, deleted: boolean }> }, allPlayers: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, deleted: boolean }> } } | { __typename?: 'SwissEvent', id: string, name: string, slug: string, deleted: boolean, players: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, winsCount: number, drawsCount: number, lossesCount: number, score: number, opponentWinRate: number, paid: boolean, dropped: boolean, deleted: boolean }> }, allPlayers: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, deleted: boolean }> } } };
+export type EventPlayersQuery = { __typename?: 'Query', event: { __typename?: 'SingleEliminationEvent', id: string, name: string, humanType: string, slug: string, deleted: boolean, players: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, winsCount: number, drawsCount: number, lossesCount: number, score: number, opponentWinRate: number, paid: boolean, dropped: boolean, deleted: boolean }> }, allPlayers: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, deleted: boolean }> } } | { __typename?: 'SwissEvent', id: string, name: string, humanType: string, slug: string, deleted: boolean, players: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, winsCount: number, drawsCount: number, lossesCount: number, score: number, opponentWinRate: number, paid: boolean, dropped: boolean, deleted: boolean }> }, allPlayers: { __typename?: 'PlayerConnection', nodes: Array<{ __typename?: 'Player', id: string, name: string, deleted: boolean }> } } };
 
 type SlipEvent_SingleEliminationEvent_Fragment = { __typename?: 'SingleEliminationEvent', id: string, name: string };
 
@@ -1316,21 +1319,21 @@ export type EventSlipsQueryVariables = Exact<{
 }>;
 
 
-export type EventSlipsQuery = { __typename?: 'Query', event: { __typename?: 'SingleEliminationEvent', id: string, name: string, slug: string, deleted: boolean, rounds: Array<{ __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, table: number, player1: { __typename?: 'Player', id: string, name: string, score: number }, player2?: { __typename?: 'Player', id: string, name: string, score: number } | null }> }> } | { __typename?: 'SwissEvent', id: string, name: string, slug: string, deleted: boolean, rounds: Array<{ __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, table: number, player1: { __typename?: 'Player', id: string, name: string, score: number }, player2?: { __typename?: 'Player', id: string, name: string, score: number } | null }> }> } };
+export type EventSlipsQuery = { __typename?: 'Query', event: { __typename?: 'SingleEliminationEvent', id: string, name: string, humanType: string, slug: string, deleted: boolean, rounds: Array<{ __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, table: number, player1: { __typename?: 'Player', id: string, name: string, score: number }, player2?: { __typename?: 'Player', id: string, name: string, score: number } | null }> }> } | { __typename?: 'SwissEvent', id: string, name: string, humanType: string, slug: string, deleted: boolean, rounds: Array<{ __typename?: 'Round', id: string, number: number, matches: Array<{ __typename?: 'Match', id: string, winnerId?: string | null, draw: boolean, table: number, player1: { __typename?: 'Player', id: string, name: string, score: number }, player2?: { __typename?: 'Player', id: string, name: string, score: number } | null }> }> } };
 
 export type EventTimersQueryVariables = Exact<{
   eventId: Scalars['ID']['input'];
 }>;
 
 
-export type EventTimersQuery = { __typename?: 'Query', event: { __typename?: 'SingleEliminationEvent', id: string, name: string, slug: string, deleted: boolean, currentRound?: { __typename?: 'Round', id: string, timers: Array<{ __typename?: 'Timer', id: string, label?: string | null, isPrimary: boolean, isExpired: boolean, isPaused: boolean, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> }>, matches: Array<{ __typename?: 'Match', id: string, table: number, player1: { __typename?: 'Player', id: string, name: string }, player2?: { __typename?: 'Player', id: string, name: string } | null, timer?: { __typename?: 'Timer', id: string } | null }> } | null } | { __typename?: 'SwissEvent', id: string, name: string, slug: string, deleted: boolean, currentRound?: { __typename?: 'Round', id: string, timers: Array<{ __typename?: 'Timer', id: string, label?: string | null, isPrimary: boolean, isExpired: boolean, isPaused: boolean, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> }>, matches: Array<{ __typename?: 'Match', id: string, table: number, player1: { __typename?: 'Player', id: string, name: string }, player2?: { __typename?: 'Player', id: string, name: string } | null, timer?: { __typename?: 'Timer', id: string } | null }> } | null } };
+export type EventTimersQuery = { __typename?: 'Query', event: { __typename?: 'SingleEliminationEvent', id: string, name: string, humanType: string, slug: string, deleted: boolean, currentRound?: { __typename?: 'Round', id: string, timers: Array<{ __typename?: 'Timer', id: string, label?: string | null, isPrimary: boolean, isExpired: boolean, isPaused: boolean, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> }>, matches: Array<{ __typename?: 'Match', id: string, table: number, player1: { __typename?: 'Player', id: string, name: string }, player2?: { __typename?: 'Player', id: string, name: string } | null, timer?: { __typename?: 'Timer', id: string } | null }> } | null } | { __typename?: 'SwissEvent', id: string, name: string, humanType: string, slug: string, deleted: boolean, currentRound?: { __typename?: 'Round', id: string, timers: Array<{ __typename?: 'Timer', id: string, label?: string | null, isPrimary: boolean, isExpired: boolean, isPaused: boolean, instant: string, expiresAt: string, pausedAt?: string | null, totalDurationInSeconds: number, phases: Array<{ __typename?: 'TimerPhase', id: string, name: string, position: number, durationInSeconds: number, offsetFromStart: number, offsetFromEnd: number, audioClip?: { __typename?: 'AudioClip', id: string, fileUrl: string } | null }> }>, matches: Array<{ __typename?: 'Match', id: string, table: number, player1: { __typename?: 'Player', id: string, name: string }, player2?: { __typename?: 'Player', id: string, name: string } | null, timer?: { __typename?: 'Timer', id: string } | null }> } | null } };
 
 export type EventsIndexQueryVariables = Exact<{
   deleted?: InputMaybe<DeletedFilter>;
 }>;
 
 
-export type EventsIndexQuery = { __typename?: 'Query', events: { __typename?: 'EventConnection', nodes: Array<{ __typename?: 'SingleEliminationEvent', id: string, slug: string, name: string, deleted: boolean, createdAt: string } | { __typename?: 'SwissEvent', id: string, slug: string, name: string, deleted: boolean, createdAt: string }> } };
+export type EventsIndexQuery = { __typename?: 'Query', events: { __typename?: 'EventConnection', nodes: Array<{ __typename?: 'SingleEliminationEvent', id: string, slug: string, name: string, humanType: string, deleted: boolean, createdAt: string } | { __typename?: 'SwissEvent', id: string, slug: string, name: string, humanType: string, deleted: boolean, createdAt: string }> } };
 
 export type DeleteTimerPresetMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -1728,6 +1731,7 @@ export const EventListItemFragmentDoc = gql`
     fragment EventListItem on Event {
   id
   name
+  humanType
   slug
   deleted
   createdAt
@@ -1746,6 +1750,7 @@ export const EventLayoutFragmentDoc = gql`
     fragment EventLayout on Event {
   id
   name
+  humanType
   slug
   deleted
 }

@@ -7,6 +7,10 @@ en:
       round/matches:
         <<: *match
         table: Table number
+      single_elimination_event:
+        type/human: Single elimination
+      swiss_event:
+        type/human: Swiss
       timer_preset/phases:
         name: Label
         duration_amount: Duration

@@ -16,6 +16,7 @@ mutation RestoreEvent($id: ID!) {
 fragment EventListItem on Event {
   id
   name
+  humanType
   slug
   deleted
   createdAt
