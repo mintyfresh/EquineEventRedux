@@ -94,6 +94,11 @@ class Round < ApplicationRecord
     end
   end
 
+  # @return [Array<(Player, Player), (Player, nil)>]
+  def pairings
+    matches.map(&:players)
+  end
+
 private
 
   # @return [void]
