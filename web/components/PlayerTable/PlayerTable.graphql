@@ -1,0 +1,4 @@
+fragment PlayerTableEvent on Event {
+  __typename
+  id
+}

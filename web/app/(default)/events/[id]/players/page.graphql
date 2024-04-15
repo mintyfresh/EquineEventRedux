@@ -2,6 +2,7 @@ query EventPlayers($id: ID!, $deleted: DeletedFilter) {
   event(id: $id) {
     id
     name
+    ...PlayerTableEvent
     ...EventLayout
     ...CreatePlayerButton
     ...ImportPlayersButton

@@ -13,12 +13,18 @@ fragment SlipMatch on Match {
   player1 {
     id
     name
-    score
+    winsCount
+    ... on SwissPlayer {
+      score
+    }
   }
   player2 {
     id
     name
-    score
+    winsCount
+    ... on SwissPlayer {
+      score
+    }
   }
   winnerId
   draw

@@ -5,7 +5,7 @@ import { useState } from 'react'
 import { Button, ButtonToolbar, Card } from 'react-bootstrap'
 import CreatePlayerButton from '../../../../../components/CreatePlayerButton'
 import ImportPlayersButton from '../../../../../components/ImportPlayersButton'
-import PlayerTable from '../../../../../components/PlayerTable'
+import PlayerTable from '../../../../../components/PlayerTable/PlayerTable'
 import { DeletedFilter, EventPlayersDocument, EventPlayersQuery, EventPlayersQueryVariables } from '../../../../../lib/generated/graphql'
 
 export default function EventPlayersPage({ params: { id } }: { params: { id: string } }) {
@@ -31,6 +31,7 @@ export default function EventPlayersPage({ params: { id } }: { params: { id: str
       </ButtonToolbar>
       {data.event.players.nodes.length > 0 ? (
         <PlayerTable
+          event={data.event}
           players={data.event.players.nodes}
           onDelete={() => refetch()}
           onRestore={() => refetch()}

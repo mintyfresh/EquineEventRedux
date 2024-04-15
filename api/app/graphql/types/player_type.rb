@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
 module Types
-  class PlayerType < BaseObject
+  module PlayerType
+    include BaseInterface
+
+    orphan_types SwissPlayerType, SingleEliminationPlayerType
+
     field :id, ID, null: false
     field :event_id, ID, null: false
     field :name, String, null: false
@@ -12,10 +16,7 @@ module Types
 
     field :completed_matches_count, Integer, null: false
     field :wins_count, Integer, null: false
-    field :draws_count, Integer, null: false
     field :losses_count, Integer, null: false
-    field :score, Integer, null: false
-    field :maximum_possible_score, Integer, null: false
 
     field :opponent_ids, [ID], null: false
     field :opponent_win_rate, Float, null: false
@@ -29,6 +30,8 @@ module Types
     def opponent_win_rate
       score_card.opponent_win_rate || 0.0
     end
+
+  protected
 
     # @return [::PlayerScoreCard]
     def score_card

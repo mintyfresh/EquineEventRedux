@@ -34,7 +34,6 @@
 class SingleEliminationPlayer < Player
   store_accessor :data, :swiss_player_id, :swiss_ranking
 
-  validates :swiss_player_id, presence: true
   validates :swiss_ranking, numericality: { only_integer: true, greater_than: 0 }
 
   # @!method self.order_by_swiss_ranking(direction = :asc)

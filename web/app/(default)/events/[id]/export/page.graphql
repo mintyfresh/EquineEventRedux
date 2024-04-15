@@ -6,11 +6,13 @@ query EventExport($id: ID!) {
       nodes {
         id
         name
-        score
         winsCount
         lossesCount
-        drawsCount
         opponentWinRate
+        ...on SwissPlayer {
+          score
+          drawsCount
+        }
       }
     }
     rounds(orderBy: NUMBER, orderByDirection: DESC) {
@@ -24,14 +26,18 @@ query EventExport($id: ID!) {
           name
           winsCount
           lossesCount
-          drawsCount
+          ...on SwissPlayer {
+            drawsCount
+          }
         }
         player2 {
           id
           name
           winsCount
           lossesCount
-          drawsCount
+          ...on SwissPlayer {
+            drawsCount
+          }
         }
       }
     }

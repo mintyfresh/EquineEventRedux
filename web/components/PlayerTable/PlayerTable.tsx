@@ -5,19 +5,24 @@ import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, Header, Sort
 import React, { useMemo, useState } from 'react'
 import { Badge, Table as BSTable } from 'react-bootstrap'
 import NumberFormat from 'react-number-format'
-import { PlayerTableFragment } from '../lib/generated/graphql'
-import PlayerNameWithBadges, { PLAYER_NAME_WITH_BADGES_FRAGMENT } from './Players/PlayerNameWithBadges'
-import PlayerActionsDropdown, { PLAYER_ACTIONS_DROPDOWN_FRAGMENT } from './PlayerTable/PlayerActionsDropdown'
+import { PlayerTableEventFragment, PlayerTableFragment } from '../../lib/generated/graphql'
+import PlayerNameWithBadges, { PLAYER_NAME_WITH_BADGES_FRAGMENT } from '../Players/PlayerNameWithBadges'
+import PlayerActionsDropdown, { PLAYER_ACTIONS_DROPDOWN_FRAGMENT } from './PlayerActionsDropdown'
 
 export const PLAYER_TABLE_FRAGMENT = gql`
   fragment PlayerTable on Player {
     id
     name
     winsCount
-    drawsCount
     lossesCount
-    score
     opponentWinRate
+    ...on SwissPlayer {
+      drawsCount
+      score
+    }
+    ...on SingleEliminationPlayer {
+      ranking: swissRanking
+    }
     ...PlayerNameWithBadges
     ...PlayerActionsDropdown
   }
@@ -65,17 +70,24 @@ const PlayerTableHeader: React.FC<{ table: Table<PlayerTableFragment>, header: H
 }
 
 export interface PlayerTableProps {
+  event: PlayerTableEventFragment
   players: PlayerTableFragment[]
   onDelete?: (player: PlayerTableFragment) => void
   onRestore?: (player: PlayerTableFragment) => void
 }
 
-const PlayerTable: React.FC<PlayerTableProps> = ({ players, onDelete, onRestore }) => {
-  const [sorting, setSorting] = useState<SortingState>([
-    { id: 'score', desc: true },
-    { id: 'opponentWinRate', desc: true },
-    { id: 'id', desc: true }
-  ])
+const PlayerTable: React.FC<PlayerTableProps> = ({ event, players, onDelete, onRestore }) => {
+  const [sorting, setSorting] = useState<SortingState>(
+    event.__typename === 'SwissEvent' ? [
+      { id: 'score', desc: true },
+      { id: 'opponentWinRate', desc: true },
+      { id: 'id', desc: true }
+    ] : [
+      { id: 'winsCount', desc: true },
+      { id: 'ranking', desc: false }, // default to 'asc' for ranking
+      { id: 'id', desc: true }
+    ]
+  )
 
   const columns: ColumnDef<PlayerTableFragment>[] = useMemo(() => [
     {
@@ -114,6 +126,10 @@ const PlayerTable: React.FC<PlayerTableProps> = ({ players, onDelete, onRestore 
       )
     },
     {
+      accessorKey: 'ranking',
+      header: 'Ranking'
+    },
+    {
       accessorKey: 'id',
       header: 'Player ID',
       enableHiding: true
@@ -135,12 +151,23 @@ const PlayerTable: React.FC<PlayerTableProps> = ({ players, onDelete, onRestore 
         </span>
       )
     }
-  ], [onDelete, onRestore])
+  ], [event.__typename, onDelete, onRestore])
 
   const table = useReactTable({
     data: players,
     columns,
-    state: { sorting, columnVisibility: { 'id': false } },
+    state: {
+      sorting,
+      columnVisibility: {
+        'id': false,
+        // fields only applicable to Swiss events
+        'drawsCount': event.__typename === 'SwissEvent',
+        'score': event.__typename === 'SwissEvent',
+        'opponentWinRate': event.__typename === 'SwissEvent',
+        // fields only applicable to single elimination events
+        'ranking': event.__typename === 'SingleEliminationEvent'
+      }
+    },
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel()
