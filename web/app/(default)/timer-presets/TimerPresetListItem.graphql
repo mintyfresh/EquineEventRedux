@@ -13,6 +13,7 @@ fragment TimerPresetListItem on TimerPreset {
   phases(limit: 3) {
     id
     name
+    colour
     durationHumanized
     audioClip {
       id

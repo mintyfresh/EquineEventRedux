@@ -6,8 +6,8 @@ import RoundMatchesGridCard from './RoundListItemMatchGridCard'
 export interface RoundListItemMatchGridProps {
   round: RoundListItemMatchGridFragment
   disabled?: boolean
-  onSetWinner?: (matchId: string, winnerId: string) => void
-  onSetDraw?: (matchId: string) => void
+  onSetWinner?: (matchId: string, winnerId: string | null) => void
+  onSetDraw?: (matchId: string, draw: boolean) => void
 }
 
 const RoundListItemMatchGrid: React.FC<RoundListItemMatchGridProps> = ({ round, disabled, onSetWinner, onSetDraw }) => {

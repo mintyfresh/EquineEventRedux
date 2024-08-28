@@ -12,7 +12,7 @@ interface MatchCardPlayerProps {
   player: MatchCardPlayer
   disabled?: boolean
   className?: string
-  onSetWinner?: (matchId: string, winnerId: string) => void
+  onSetWinner?: (matchId: string, winnerId: string | null) => void
 }
 
 const MatchCardPlayer: React.FC<MatchCardPlayerProps> = ({ match, player, disabled, className, onSetWinner }) => {
@@ -24,12 +24,24 @@ const MatchCardPlayer: React.FC<MatchCardPlayerProps> = ({ match, player, disabl
     )
   }
 
+  const onSelectWinner = () => {
+    if (disabled) {
+      return
+    }
+
+    if (match.winnerId === player.id) {
+      onSetWinner?.(match.id, null)
+    } else {
+      onSetWinner?.(match.id, player.id)
+    }
+  }
+
   return (
     <Card.Text
       className={'h5 px-1 py-2 ' + className}
       role={disabled ? undefined : 'button'}
       aria-disabled={disabled}
-      onClick={() => !disabled && onSetWinner?.(match.id, player.id)}
+      onClick={onSelectWinner}
     >
       <FontAwesomeIcon
         icon={faCrown}
@@ -46,7 +58,7 @@ const MatchCardPlayer: React.FC<MatchCardPlayerProps> = ({ match, player, disabl
 interface MatchCardDividerProps {
   match: RoundListItemMatchGridCardFragment
   disabled?: boolean
-  onSetDraw?: (matchId: string) => void
+  onSetDraw?: (matchId: string, draw: boolean) => void
 }
 
 const MatchCardDivider: React.FC<MatchCardDividerProps> = ({ match, disabled, onSetDraw }) => {
@@ -60,7 +72,7 @@ const MatchCardDivider: React.FC<MatchCardDividerProps> = ({ match, disabled, on
     <Row
       role={disabled ? undefined : 'button'}
       aria-disabled={disabled}
-      onClick={() => !disabled && onSetDraw?.(match.id)}
+      onClick={() => !disabled && onSetDraw?.(match.id, !match.draw)}
     >
       <Col><hr /></Col>
       <Col xs="auto" className="my-auto">
@@ -77,8 +89,8 @@ export interface RoundListItemMatchGridCardProps {
   round: RoundListItemMatchGridFragment
   match: RoundListItemMatchGridCardFragment
   disabled?: boolean
-  onSetWinner?: (matchId: string, winnerId: string) => void
-  onSetDraw?: (matchId: string) => void
+  onSetWinner?: (matchId: string, winnerId: string | null) => void
+  onSetDraw?: (matchId: string, draw: boolean) => void
 }
 
 const RoundListItemMatchGridCard: React.FC<RoundListItemMatchGridCardProps> = ({ round, match, disabled, onSetWinner, onSetDraw }) => {

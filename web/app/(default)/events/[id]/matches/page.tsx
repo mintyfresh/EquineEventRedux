@@ -19,12 +19,12 @@ export default function EventMatchesPage({ params: { id } }: { params: { id: str
 
   const [setResolution, { loading: settingResolution }] = useSetMatchResolutionMutation()
 
-  const onSetWinner = (matchId: string, winnerId: string) => {
+  const onSetWinner = (matchId: string, winnerId: string | null) => {
     setResolution({ variables: { id: matchId, winnerId, draw: false } })
   }
 
-  const onSetDraw = (matchId: string) => {
-    setResolution({ variables: { id: matchId, winnerId: null, draw: true } })
+  const onSetDraw = (matchId: string, draw: boolean) => {
+    setResolution({ variables: { id: matchId, winnerId: null, draw } })
   }
 
   useEffect(() => {

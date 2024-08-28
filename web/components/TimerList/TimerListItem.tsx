@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { flushSync } from 'react-dom'
+import { integerToColour } from '../../lib/colour'
 import { TimerListFragment, TimerListItemFragment, useUpdateTimerMutation } from '../../lib/generated/graphql'
 import Timer from '../Timer/Timer'
 import TimerListItemControls from './TimerListItemControls'
@@ -38,7 +39,7 @@ const TimerListItem: React.FC<TimerListItemProps> = ({ timerList, timer, readOnl
             <h3 className="mb-0 pb-0" style={{ 'fontSize': '70px', 'fontWeight': 'lighter' }}>
               {phase?.name ?? 'Done'}
             </h3>
-            <div className="mb-3" style={{ 'fontSize': '200px', 'fontWeight': 'lighter', 'lineHeight': '12rem' }}>
+            <div className="mb-3" style={{ 'fontSize': '200px', 'fontWeight': 'lighter', 'lineHeight': '12rem', 'color': integerToColour(phase?.colour ?? 0) }}>
               {hours > 0 && (
                 hours.toString().padStart(2, '0') + ':'
               )}

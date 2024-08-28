@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
+import { playAudioClip, preloadAudioClip } from '../../lib/audio-cache'
 import { TimerFragment, TimerPhaseFragment } from '../../lib/generated/graphql'
 
 const UPDATE_INTERVAL = 250
@@ -42,7 +43,7 @@ function Timer<Timer extends TimerFragment & { phases: Phase[] }, Phase extends 
   const [hours, setHours] = useState(0)
   const [minutes, setMinutes] = useState(0)
   const [seconds, setSeconds] = useState(0)
-  const [audioClip, setAudioClip] = useState<HTMLAudioElement | null>(null)
+  const [audioClip, setAudioClip] = useState<string | null>(null)
 
   // A date representing the time at which the server last processed the timer.
   const instant = useMemo(() => new Date(timer.instant), [timer.instant])
@@ -57,12 +58,11 @@ function Timer<Timer extends TimerFragment & { phases: Phase[] }, Phase extends 
   const pausedAt = useMemo(() => timer.pausedAt ? new Date(timer.pausedAt) : null, [timer.pausedAt])
 
   // Preload audio clips mapped to the phases they correspond to.
-  const audioClips = useMemo(
-    () => new Map<string, HTMLAudioElement | null>(
-      timer.phases.map((phase) => [phase.id, phase.audioClip ? new Audio(phase.audioClip.fileUrl) : null])
-    ),
-    [timer.phases]
-  )
+  useEffect(() => {
+    timer.phases.forEach((phase) =>
+      phase.audioClip && preloadAudioClip(phase.audioClip.fileUrl)
+    )
+  }, [timer.phases])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -82,7 +82,7 @@ function Timer<Timer extends TimerFragment & { phases: Phase[] }, Phase extends 
           console.log('Phase changed:', currentPhase?.id, 'from', previousPhase?.id)
           // queue the audio clip rather than playing it immediately
           // (this block might be called more than once before the audio is played, so we need to ensure it's only played once)
-          setAudioClip(audioClips.get(previousPhase.id) ?? null)
+          setAudioClip(previousPhase.audioClip?.fileUrl ?? null)
         }
 
         return currentPhase
@@ -92,20 +92,17 @@ function Timer<Timer extends TimerFragment & { phases: Phase[] }, Phase extends 
     return () => clearInterval(interval)
   }, [latency, expiresAt, pausedAt, timer.totalDurationInSeconds, timer.phases])
 
-  useEffect(() => {    
+  useEffect(() => {
     // Play the queued audio clip.
     if (audioClip) {
       console.log('Playing queued audio clip:', audioClip)
 
-      try {
-        if (audioEnabled) {
-          audioClip.play()
-        }
-      } catch (error) {
-        console.error(error)
-      } finally {
-        setAudioClip(null)
+      if (audioEnabled) {
+        playAudioClip(audioClip)
+          .catch((error) => console.error(error))
       }
+      
+      setAudioClip(null)
     }
   }, [audioEnabled, audioClip])
 

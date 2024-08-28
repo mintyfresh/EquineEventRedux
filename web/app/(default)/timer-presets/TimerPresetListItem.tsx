@@ -65,7 +65,9 @@ export default function TimerPresetListItem({ preset, onDelete }: TimerPresetLis
           <Col key={phase.id} md={4} lg={3} className="mb-0">
             <Card body>
               <Card.Title>
-                {phase.name}
+                <span style={{ color: `#${phase.colour.toString(16).padStart(6, '0')}` }}>
+                  {phase.name}
+                </span>
                 {phase.audioClip && (
                   <FontAwesomeIcon
                     icon={faVolumeUp}

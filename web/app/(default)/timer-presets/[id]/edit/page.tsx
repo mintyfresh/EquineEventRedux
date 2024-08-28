@@ -21,6 +21,7 @@ export default function EditTimerPresetPage({ params: { id } }: { params: { id: 
       phases: data.timerPreset.phases.map((phase) => ({
         id: phase.id,
         name: phase.name,
+        colour: phase.colour,
         position: phase.position,
         durationAmount: phase.durationAmount,
         durationUnit: phase.durationUnit

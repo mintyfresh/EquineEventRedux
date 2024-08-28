@@ -7,8 +7,8 @@ import RoundListItemMatchTimer from './RoundListItemMatchTimer'
 export interface RoundListItemMatchListProps {
   round: RoundListItemMatchListFragment
   disabled?: boolean
-  onSetWinner?: (matchId: string, winnerId: string) => void
-  onSetDraw?: (matchId: string) => void
+  onSetWinner?: (matchId: string, winnerId: string | null) => void
+  onSetDraw?: (matchId: string, draw: boolean) => void
 }
 
 const RoundListItemMatchList: React.FC<RoundListItemMatchListProps> = ({ round, disabled, onSetWinner, onSetDraw }) => {
@@ -52,7 +52,7 @@ const RoundListItemMatchList: React.FC<RoundListItemMatchListProps> = ({ round, 
               </Dropdown.Item>
               <Dropdown.Item
                 disabled={disabled || match.draw}
-                onClick={() => onSetDraw?.(match.id)}
+                onClick={() => onSetDraw?.(match.id, true)}
               >
                 Mark as a draw
               </Dropdown.Item>

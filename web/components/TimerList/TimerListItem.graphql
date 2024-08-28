@@ -21,4 +21,5 @@ fragment TimerListItem on Timer {
 fragment TimerListItemPhase on TimerPhase {
   id
   name
+  colour
 }

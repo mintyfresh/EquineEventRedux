@@ -18,8 +18,8 @@ const TimerPresetSelect: React.FC<TimerPresetSelectProps> = ({ timerPresets, sel
         value && onChange?.(value)
       }}
     >
-      {timerPresets.map((preset) => (
-        <option key={preset.id} value={preset.id}>
+      {timerPresets.map((preset, index) => (
+        <option key={preset.id ?? index} value={preset.id}>
           {preset.name}
         </option>
       ))}

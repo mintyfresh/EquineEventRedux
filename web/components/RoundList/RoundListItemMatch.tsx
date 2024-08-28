@@ -8,8 +8,8 @@ export interface RoundListItemMatchProps {
   round: RoundListItemMatchFragment
   viewMode?: RoundViewMode
   disabled?: boolean
-  onSetWinner?(matchId: string, winnerId: string): void
-  onSetDraw?(matchId: string): void
+  onSetWinner?(matchId: string, winnerId: string | null): void
+  onSetDraw?(matchId: string, draw: boolean): void
 }
 
 const RoundListItemMatch: React.FC<RoundListItemMatchProps> = ({ round, viewMode, disabled, onSetWinner, onSetDraw }) => {

@@ -13,6 +13,8 @@ export default function EventTimersPage({ params: { id, fullscreen } }: { params
 
   const currentRound = data?.event?.currentRound
 
+  console.log('currentRound', currentRound)
+
   if (!currentRound) {
     return (
       <Alert variant="warning">

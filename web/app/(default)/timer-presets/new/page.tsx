@@ -14,6 +14,7 @@ export default function NewTimerPresetPage() {
     phases: [
       {
         name: '',
+        colour: 0,
         durationAmount: 10,
         durationUnit: TimerPhaseDurationUnit.Minutes
       }

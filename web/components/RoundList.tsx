@@ -5,8 +5,8 @@ export interface RoundListProps {
   rounds: RoundListItemFragment[]
   viewMode?: RoundViewMode
   disabled?: boolean
-  onSetWinner?(matchId: string, winnerId: string): void
-  onSetDraw?(matchId: string): void
+  onSetWinner?(matchId: string, winnerId: string | null): void
+  onSetDraw?(matchId: string, draw: boolean): void
   onDelete?(round: RoundListItemFragment): void
 }
 

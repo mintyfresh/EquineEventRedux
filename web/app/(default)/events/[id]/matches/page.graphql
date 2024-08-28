@@ -4,6 +4,9 @@ query EventMatches($id: ID!, $deleted: DeletedFilter) {
     name
     ...EventLayout
     ...CreateRoundButton
+    currentRound {
+      id
+    }
     rounds(deleted: $deleted, orderBy: NUMBER, orderByDirection: DESC) {
       ...RoundListItem
     }

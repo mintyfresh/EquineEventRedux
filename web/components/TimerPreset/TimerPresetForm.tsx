@@ -2,6 +2,7 @@ import { faFlag, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
 import { Button, Card, Col, Form, InputGroup, Row } from 'react-bootstrap'
+import { colourToInteger, integerToColour } from '../../lib/colour'
 import { Errors } from '../../lib/errors'
 import { TimerPhaseDurationUnit, TimerPresetCreateInput, TimerPresetPhaseInput, TimerPresetUpdateInput } from '../../lib/generated/graphql'
 import AudioClipSelect from '../AudioClipSelect/AudioClipSelect'
@@ -52,23 +53,45 @@ const TimerPresetFormPhase: React.FC<TimerPresetFormPhaseProps> = ({ index, phas
         <Row>
           <Col md={6} lg={4}>
             <Form.Group className="mb-3">
-              <Form.Label>Label*</Form.Label>
-              <Form.Control
-                type="text"
-                title={`Phase ${index + 1} label`}
-                value={phase.name ?? ''}
-                onChange={(event) => onUpdate({ name: event.currentTarget.value })}
-                isInvalid={errors.any(`name`)}
-                disabled={phase._destroy || disabled}
-                required
-              />
-              <Form.Text>
-                Displayed above the timer when the phase is active.
-              </Form.Text>
-              <FormControlErrors
-                name={`name`}
-                errors={errors}
-              />
+              <Row className="gx-2">
+                <Col>
+                  <Form.Label>Label*</Form.Label>
+                  <InputGroup>
+                    <Form.Control
+                      type="text"
+                      title={`Phase ${index + 1} label`}
+                      value={phase.name ?? ''}
+                      onChange={(event) => onUpdate({ name: event.currentTarget.value })}
+                      isInvalid={errors.any(`name`)}
+                      disabled={phase._destroy || disabled}
+                      className="flex-fill"
+                      required
+                    />
+                  </InputGroup>
+                  <Form.Text>
+                    Displayed above the timer when the phase is active.
+                  </Form.Text>
+                  <FormControlErrors
+                    name={`name`}
+                    errors={errors}
+                  />
+                </Col>
+                <Col xs="auto">
+                  <Form.Label>Colour</Form.Label>
+                  <Form.Control
+                    type="color"
+                    title={`Phase ${index + 1} colour`}
+                    value={integerToColour(phase.colour ?? 0)}
+                    onChange={(event) => onUpdate({ colour: colourToInteger(event.currentTarget.value) })}
+                    isInvalid={errors.any(`colour`)}
+                    disabled={phase._destroy || disabled}
+                  />
+                  <FormControlErrors
+                    name={`colour`}
+                    errors={errors}
+                  />
+                </Col>
+              </Row>
             </Form.Group>
           </Col>
           <Col md={6} lg={4}>
