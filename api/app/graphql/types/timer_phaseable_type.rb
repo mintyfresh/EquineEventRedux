@@ -6,6 +6,9 @@ module Types
 
     field :id, ID, null: false
     field :name, String, null: false
+    field :colour, Integer, null: false do
+      description 'The colour of the phase in RGB format (0xRRGGBB)'
+    end
     field :position, Integer, null: false
     field :duration_amount, Integer, null: false
     field :duration_unit, Types::TimerPhaseDurationUnitType, null: false

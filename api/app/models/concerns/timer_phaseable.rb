@@ -35,12 +35,16 @@ module TimerPhaseable
   DURATION_MINIMUM = 10.seconds
   DURATION_UNITS = %w[seconds minutes hours].freeze
 
+  COLOUR_MIN_VALUE = 0x00_00_00
+  COLOUR_MAX_VALUE = 0xFF_FF_FF
+
   included do
     belongs_to :audio_clip, optional: true
 
     validates :name, presence: true
     validates :duration_amount, numericality: { greater_than: 0 }
     validates :duration_unit, inclusion: { in: DURATION_UNITS }
+    validates :colour, numericality: { in: COLOUR_MIN_VALUE..COLOUR_MAX_VALUE }
 
     validate if: -> { duration.present? } do
       errors.add(:duration_amount, :too_short, count: DURATION_MINIMUM.inspect) if duration < DURATION_MINIMUM

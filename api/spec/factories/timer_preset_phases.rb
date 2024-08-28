@@ -13,6 +13,7 @@
 #  offset_from_end   :integer          not null
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
+#  colour            :integer          default(0), not null
 #
 # Indexes
 #
@@ -30,6 +31,7 @@ FactoryBot.define do
     timer_preset
 
     sequence(:name) { |n| "Phase #{Faker::Lorem.word} #{n}" }
+    colour { rand(0x000000..0xFFFFFF) }
     duration_amount { 10 }
     duration_unit { 'minutes' }
   end

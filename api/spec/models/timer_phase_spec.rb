@@ -17,6 +17,7 @@
 #  extension_in_seconds :integer          default(0), not null
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
+#  colour               :integer          default(0), not null
 #
 # Indexes
 #

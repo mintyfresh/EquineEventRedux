@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_03_02_224702) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_28_204957) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pgcrypto"
@@ -127,9 +127,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_02_224702) do
     t.integer "extension_in_seconds", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "colour", default: 0, null: false
     t.index ["audio_clip_id"], name: "index_timer_phases_on_audio_clip_id"
     t.index ["preset_phase_id"], name: "index_timer_phases_on_preset_phase_id"
     t.index ["timer_id"], name: "index_timer_phases_on_timer_id"
+    t.check_constraint "colour >= '000000000000000000000000'::\"bit\"::integer AND colour <= '111111111111111111111111'::\"bit\"::integer"
     t.check_constraint "duration_amount > 0"
   end
 
@@ -144,9 +146,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_02_224702) do
     t.integer "offset_from_end", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "colour", default: 0, null: false
     t.index ["audio_clip_id"], name: "index_timer_preset_phases_on_audio_clip_id"
     t.index ["timer_preset_id", "name"], name: "index_timer_preset_phases_on_timer_preset_id_and_name", unique: true
     t.index ["timer_preset_id"], name: "index_timer_preset_phases_on_timer_preset_id"
+    t.check_constraint "colour >= '000000000000000000000000'::\"bit\"::integer AND colour <= '111111111111111111111111'::\"bit\"::integer"
     t.check_constraint "duration_amount > 0"
   end
 

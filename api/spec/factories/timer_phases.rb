@@ -17,6 +17,7 @@
 #  extension_in_seconds :integer          default(0), not null
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
+#  colour               :integer          default(0), not null
 #
 # Indexes
 #
@@ -37,6 +38,7 @@ FactoryBot.define do
 
     audio_clip { preset_phase.audio_clip }
     name { preset_phase.name }
+    colour { preset_phase.colour }
     position { preset_phase.position }
     duration_amount { preset_phase.duration_amount }
     duration_unit { preset_phase.duration_unit }

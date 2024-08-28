@@ -21,6 +21,7 @@ TimerPreset.find_or_create_by!(system_ref: '35-minute-builtin') do |preset|
   # 3 minute setup phase
   preset.phases.build(
     name:            'Setup',
+    colour:          0xFFC107,
     audio_clip:      AudioClip['begin'],
     position:        1,
     duration_amount: 3,
@@ -30,6 +31,7 @@ TimerPreset.find_or_create_by!(system_ref: '35-minute-builtin') do |preset|
   # 35 minute soft-time phase
   preset.phases.build(
     name:            'Time Remaining',
+    colour:          0x198754,
     audio_clip:      AudioClip['soft-time'],
     position:        2,
     duration_amount: 35,
@@ -39,6 +41,7 @@ TimerPreset.find_or_create_by!(system_ref: '35-minute-builtin') do |preset|
   # 5 minute hard-time phase
   preset.phases.build(
     name:            'Game Ends In',
+    colour:          0xDC3545,
     audio_clip:      AudioClip['hard-time'],
     position:        3,
     duration_amount: 5,
@@ -52,6 +55,7 @@ TimerPreset.find_or_create_by!(system_ref: '45-minute-builtin') do |preset|
   # 3 minute setup phase
   preset.phases.build(
     name:            'Setup',
+    colour:          0xFFC107,
     audio_clip:      AudioClip['begin'],
     position:        1,
     duration_amount: 3,
@@ -61,6 +65,7 @@ TimerPreset.find_or_create_by!(system_ref: '45-minute-builtin') do |preset|
   # 35 minute soft-time phase
   preset.phases.build(
     name:            'Time Remaining',
+    colour:          0x198754,
     audio_clip:      AudioClip['soft-time'],
     position:        2,
     duration_amount: 45,
@@ -70,9 +75,34 @@ TimerPreset.find_or_create_by!(system_ref: '45-minute-builtin') do |preset|
   # 5 minute hard-time phase
   preset.phases.build(
     name:            'Game Ends In',
+    colour:          0xDC3545,
     audio_clip:      AudioClip['hard-time'],
     position:        3,
     duration_amount: 5,
     duration_unit:   'minutes'
+  )
+end
+
+TimerPreset.find_or_create_by!(system_ref: '2-hour-builtin') do |preset|
+  preset.name = '2 Hour Game'
+
+  # 5 minute setup phase
+  preset.phases.build(
+    name:            'Setup',
+    colour:          0xFFC107,
+    audio_clip:      AudioClip['begin'],
+    position:        1,
+    duration_amount: 5,
+    duration_unit:   'minutes'
+  )
+
+  # 2 hour game phase
+  preset.phases.build(
+    name:            'Time Remaining',
+    colour:          0x198754,
+    audio_clip:      AudioClip['hard-time'],
+    position:        2,
+    duration_amount: 2,
+    duration_unit:   'hours'
   )
 end

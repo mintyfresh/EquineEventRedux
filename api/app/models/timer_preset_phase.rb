@@ -15,6 +15,7 @@
 #  offset_from_end   :integer          not null
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
+#  colour            :integer          default(0), not null
 #
 # Indexes
 #
