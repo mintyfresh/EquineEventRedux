@@ -143,6 +143,7 @@ GEM
     json (2.7.1)
     language_server-protocol (3.17.0.3)
     lazy_priority_queue (0.1.1)
+    logger (1.6.5)
     loofah (2.22.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
@@ -170,6 +171,7 @@ GEM
     nokogiri (1.16.2-x86_64-linux)
       racc (~> 1.4)
     oj (3.13.16)
+    ostruct (0.6.1)
     parallel (1.24.0)
     parser (3.3.0.5)
       ast (~> 2.4.1)
@@ -314,9 +316,11 @@ DEPENDENCIES
   graphql-order_by!
   graphql-rails_logger
   has_unique_attribute
+  logger
   method_source
   moonfire!
   oj
+  ostruct
   pg (~> 1.1)
   puma (~> 6.0)
   rack-cors
@@ -327,11 +331,12 @@ DEPENDENCIES
   rubocop-rails
   rubocop-rspec
   scenic
+  stringio
   tzinfo-data
   where_any
 
 RUBY VERSION
-   ruby 3.2.2p53
+   ruby 3.3.5p100
 
 BUNDLED WITH
-   2.3.10
+   2.6.3
